@@ -23,7 +23,7 @@ func main() {
 	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root docRoot")
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.Parse()
-	fmt.Println(fmt.Sprintf("go serve %s", version))
+	fmt.Println(fmt.Sprintf("go-serve %s", version))
 	log.Println(fmt.Sprintf("Starting serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
