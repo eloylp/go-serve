@@ -2,10 +2,13 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 )
+
+var version string
 
 func main() {
 
@@ -20,9 +23,19 @@ func main() {
 	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root docRoot")
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.Parse()
+	fmt.Println(fmt.Sprintf("go serve %s", version))
+	log.Println(fmt.Sprintf("Starting serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	if err := http.ListenAndServe(listenAddr, fileHandler); err != http.ErrServerClosed && err != nil {
+	if err := http.ListenAndServe(listenAddr, versionHeader(fileHandler)); err != http.ErrServerClosed && err != nil {
 		log.Fatal(err)
 	}
+}
+
+func versionHeader(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Add("Server", fmt.Sprintf("go-serve %s", version))
+		h.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
 }
