@@ -20,7 +20,7 @@ func main() {
 	var docRoot string
 	var listenAddr string
 
-	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root docRoot")
+	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root")
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.Parse()
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
