@@ -14,7 +14,7 @@ An HTTP server for serving local files to external network in a simple way
 
 ### How to install this binary
 
-You can go to the [releases]("/releases/latest") for specific OS and 
+You can go to the [releases](https://github.com/eloylp/go-serve/releases/latest) for specific OS and 
 architecture requirements and download binaries.
 
 An example install for a Linux machine could be:
