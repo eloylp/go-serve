@@ -18,18 +18,19 @@ func main() {
 	}
 
 	var docRoot string
-	var stripPrefix string
+	var prefix string
 	var listenAddr string
 
 	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root")
-	flag.StringVar(&stripPrefix, "p", "/", "Defines strip prefix")
+	flag.StringVar(&prefix, "p", "/", "Defines strip prefix")
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.Parse()
+
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
 	log.Println(fmt.Sprintf("Starting serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	http.Handle(stripPrefix, http.StripPrefix(stripPrefix, versionHeader(fileHandler)))
+	http.Handle(prefix, http.StripPrefix(prefix, versionHeader(fileHandler)))
 	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed && err != nil {
 		log.Fatal(err)
 	}
