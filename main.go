@@ -27,7 +27,7 @@ func main() {
 	flag.Parse()
 
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
-	log.Println(fmt.Sprintf("Starting serve %s at %s ...", docRoot, listenAddr))
+	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
 	http.Handle(prefix, http.StripPrefix(prefix, versionHeader(fileHandler)))
