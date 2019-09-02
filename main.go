@@ -22,7 +22,7 @@ func main() {
 	var listenAddr string
 
 	flag.StringVar(&docRoot, "d", currentDir, "Defines the document root")
-	flag.StringVar(&prefix, "p", "/", "Defines strip prefix")
+	flag.StringVar(&prefix, "p", "/", "Defines prefix to use for serve files")
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.Parse()
 
