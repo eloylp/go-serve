@@ -30,7 +30,7 @@ func main() {
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	http.Handle(prefix, http.StripPrefix(prefix, versionHeader(fileHandler)))
+	http.Handle(prefix, http.StripPrefix(prefix, requestLogger(versionHeader(fileHandler))))
 	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed && err != nil {
 		log.Fatal(err)
 	}
@@ -39,6 +39,14 @@ func main() {
 func versionHeader(h http.Handler) http.Handler {
 	fn := func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Add("Server", fmt.Sprintf("go-serve %s", version))
+		h.ServeHTTP(w, r)
+	}
+	return http.HandlerFunc(fn)
+}
+
+func requestLogger(h http.Handler) http.Handler {
+	fn := func(w http.ResponseWriter, r *http.Request) {
+		go log.Printf("%s %s from client %s", r.Method, r.RequestURI, r.RemoteAddr)
 		h.ServeHTTP(w, r)
 	}
 	return http.HandlerFunc(fn)
