@@ -15,8 +15,8 @@ func TestServerHeader(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	middleware := handler.ServerHeader("v1.0.0")
-	testHandler := handlerFixture()
-	chain := middleware(testHandler)
+	h := handlerFixture()
+	chain := middleware(h)
 	request := newTestRequest(t, "GET", "/", nil)
 
 	chain.ServeHTTP(rec, request)
@@ -50,17 +50,17 @@ func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Requ
 func TestRequestLogger(t *testing.T) {
 
 	rec := httptest.NewRecorder()
-	fakeLogger := mock.NewFakeLogger()
-	middleware := handler.RequestLogger(fakeLogger)
-	testHandler := handlerFixture()
+	logger := mock.NewFakeLogger()
+	middleware := handler.RequestLogger(logger)
+	h := handlerFixture()
 
-	chain := middleware(testHandler)
+	chain := middleware(h)
 	request := newTestRequest(t, "GET", "/path", nil)
 	request.RemoteAddr = "127.0.0.1"
-	fakeLogger.On("Infof", "%s %s from client %s",
+	logger.On("Infof", "%s %s from client %s",
 		request.Method, "/path", request.RemoteAddr).Return()
 
 	chain.ServeHTTP(rec, request)
-	fakeLogger.AssertExpectations(t)
+	logger.AssertExpectations(t)
 	assertOriginalHandlerExecution(t, rec.Result().Body)
 }
