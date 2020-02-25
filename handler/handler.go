@@ -2,8 +2,8 @@ package handler
 
 import (
 	"fmt"
+	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
-	"log"
 	"net/http"
 )
 
@@ -16,10 +16,10 @@ func VersionHeader(version string) www.Middleware {
 	}
 }
 
-func RequestLogger() www.Middleware {
+func RequestLogger(logger logging.Logger) www.Middleware {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			go log.Printf("%s %s from client %s", r.Method, r.RequestURI, r.RemoteAddr)
+			logger.Infof("%s %s from client %s", r.Method, r.URL.String(), r.RemoteAddr)
 			h.ServeHTTP(w, r)
 		})
 	}

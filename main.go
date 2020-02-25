@@ -4,6 +4,7 @@ import (
 	"flag"
 	"fmt"
 	"github.com/eloylp/go-serve/handler"
+	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
 	"log"
 	"net/http"
@@ -32,7 +33,8 @@ func main() {
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.VersionHeader(version), handler.RequestLogger())))
+	logger := logging.NewConsoleLogger()
+	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.VersionHeader(version), handler.RequestLogger(logger))))
 	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
