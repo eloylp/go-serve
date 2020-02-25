@@ -17,7 +17,7 @@ func TestServerHeader(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	middleware := handler.ServerHeader("v1.0.0")
-	h := handlerFixture()
+	h := handlerFixture(t)
 	chain := middleware(h)
 	request := newTestRequest(t, "GET", "/", nil)
 
@@ -28,9 +28,11 @@ func TestServerHeader(t *testing.T) {
 	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
-func handlerFixture() http.HandlerFunc {
+func handlerFixture(t *testing.T) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte(handlerFixtureBody))
+		if _, err := w.Write([]byte(handlerFixtureBody)); err != nil {
+			t.Fatal(err)
+		}
 	}
 }
 
@@ -55,7 +57,7 @@ func TestRequestLogger(t *testing.T) {
 	rec := httptest.NewRecorder()
 	logger := mock.NewFakeLogger()
 	middleware := handler.RequestLogger(logger)
-	h := handlerFixture()
+	h := handlerFixture(t)
 
 	chain := middleware(h)
 	request := newTestRequest(t, "GET", "/path", nil)
