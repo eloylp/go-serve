@@ -34,7 +34,7 @@ func main() {
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
 	logger := logging.NewConsoleLogger()
-	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.VersionHeader(version), handler.RequestLogger(logger))))
+	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.ServerHeader(version), handler.RequestLogger(logger))))
 	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

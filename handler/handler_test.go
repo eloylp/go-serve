@@ -10,10 +10,10 @@ import (
 	"testing"
 )
 
-func TestVersionHeader(t *testing.T) {
+func TestServerHeader(t *testing.T) {
 
 	rec := httptest.NewRecorder()
-	middleware := handler.VersionHeader("v1.0.0")
+	middleware := handler.ServerHeader("v1.0.0")
 	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("Handle wrote this"))
 	})
