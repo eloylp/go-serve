@@ -1,7 +1,7 @@
-package middleware_test
+package www_test
 
 import (
-	"github.com/eloylp/go-serve/middleware"
+	"github.com/eloylp/go-serve/www"
 	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
@@ -14,19 +14,19 @@ func TestApply(t *testing.T) {
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("handler_write\n"))
 	})
-	var m1 middleware.Middleware = func(h http.Handler) http.Handler {
+	var m1 www.Middleware = func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("middleware1_write\n"))
 			h.ServeHTTP(w, r)
 		})
 	}
-	var m2 middleware.Middleware = func(h http.Handler) http.Handler {
+	var m2 www.Middleware = func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			_, _ = w.Write([]byte("middleware2_write\n"))
 			h.ServeHTTP(w, r)
 		})
 	}
-	a := middleware.Apply(h, m1, m2)
+	a := www.Apply(h, m1, m2)
 	rec := httptest.NewRecorder()
 
 	a.ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
