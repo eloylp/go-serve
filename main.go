@@ -33,7 +33,7 @@ func main() {
 
 	fileHandler := http.FileServer(http.Dir(docRoot))
 	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.VersionHeader(version), handler.RequestLogger())))
-	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed && err != nil {
+	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 }
