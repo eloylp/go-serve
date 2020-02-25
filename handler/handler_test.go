@@ -17,10 +17,8 @@ func TestServerHeader(t *testing.T) {
 	middleware := handler.ServerHeader("v1.0.0")
 	testHandler := handlerFixture()
 	chain := middleware(testHandler)
-	request, err := http.NewRequest("GET", "/", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	request := newTestRequest(t, "GET", "/", nil)
+
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, "go-serve v1.0.0", rec.Result().Header.Get("Server"),
 		"Server header is not matching name version format")
@@ -41,6 +39,14 @@ func assertOriginalHandlerExecution(t *testing.T, body io.ReadCloser) {
 	assert.Equal(t, "Handle wrote this", string(data), "Handler is not correctly executed")
 }
 
+func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Request {
+	request, err := http.NewRequest(method, url, body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return request
+}
+
 func TestRequestLogger(t *testing.T) {
 
 	rec := httptest.NewRecorder()
@@ -49,10 +55,7 @@ func TestRequestLogger(t *testing.T) {
 	testHandler := handlerFixture()
 
 	chain := middleware(testHandler)
-	request, err := http.NewRequest("GET", "/path", nil)
-	if err != nil {
-		t.Fatal(err)
-	}
+	request := newTestRequest(t, "GET", "/path", nil)
 	request.RemoteAddr = "127.0.0.1"
 	fakeLogger.On("Infof", "%s %s from client %s",
 		request.Method, "/path", request.RemoteAddr).Return()
