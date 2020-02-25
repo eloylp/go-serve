@@ -4,6 +4,7 @@ import (
 	"github.com/eloylp/go-serve/handler"
 	"github.com/eloylp/go-serve/logging/mock"
 	"github.com/stretchr/testify/assert"
+	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
@@ -25,8 +26,11 @@ func TestServerHeader(t *testing.T) {
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, "go-serve v1.0.0", rec.Result().Header.Get("Server"),
 		"Server header is not matching name version format")
+	assertOriginalHandlerExecution(t, rec.Result().Body)
+}
 
-	data, err := ioutil.ReadAll(rec.Result().Body)
+func assertOriginalHandlerExecution(t *testing.T, body io.ReadCloser) {
+	data, err := ioutil.ReadAll(body)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -52,10 +56,5 @@ func TestRequestLogger(t *testing.T) {
 
 	chain.ServeHTTP(rec, request)
 	fakeLogger.AssertExpectations(t)
-
-	data, err := ioutil.ReadAll(rec.Result().Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.Equal(t, "Handle wrote this", string(data))
+	assertOriginalHandlerExecution(t, rec.Result().Body)
 }
