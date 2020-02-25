@@ -15,9 +15,7 @@ func TestServerHeader(t *testing.T) {
 
 	rec := httptest.NewRecorder()
 	middleware := handler.ServerHeader("v1.0.0")
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Handle wrote this"))
-	})
+	testHandler := handlerFixture()
 	chain := middleware(testHandler)
 	request, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
@@ -27,6 +25,12 @@ func TestServerHeader(t *testing.T) {
 	assert.Equal(t, "go-serve v1.0.0", rec.Result().Header.Get("Server"),
 		"Server header is not matching name version format")
 	assertOriginalHandlerExecution(t, rec.Result().Body)
+}
+
+func handlerFixture() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		_, _ = w.Write([]byte("Handle wrote this"))
+	}
 }
 
 func assertOriginalHandlerExecution(t *testing.T, body io.ReadCloser) {
@@ -42,9 +46,8 @@ func TestRequestLogger(t *testing.T) {
 	rec := httptest.NewRecorder()
 	fakeLogger := mock.NewFakeLogger()
 	middleware := handler.RequestLogger(fakeLogger)
-	testHandler := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Handle wrote this"))
-	})
+	testHandler := handlerFixture()
+
 	chain := middleware(testHandler)
 	request, err := http.NewRequest("GET", "/path", nil)
 	if err != nil {
