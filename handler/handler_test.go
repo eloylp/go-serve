@@ -11,6 +11,8 @@ import (
 	"testing"
 )
 
+const handlerFixtureBody = "Handle wrote this"
+
 func TestServerHeader(t *testing.T) {
 
 	rec := httptest.NewRecorder()
@@ -23,21 +25,21 @@ func TestServerHeader(t *testing.T) {
 
 	assert.Equal(t, "go-serve v1.0.0", rec.Result().Header.Get("Server"),
 		"Server header is not matching name version format")
-	assertOriginalHandlerExecution(t, rec.Result().Body)
+	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
 func handlerFixture() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, _ = w.Write([]byte("Handle wrote this"))
+		_, _ = w.Write([]byte(handlerFixtureBody))
 	}
 }
 
-func assertOriginalHandlerExecution(t *testing.T, body io.ReadCloser) {
+func assertHandlerFixtureExecution(t *testing.T, body io.ReadCloser) {
 	data, err := ioutil.ReadAll(body)
 	if err != nil {
 		t.Fatal(err)
 	}
-	assert.Equal(t, "Handle wrote this", string(data), "Handler is not correctly executed")
+	assert.Equal(t, handlerFixtureBody, string(data), "Handler is not correctly executed")
 }
 
 func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Request {
@@ -64,5 +66,5 @@ func TestRequestLogger(t *testing.T) {
 	chain.ServeHTTP(rec, request)
 
 	logger.AssertExpectations(t)
-	assertOriginalHandlerExecution(t, rec.Result().Body)
+	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
