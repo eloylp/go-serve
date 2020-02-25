@@ -20,6 +20,7 @@ func TestServerHeader(t *testing.T) {
 	request := newTestRequest(t, "GET", "/", nil)
 
 	chain.ServeHTTP(rec, request)
+
 	assert.Equal(t, "go-serve v1.0.0", rec.Result().Header.Get("Server"),
 		"Server header is not matching name version format")
 	assertOriginalHandlerExecution(t, rec.Result().Body)
@@ -61,6 +62,7 @@ func TestRequestLogger(t *testing.T) {
 		request.Method, "/path", request.RemoteAddr).Return()
 
 	chain.ServeHTTP(rec, request)
+
 	logger.AssertExpectations(t)
 	assertOriginalHandlerExecution(t, rec.Result().Body)
 }
