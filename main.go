@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/handler"
@@ -9,6 +10,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 )
 
 var version string
@@ -24,10 +26,20 @@ func main() {
 	}
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
-
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	http.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.ServerHeader(version), handler.RequestLogger(logger))))
-	if err := http.ListenAndServe(listenAddr, nil); err != http.ErrServerClosed {
+
+	m := http.NewServeMux()
+	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.ServerHeader(version), handler.RequestLogger(logger))))
+
+	s := &http.Server{
+		Addr:    listenAddr,
+		Handler: m,
+	}
+
+	ctx, _ := context.WithTimeout(context.Background(), 20*time.Second)
+	www.Shutdown(ctx, s)
+	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
+	log.Println("server shutdown gracefully")
 }
