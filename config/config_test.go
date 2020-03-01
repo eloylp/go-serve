@@ -1,0 +1,50 @@
+package config_test
+
+import (
+	"flag"
+	"github.com/eloylp/go-serve/config"
+	"github.com/stretchr/testify/assert"
+	"testing"
+)
+
+func TestFromArgs(t *testing.T) {
+
+	type sample struct {
+		context                     string
+		args                        []string
+		docRoot, prefix, listenAddr string
+		err                         error
+	}
+
+	samples := []sample{
+		{
+			"Can be called with a full argument list",
+			[]string{"-d", "/root", "-p", "/prefix", "-l", "127.0.0.1:8080"},
+			"/root",
+			"/prefix",
+			"127.0.0.1:8080",
+			nil,
+		},
+		{
+			"Can be called with any params falling back in defaults",
+			[]string{},
+			"^(.*)/go-serve/config$",
+			"/",
+			"0.0.0.0:8080",
+			nil,
+		},
+	}
+
+	for _, s := range samples {
+		t.Run(s.context, func(t *testing.T) {
+
+			flag.CommandLine = flag.NewFlagSet(s.context, flag.ContinueOnError)
+			docRoot, prefix, listenAddr, err := config.FromArgs(s.args)
+
+			assert.Equal(t, s.err, err, "Error is not expected")
+			assert.Regexp(t, s.docRoot, docRoot, "Not expected doc root")
+			assert.Equal(t, s.prefix, prefix, "Not expected prefix")
+			assert.Equal(t, s.listenAddr, listenAddr, "Not expected listen addr")
+		})
+	}
+}
