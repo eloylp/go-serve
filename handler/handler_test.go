@@ -73,23 +73,23 @@ func TestRequestLogger(t *testing.T) {
 
 func TestAuthChecker_Valid(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("A1234", http.StatusUnauthorized)
+	auth := handler.AuthChecker("A1234")
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
-	request.Header.Add("Authorization", "A1234")
+	request.Header.Add("Authorization", "QTEyMzQ=")
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, rec.Result().StatusCode, http.StatusOK)
 	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
-func TestAuthChecker_NotValid(t *testing.T) {
+func TestAuthChecker_NotValidAuth(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("A1234", http.StatusUnauthorized)
+	auth := handler.AuthChecker("A1234")
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
-	request.Header.Add("Authorization", "AFail1234")
+	request.Header.Add("Authorization", "QTEyMzRGYWls")
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, rec.Result().StatusCode, http.StatusUnauthorized)
 	data, err := ioutil.ReadAll(rec.Result().Body)
@@ -97,4 +97,20 @@ func TestAuthChecker_NotValid(t *testing.T) {
 		t.Fatal(err)
 	}
 	assert.Equal(t, data, []byte("Bad auth"))
+}
+
+func TestAuthChecker_NotValidAuthFormat(t *testing.T) {
+	rec := httptest.NewRecorder()
+	auth := handler.AuthChecker("A1234")
+	h := handlerFixture(t)
+	chain := auth(h)
+	request := httptest.NewRequest("GET", "/path", nil)
+	request.Header.Add("Authorization", "NOT_BASE64")
+	chain.ServeHTTP(rec, request)
+	assert.Equal(t, rec.Result().StatusCode, http.StatusBadRequest)
+	data, err := ioutil.ReadAll(rec.Result().Body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, data, []byte("Auth header must be encoded in base64"))
 }

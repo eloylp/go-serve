@@ -3,6 +3,7 @@
 package handler
 
 import (
+	"encoding/base64"
 	"fmt"
 	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
@@ -31,15 +32,23 @@ func RequestLogger(logger logging.Logger) www.Middleware {
 	}
 }
 
-// AuthChecker takes the token to check as param and the
-// desired response header. Will let pass the request through
-// the chain if validation succeeds. If not, will stop the
-// chain call by writing a "Bad auth" message.
-func AuthChecker(token string, responseCode int) www.Middleware {
+// AuthChecker takes as parameter a token for check against  the
+// Authorization request header, that needs to be base64 encoded.
+// Will let pass the request through the chain if validation
+// succeeds. If not, it will stop the chain with an unauthorized
+// status code (401) and a "Bad auth" message.
+func AuthChecker(token string) www.Middleware {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			if r.Header.Get("Authorization") != token {
-				w.WriteHeader(responseCode)
+			headerAuthB64 := r.Header.Get("Authorization")
+			headerAuth, err := base64.StdEncoding.DecodeString(headerAuthB64)
+			if err != nil {
+				w.WriteHeader(http.StatusBadRequest)
+				_, _ = w.Write([]byte("Auth header must be encoded in base64"))
+				return
+			}
+			if string(headerAuth) != token {
+				w.WriteHeader(http.StatusUnauthorized)
 				_, _ = w.Write([]byte("Bad auth"))
 				return
 			}
