@@ -1,3 +1,7 @@
+// Package www is thought as a container for HTTP
+// servers and even handler support related stuff
+// like middlewares. This package is thought to be
+// reused among applications.
 package www
 
 import (
