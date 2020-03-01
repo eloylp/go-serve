@@ -1,3 +1,5 @@
+// Package handler covers all necessary stuff for
+// running HTTP server logic.
 package handler
 
 import (
@@ -7,6 +9,8 @@ import (
 	"net/http"
 )
 
+// ServerHeader will grab server information in the
+// "Server" header. Like version.
 func ServerHeader(version string) www.Middleware {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -16,6 +20,8 @@ func ServerHeader(version string) www.Middleware {
 	}
 }
 
+// RequestLogger will log the client connection
+// information on each request.
 func RequestLogger(logger logging.Logger) www.Middleware {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
