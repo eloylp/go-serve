@@ -83,6 +83,17 @@ func TestAuthChecker_Valid(t *testing.T) {
 	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
+func TestAuthChecker_ValidWithEmptyStringToken(t *testing.T) {
+	rec := httptest.NewRecorder()
+	auth := handler.AuthChecker("")
+	h := handlerFixture(t)
+	chain := auth(h)
+	request := httptest.NewRequest("GET", "/path", nil)
+	chain.ServeHTTP(rec, request)
+	assert.Equal(t, rec.Result().StatusCode, http.StatusOK)
+	assertHandlerFixtureExecution(t, rec.Result().Body)
+}
+
 func TestAuthChecker_NotValidAuth(t *testing.T) {
 	rec := httptest.NewRecorder()
 	auth := handler.AuthChecker("A1234")
