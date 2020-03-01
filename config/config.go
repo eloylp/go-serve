@@ -23,3 +23,9 @@ func FromArgs(args []string) (docRoot, prefix, listenAddr string, err error) {
 	}
 	return docRoot, prefix, listenAddr, nil
 }
+
+// FromEnvAuthToken encapsulates the gathering of the imposed
+// auth token
+func FromEnvAuthToken() string {
+	return os.Getenv("GO_SERVE_AUTH_TOKEN")
+}
