@@ -20,16 +20,23 @@ func main() {
 	logger := logging.NewConsoleLogger()
 
 	docRoot, prefix, listenAddr, err := config.FromArgs(os.Args)
-
 	if err != nil {
 		log.Fatal(err)
 	}
+	token := config.FromEnvAuthToken()
+
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 	fileHandler := http.FileServer(http.Dir(docRoot))
 
+	middlewares := []www.Middleware{
+		handler.ServerHeader(version),
+		handler.RequestLogger(logger),
+		handler.AuthChecker(token),
+	}
 	m := http.NewServeMux()
-	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, handler.ServerHeader(version), handler.RequestLogger(logger))))
+
+	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, middlewares...)))
 
 	s := &http.Server{
 		Addr:    listenAddr,
