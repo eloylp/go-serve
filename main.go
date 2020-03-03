@@ -2,6 +2,8 @@ package main
 
 import (
 	"context"
+	"errors"
+	"flag"
 	"fmt"
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/handler"
@@ -19,10 +21,14 @@ func main() {
 
 	logger := logging.NewConsoleLogger()
 
-	docRoot, prefix, listenAddr, err := config.FromArgs(os.Args)
+	docRoot, prefix, listenAddr, err := config.FromArgs(os.Args[1:])
+	if errors.Is(err, flag.ErrHelp) {
+		return
+	}
 	if err != nil {
 		log.Fatal(err)
 	}
+
 	token := config.FromEnvAuthToken()
 
 	fmt.Println(fmt.Sprintf("go-serve %s", version))
