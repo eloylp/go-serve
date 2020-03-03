@@ -33,6 +33,21 @@ func TestFromArgs(t *testing.T) {
 			"0.0.0.0:8080",
 			nil,
 		},
+		{
+			"Invoke help with -h must cause errHelp",
+			[]string{"-h"},
+			"^(.*)/go-serve/config$",
+			"/",
+			"0.0.0.0:8080",
+			flag.ErrHelp,
+		}, {
+			"Invoke help with -help must cause errHelp",
+			[]string{"-help"},
+			"^(.*)/go-serve/config$",
+			"/",
+			"0.0.0.0:8080",
+			flag.ErrHelp,
+		},
 	}
 
 	for _, s := range samples {
@@ -40,8 +55,10 @@ func TestFromArgs(t *testing.T) {
 
 			flag.CommandLine = flag.NewFlagSet(s.context, flag.ContinueOnError)
 			docRoot, prefix, listenAddr, err := config.FromArgs(s.args)
-
-			assert.Equal(t, s.err, err, "Error is not expected")
+			if err != nil {
+				assert.Equal(t, s.err, err, "Error is not expected")
+				return
+			}
 			assert.Regexp(t, s.docRoot, docRoot, "Not expected doc root")
 			assert.Equal(t, s.prefix, prefix, "Not expected prefix")
 			assert.Equal(t, s.listenAddr, listenAddr, "Not expected listen addr")
