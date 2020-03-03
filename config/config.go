@@ -7,8 +7,8 @@ import (
 	"os"
 )
 
-// FromArgs will receive and argument list as parameter, returning the proper
-// variables with all the values.
+// FromArgs will receive and argument list as parameter, excluding
+// the program name and returning the proper variables with all the values.
 func FromArgs(args []string) (docRoot, prefix, listenAddr string, err error) {
 	currentDir, err := os.Getwd()
 	if err != nil {
