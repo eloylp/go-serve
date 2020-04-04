@@ -21,7 +21,7 @@ func main() {
 
 	logger := logging.NewConsoleLogger()
 
-	docRoot, prefix, listenAddr, err := config.FromArgs(os.Args[1:])
+	docRoot, prefix, listenAddr, authFile, err := config.FromArgs(os.Args[1:])
 	if errors.Is(err, flag.ErrHelp) {
 		return
 	}
@@ -29,26 +29,24 @@ func main() {
 		log.Fatal(err)
 	}
 
-	token := config.FromEnvAuthToken()
-
-	fmt.Println(fmt.Sprintf("go-serve %s", version))
+	serverIdentity := fmt.Sprintf("go-serve %s", version)
+	fmt.Println(serverIdentity)
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 	fileHandler := http.FileServer(http.Dir(docRoot))
 
 	middlewares := []www.Middleware{
 		handler.ServerHeader(version),
 		handler.RequestLogger(logger),
-		handler.AuthChecker(token),
+	}
+	if authFile != "" {
+		middlewares = append(middlewares, handler.AuthChecker(serverIdentity, authFile))
 	}
 	m := http.NewServeMux()
-
 	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, middlewares...)))
-
 	s := &http.Server{
 		Addr:    listenAddr,
 		Handler: m,
 	}
-
 	ctx, _ := context.WithTimeout(context.Background(), 20*time.Second)
 	www.Shutdown(ctx, s)
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {

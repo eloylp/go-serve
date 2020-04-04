@@ -3,8 +3,8 @@
 package handler
 
 import (
-	"encoding/base64"
 	"fmt"
+	auth "github.com/abbot/go-http-auth"
 	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
 	"net/http"
@@ -32,24 +32,29 @@ func RequestLogger(logger logging.Logger) www.Middleware {
 	}
 }
 
-// AuthChecker takes as parameter a token for check against  the
-// Authorization request header, that needs to be base64 encoded.
+// AuthChecker represents the basic auth implementation
+// https://tools.ietf.org/html/rfc7617
 // Will let pass the request through the chain if validation
 // succeeds. If not, it will stop the chain with an unauthorized
-// status code (401) and a "Bad auth" message.
-func AuthChecker(token string) www.Middleware {
+// status code (401).
+// A status code (500) with  "Bad auth file" message as body
+// will be returned if the basic auth file is not correct.
+// The underlying library will watch the file for changes
+// and will update the server automatically.
+func AuthChecker(realm string, authFilePath string) www.Middleware {
+	ap := auth.HtpasswdFileProvider(authFilePath)
+	authenticator := auth.NewBasicAuthenticator(realm, ap)
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			headerAuthB64 := r.Header.Get("Authorization")
-			headerAuth, err := base64.StdEncoding.DecodeString(headerAuthB64)
-			if err != nil {
-				w.WriteHeader(http.StatusBadRequest)
-				_, _ = w.Write([]byte("Auth header must be encoded in base64"))
-				return
-			}
-			if string(headerAuth) != token {
-				w.WriteHeader(http.StatusUnauthorized)
-				_, _ = w.Write([]byte("Bad auth"))
+			defer func() {
+				if r := recover(); r != nil {
+					w.WriteHeader(http.StatusInternalServerError)
+					_, _ = w.Write([]byte("Bad auth file"))
+					return
+				}
+			}()
+			if authenticator.CheckAuth(r) == "" {
+				authenticator.RequireAuth(w, r)
 				return
 			}
 			h.ServeHTTP(w, r)

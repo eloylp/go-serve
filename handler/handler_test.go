@@ -44,6 +44,14 @@ func assertHandlerFixtureExecution(t *testing.T, body io.ReadCloser) {
 	assert.Equal(t, handlerFixtureBody, string(data), "Handler is not correctly executed")
 }
 
+func assertBodyContent(t *testing.T, expected string, body io.ReadCloser) {
+	data, err := ioutil.ReadAll(body)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assert.Equal(t, expected, string(data))
+}
+
 func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Request {
 	request, err := http.NewRequest(method, url, body)
 	if err != nil {
@@ -71,57 +79,54 @@ func TestRequestLogger(t *testing.T) {
 	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
+const htpasswdTestFile = "./.htpasswd-test"
+const realm = "secured-server"
+
 func TestAuthChecker_Valid(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("A1234")
+	auth := handler.AuthChecker(realm, htpasswdTestFile)
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
-	request.Header.Add("Authorization", "QTEyMzQ=")
+	request.SetBasicAuth("user", "abc1234")
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, rec.Result().StatusCode, http.StatusOK)
 	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
-func TestAuthChecker_ValidWithEmptyStringToken(t *testing.T) {
+func TestAuthChecker_ValidWithEmptyAuthPath(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("")
+	// No valid htpasswd file config file, so handler must fail
+	auth := handler.AuthChecker(realm, "")
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
+	request.SetBasicAuth("user", "password")
 	chain.ServeHTTP(rec, request)
-	assert.Equal(t, rec.Result().StatusCode, http.StatusOK)
-	assertHandlerFixtureExecution(t, rec.Result().Body)
+	assert.Equal(t, http.StatusInternalServerError, rec.Result().StatusCode)
+	assertBodyContent(t, "Bad auth file", rec.Result().Body)
 }
 
 func TestAuthChecker_NotValidAuth(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("A1234")
+	auth := handler.AuthChecker(realm, htpasswdTestFile)
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
-	request.Header.Add("Authorization", "QTEyMzRGYWls")
+	request.SetBasicAuth("notvalid", "auth")
 	chain.ServeHTTP(rec, request)
 	assert.Equal(t, rec.Result().StatusCode, http.StatusUnauthorized)
-	data, err := ioutil.ReadAll(rec.Result().Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.Equal(t, data, []byte("Bad auth"))
+	assertBodyContent(t, "401 Unauthorized\n", rec.Result().Body)
 }
 
 func TestAuthChecker_NotValidAuthFormat(t *testing.T) {
 	rec := httptest.NewRecorder()
-	auth := handler.AuthChecker("A1234")
+	auth := handler.AuthChecker(realm, htpasswdTestFile)
 	h := handlerFixture(t)
 	chain := auth(h)
 	request := httptest.NewRequest("GET", "/path", nil)
 	request.Header.Add("Authorization", "NOT_BASE64")
 	chain.ServeHTTP(rec, request)
-	assert.Equal(t, rec.Result().StatusCode, http.StatusBadRequest)
-	data, err := ioutil.ReadAll(rec.Result().Body)
-	if err != nil {
-		t.Fatal(err)
-	}
-	assert.Equal(t, data, []byte("Auth header must be encoded in base64"))
+	assert.Equal(t, rec.Result().StatusCode, http.StatusUnauthorized)
+	assertBodyContent(t, "401 Unauthorized\n", rec.Result().Body)
 }
