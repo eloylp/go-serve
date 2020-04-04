@@ -14,7 +14,6 @@ import (
 const handlerFixtureBody = "Handle wrote this"
 
 func TestServerHeader(t *testing.T) {
-
 	rec := httptest.NewRecorder()
 	middleware := handler.ServerHeader("v1.0.0")
 	h := handlerFixture(t)
@@ -61,7 +60,6 @@ func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Requ
 }
 
 func TestRequestLogger(t *testing.T) {
-
 	rec := httptest.NewRecorder()
 	logger := mock.NewFakeLogger()
 	middleware := handler.RequestLogger(logger)

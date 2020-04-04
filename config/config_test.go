@@ -8,14 +8,12 @@ import (
 )
 
 func TestFromArgs(t *testing.T) {
-
 	type sample struct {
 		context                               string
 		args                                  []string
 		docRoot, prefix, listenAddr, authFile string
 		err                                   error
 	}
-
 	samples := []sample{
 		{
 			"Can be called with a full argument list",
@@ -53,7 +51,6 @@ func TestFromArgs(t *testing.T) {
 			flag.ErrHelp,
 		},
 	}
-
 	for _, s := range samples {
 		t.Run(s.context, func(t *testing.T) {
 

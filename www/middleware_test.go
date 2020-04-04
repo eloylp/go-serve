@@ -10,7 +10,6 @@ import (
 )
 
 func TestApply(t *testing.T) {
-
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		_, _ = w.Write([]byte("handler_write\n"))
 	})
@@ -28,9 +27,7 @@ func TestApply(t *testing.T) {
 	}
 	a := www.Apply(h, m1, m2)
 	rec := httptest.NewRecorder()
-
 	a.ServeHTTP(rec, httptest.NewRequest("GET", "/", nil))
-
 	expected := `middleware1_write
 middleware2_write
 handler_write
