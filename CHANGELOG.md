@@ -1,4 +1,16 @@
 
+## [v1.3.0](https://github.com/eloylp/go-serve/releases/v1.3.0) - 2020-04-05
+### Changed
+- Golang version
+- Updated README.md
+### Added
+- Support for basic auth file.
+- Now server stops gracefully after a SIGTERM or SIGINT signals.
+### Changed
+- Code readability improved 
+- Added more tests
+- Added middleware tooling
+
 ## [v1.2.0](https://github.com/eloylp/go-serve/releases/v1.2.0) - 2019-09-02
 ### Added
 - Support for request logging
