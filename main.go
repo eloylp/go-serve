@@ -1,7 +1,6 @@
 package main
 
 import (
-	"context"
 	"errors"
 	"flag"
 	"fmt"
@@ -47,8 +46,7 @@ func main() {
 		Addr:    listenAddr,
 		Handler: m,
 	}
-	ctx, _ := context.WithTimeout(context.Background(), 20*time.Second)
-	www.Shutdown(ctx, s)
+	www.Shutdown(s, 20*time.Second)
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
