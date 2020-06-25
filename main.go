@@ -24,8 +24,7 @@ var (
 
 func main() {
 	logger := logging.NewConsoleLogger()
-
-	docRoot, prefix, listenAddr, authFile, err := config.FromArgs(os.Args)
+	s, err := config.FromArgs(os.Args)
 	if errors.Is(err, flag.ErrHelp) {
 		return
 	}
@@ -35,26 +34,26 @@ func main() {
 
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	fmt.Println(serverIdentity)
-	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
-	fileHandler := http.FileServer(http.Dir(docRoot))
+	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", s.DocRoot, s.ListenAddr))
+	fileHandler := http.FileServer(http.Dir(s.DocRoot))
 
 	middlewares := []www.Middleware{
 		handler.ServerHeader(Version),
 		handler.RequestLogger(logger),
 	}
-	if authFile != "" {
-		middlewares = append(middlewares, handler.AuthChecker(serverIdentity, authFile))
+	if s.AuthFile != "" {
+		middlewares = append(middlewares, handler.AuthChecker(serverIdentity, s.AuthFile))
 	}
 	m := http.NewServeMux()
-	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, middlewares...)))
-	s := &http.Server{
-		Addr:         listenAddr,
+	m.Handle(s.Prefix, http.StripPrefix(s.Prefix, www.Apply(fileHandler, middlewares...)))
+	server := &http.Server{
+		Addr:         s.ListenAddr,
 		Handler:      m,
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
-	www.Shutdown(s, 20*time.Second) //nolint:gomnd
-	if err := s.ListenAndServe(); err != http.ErrServerClosed {
+	www.Shutdown(server, 20*time.Second) //nolint:gomnd
+	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
 	log.Println("server shutdown gracefully")
