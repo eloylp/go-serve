@@ -11,13 +11,12 @@ import (
 
 // nolint: GoLinterLocal
 func TestFromArgs(t *testing.T) {
-	type sample struct {
+	samples := []struct {
 		context          string
 		args             []string
 		expectedSettings config.Settings
 		err              error
-	}
-	samples := []sample{
+	}{
 		{
 			"Can be called with a full argument list",
 			[]string{"go-serve", "-d", "/root", "-p", "/prefix", "-l", "127.0.0.1:8080", "-a", "./.htpasswd"},
