@@ -7,7 +7,7 @@ import (
 	"os"
 )
 
-// FromArgs will receive and argument list as parameter, excluding
+// FromArgs will receive and argument list as parameter, including
 // the program name and returning the proper variables with all the values.
 func FromArgs(args []string) (docRoot, prefix, listenAddr, authFile string, err error) {
 	currentDir, err := os.Getwd()
@@ -19,7 +19,8 @@ func FromArgs(args []string) (docRoot, prefix, listenAddr, authFile string, err 
 	flag.StringVar(&listenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.StringVar(&authFile, "a", "", "Defines the .htpasswd file path for auth")
 
-	if err = flag.CommandLine.Parse(args); err != nil {
+	argsFiltered := args[1:] // exclude program name
+	if err = flag.CommandLine.Parse(argsFiltered); err != nil {
 		return
 	}
 	return docRoot, prefix, listenAddr, authFile, nil

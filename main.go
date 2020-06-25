@@ -25,7 +25,7 @@ var (
 func main() {
 	logger := logging.NewConsoleLogger()
 
-	docRoot, prefix, listenAddr, authFile, err := config.FromArgs(os.Args[1:])
+	docRoot, prefix, listenAddr, authFile, err := config.FromArgs(os.Args)
 	if errors.Is(err, flag.ErrHelp) {
 		return
 	}

@@ -20,7 +20,7 @@ func TestFromArgs(t *testing.T) {
 	samples := []sample{
 		{
 			"Can be called with a full argument list",
-			[]string{"-d", "/root", "-p", "/prefix", "-l", "127.0.0.1:8080", "-a", "./.htpasswd"},
+			[]string{"go-serve", "-d", "/root", "-p", "/prefix", "-l", "127.0.0.1:8080", "-a", "./.htpasswd"},
 			"/root",
 			"/prefix",
 			"127.0.0.1:8080",
@@ -29,7 +29,7 @@ func TestFromArgs(t *testing.T) {
 		},
 		{
 			"Can be called with any params falling back in defaults",
-			[]string{},
+			[]string{"go-serve"},
 			"^(.*)/go-serve/config$",
 			"/",
 			"0.0.0.0:8080",
@@ -38,7 +38,7 @@ func TestFromArgs(t *testing.T) {
 		},
 		{
 			"Invoke help with -h must cause errHelp",
-			[]string{"-h"},
+			[]string{"go-serve", "-h"},
 			"^(.*)/go-serve/config$",
 			"/",
 			"0.0.0.0:8080",
@@ -46,7 +46,7 @@ func TestFromArgs(t *testing.T) {
 			flag.ErrHelp,
 		}, {
 			"Invoke help with -help must cause errHelp",
-			[]string{"-help"},
+			[]string{"go-serve", "-help"},
 			"^(.*)/go-serve/config$",
 			"/",
 			"0.0.0.0:8080",
