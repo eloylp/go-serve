@@ -4,7 +4,7 @@ HTTP server for serving local files to the network simply.
 
 ### Motivation
 
-- Simple design and easy configuration
+- Simple design (only makes use of Go std lib) and easy configuration
 - Low memory footprint
 - Low startup and shutdown times
 - Share files among machines easily
