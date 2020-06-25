@@ -4,10 +4,12 @@ package handler
 
 import (
 	"fmt"
+	"net/http"
+
 	auth "github.com/abbot/go-http-auth"
+
 	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
-	"net/http"
 )
 
 // ServerHeader will grab server information in the
@@ -41,7 +43,7 @@ func RequestLogger(logger logging.Logger) www.Middleware {
 // will be returned if the basic auth file is not correct.
 // The underlying library will watch the file for changes
 // and will update the server automatically.
-func AuthChecker(realm string, authFilePath string) www.Middleware {
+func AuthChecker(realm, authFilePath string) www.Middleware {
 	ap := auth.HtpasswdFileProvider(authFilePath)
 	authenticator := auth.NewBasicAuthenticator(realm, ap)
 	return func(h http.Handler) http.Handler {

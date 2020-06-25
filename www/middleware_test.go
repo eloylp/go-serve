@@ -1,12 +1,15 @@
+//nolint:bodyclose
 package www_test
 
 import (
-	"github.com/eloylp/go-serve/www"
-	"github.com/stretchr/testify/assert"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/go-serve/www"
 )
 
 func TestApply(t *testing.T) {

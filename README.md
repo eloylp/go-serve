@@ -1,6 +1,6 @@
 # go-serve
 
-HTTP server for serving local files to the network in a simple way.
+HTTP server for serving local files to the network simply.
 
 ### Motivation
 
@@ -26,7 +26,7 @@ sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v1.3.0/go-ser
 
 ### How to use it
 
-By default "go-serve" command will serve the current working dir as 
+By default, "go-serve" command will serve the current working dir as 
 its document root and serve its content in all interfaces on port 8080.
 
 ```bash
@@ -36,7 +36,7 @@ go-serve v1.3.0
 2019/09/02 18:45:02 Starting to serve /home/user at 0.0.0.0:8080 ...
 ```
 
-Of course you can customize this parameters as in this full example:
+Of course, you can customize these parameters as in this full example:
 ```bash
 $ go-serve -l 0.0.0.0:3000 -d /tmp -p /assets
 go-serve v1.3.0

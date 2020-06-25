@@ -15,7 +15,8 @@ func Shutdown(s *http.Server, timeout time.Duration) {
 	signal.Notify(signals, os.Interrupt, syscall.SIGTERM)
 	go func() {
 		<-signals
-		ctx, _ := context.WithTimeout(context.Background(), timeout)
+		ctx, cancel := context.WithTimeout(context.Background(), timeout)
+		defer cancel()
 		if err := s.Shutdown(ctx); err != nil {
 			log.Println(err)
 		}

@@ -8,7 +8,7 @@ type fakeLogger struct {
 	mock.Mock
 }
 
-func NewFakeLogger() *fakeLogger {
+func NewFakeLogger() *fakeLogger { //nolint:golint
 	return &fakeLogger{}
 }
 
@@ -17,7 +17,7 @@ func (f *fakeLogger) Info(msg string) {
 }
 
 func (f *fakeLogger) Infof(msg string, args ...interface{}) {
-	called := []interface{}{}
+	var called []interface{}
 	called = append(called, msg)
 	called = append(called, args...)
 	f.Called(called...)
@@ -28,7 +28,7 @@ func (f *fakeLogger) Error(msg string) {
 }
 
 func (f *fakeLogger) Errorf(msg string, args ...interface{}) {
-	called := []interface{}{}
+	var called []interface{}
 	called = append(called, msg)
 	called = append(called, args...)
 	f.Called(called...)

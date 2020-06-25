@@ -4,14 +4,15 @@ import (
 	"errors"
 	"flag"
 	"fmt"
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/handler"
-	"github.com/eloylp/go-serve/logging"
-	"github.com/eloylp/go-serve/www"
 	"log"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/eloylp/go-serve/config"
+	"github.com/eloylp/go-serve/handler"
+	"github.com/eloylp/go-serve/logging"
+	"github.com/eloylp/go-serve/www"
 )
 
 var (
@@ -22,7 +23,6 @@ var (
 )
 
 func main() {
-
 	logger := logging.NewConsoleLogger()
 
 	docRoot, prefix, listenAddr, authFile, err := config.FromArgs(os.Args[1:])
@@ -51,7 +51,7 @@ func main() {
 		Addr:    listenAddr,
 		Handler: m,
 	}
-	www.Shutdown(s, 20*time.Second)
+	www.Shutdown(s, 20*time.Second) //nolint:gomnd
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}

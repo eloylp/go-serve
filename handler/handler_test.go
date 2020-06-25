@@ -1,14 +1,17 @@
+//nolint:bodyclose
 package handler_test
 
 import (
-	"github.com/eloylp/go-serve/handler"
-	"github.com/eloylp/go-serve/logging/mock"
-	"github.com/stretchr/testify/assert"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/go-serve/handler"
+	"github.com/eloylp/go-serve/logging/mock"
 )
 
 const handlerFixtureBody = "Handle wrote this"
@@ -35,7 +38,7 @@ func handlerFixture(t *testing.T) http.HandlerFunc {
 	}
 }
 
-func assertHandlerFixtureExecution(t *testing.T, body io.ReadCloser) {
+func assertHandlerFixtureExecution(t *testing.T, body io.Reader) {
 	data, err := ioutil.ReadAll(body)
 	if err != nil {
 		t.Fatal(err)

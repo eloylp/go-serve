@@ -2,11 +2,14 @@ package config_test
 
 import (
 	"flag"
-	"github.com/eloylp/go-serve/config"
-	"github.com/stretchr/testify/assert"
 	"testing"
+
+	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/go-serve/config"
 )
 
+// nolint: GoLinterLocal
 func TestFromArgs(t *testing.T) {
 	type sample struct {
 		context                               string
@@ -53,7 +56,6 @@ func TestFromArgs(t *testing.T) {
 	}
 	for _, s := range samples {
 		t.Run(s.context, func(t *testing.T) {
-
 			flag.CommandLine = flag.NewFlagSet(s.context, flag.ContinueOnError)
 			docRoot, prefix, listenAddr, authFile, err := config.FromArgs(s.args)
 			if err != nil {

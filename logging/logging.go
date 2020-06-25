@@ -14,7 +14,7 @@ type Logger interface {
 
 type consoleLogger struct{}
 
-func NewConsoleLogger() *consoleLogger {
+func NewConsoleLogger() *consoleLogger { //nolint:golint
 	return &consoleLogger{}
 }
 
