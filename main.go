@@ -14,7 +14,12 @@ import (
 	"time"
 )
 
-var version string
+var (
+	Name      string
+	Version   string
+	Build     string
+	BuildTime string
+)
 
 func main() {
 
@@ -28,13 +33,13 @@ func main() {
 		log.Fatal(err)
 	}
 
-	serverIdentity := fmt.Sprintf("go-serve %s", version)
+	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	fmt.Println(serverIdentity)
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", docRoot, listenAddr))
 	fileHandler := http.FileServer(http.Dir(docRoot))
 
 	middlewares := []www.Middleware{
-		handler.ServerHeader(version),
+		handler.ServerHeader(Version),
 		handler.RequestLogger(logger),
 	}
 	if authFile != "" {
