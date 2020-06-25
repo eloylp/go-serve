@@ -48,8 +48,10 @@ func main() {
 	m := http.NewServeMux()
 	m.Handle(prefix, http.StripPrefix(prefix, www.Apply(fileHandler, middlewares...)))
 	s := &http.Server{
-		Addr:    listenAddr,
-		Handler: m,
+		Addr:         listenAddr,
+		Handler:      m,
+		ReadTimeout:  15 * time.Second,
+		WriteTimeout: 15 * time.Second,
 	}
 	www.Shutdown(s, 20*time.Second) //nolint:gomnd
 	if err := s.ListenAndServe(); err != http.ErrServerClosed {
