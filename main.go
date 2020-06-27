@@ -7,7 +7,10 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"sync"
 	"time"
+
+	"github.com/eloylp/kit/shutdown"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/handler"
@@ -52,9 +55,15 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 		WriteTimeout: 15 * time.Second,
 	}
-	www.Shutdown(server, 20*time.Second) //nolint:gomnd
+	wg := &sync.WaitGroup{}
+	wg.Add(1)
+	shutdownWait := 20 * time.Second
+	shutdown.WithOSSignals(server, shutdownWait, wg, func(err error) {
+		logger.Errorf("shutdown error: %v", err)
+	})
 	if err := server.ListenAndServe(); err != http.ErrServerClosed {
 		log.Fatal(err)
 	}
+	wg.Wait()
 	log.Println("server shutdown gracefully")
 }

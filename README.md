@@ -19,7 +19,7 @@ architecture requirements and download binaries.
 
 An example install for a Linux machine could be:
 ```bash
-sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v1.3.0/go-serve_1.3.0_Linux_x86_64" \
+sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v1.3.1/go-serve_1.3.1_Linux_x86_64" \
 -o /usr/local/bin/go-serve \
 && sudo chmod +x /usr/local/bin/go-serve
 ```
@@ -32,14 +32,14 @@ its document root and serve its content in all interfaces on port 8080.
 ```bash
 $ cd ~
 $ go-serve
-go-serve v1.3.0
+go-serve v1.3.1
 2019/09/02 18:45:02 Starting to serve /home/user at 0.0.0.0:8080 ...
 ```
 
 Of course, you can customize these parameters as in this full example:
 ```bash
 $ go-serve -l 0.0.0.0:3000 -d /tmp -p /assets
-go-serve v1.3.0
+go-serve v1.3.1
 2019/09/02 18:47:02 Starting to serve /tmp at 0.0.0.0:3000 ...
 ```
 **Note that the last option is the prefix from where the files will be served.**

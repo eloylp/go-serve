@@ -1,4 +1,10 @@
 
+## [v1.3.1](https://github.com/eloylp/go-serve/releases/v1.3.1) - 2020-06-27
+### Changed
+- Go version to 1.14.4
+- Fix HTTP shutdown with shutdown wrapper. Was not waiting for ending
+connections.
+
 ## [v1.3.0](https://github.com/eloylp/go-serve/releases/v1.3.0) - 2020-04-05
 ### Changed
 - Golang version
