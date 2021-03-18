@@ -23,8 +23,6 @@ func FromArgs(args []string) (s Settings, err error) {
 	flag.StringVar(&s.ListenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
 	flag.StringVar(&s.AuthFile, "a", "", "Defines the .htpasswd file path for auth")
 	argsFiltered := args[1:] // exclude program name
-	if err = flag.CommandLine.Parse(argsFiltered); err != nil {
-		return
-	}
+	err = flag.CommandLine.Parse(argsFiltered)
 	return
 }
