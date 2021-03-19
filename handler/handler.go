@@ -7,14 +7,13 @@ import (
 	"net/http"
 
 	auth "github.com/abbot/go-http-auth"
+	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-
-	"github.com/eloylp/go-serve/www"
 )
 
 // ServerHeader will grab server information in the
 // "Server" header. Like version.
-func ServerHeader(version string) www.Middleware {
+func ServerHeader(version string) mux.MiddlewareFunc {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			w.Header().Add("Server", fmt.Sprintf("go-serve %s", version))
@@ -25,7 +24,7 @@ func ServerHeader(version string) www.Middleware {
 
 // RequestLogger will log the client connection
 // information on each request.
-func RequestLogger(logger *logrus.Logger) www.Middleware {
+func RequestLogger(logger *logrus.Logger) mux.MiddlewareFunc {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("%s %s from client %s", r.Method, r.URL.String(), r.RemoteAddr)
@@ -43,7 +42,7 @@ func RequestLogger(logger *logrus.Logger) www.Middleware {
 // will be returned if the basic auth file is not correct.
 // The underlying library will watch the file for changes
 // and will update the server automatically.
-func AuthChecker(realm, authFilePath string) www.Middleware {
+func AuthChecker(realm, authFilePath string) mux.MiddlewareFunc {
 	ap := auth.HtpasswdFileProvider(authFilePath)
 	authenticator := auth.NewBasicAuthenticator(realm, ap)
 	return func(h http.Handler) http.Handler {
