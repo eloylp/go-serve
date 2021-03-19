@@ -18,15 +18,27 @@ type Settings struct {
 	Prefix          string `default:"/"`
 	AuthFile        string
 	ShutdownTimeout time.Duration `default:"1s"`
-	LoggerOutput    io.Writer
+	Logger          *LoggerSettings
+}
+
+type LoggerSettings struct {
+	Format string `default:"json"`
+	Output io.Writer
 }
 
 func FromEnv() (*Settings, error) {
-	s := &Settings{}
+	s := emptySettings()
 	if err := envconfig.Process("GOSERVE", s); err != nil {
 		return nil, fmt.Errorf("config: %w", err)
 	}
 	return s, nil
+}
+
+func emptySettings() *Settings {
+	s := &Settings{
+		Logger: &LoggerSettings{},
+	}
+	return s
 }
 
 func WithListenAddr(addr string) Option {
@@ -42,7 +54,7 @@ func WithDocRoot(docRoot string) Option {
 }
 
 func ForOptions(opts ...Option) *Settings {
-	cfg := &Settings{}
+	cfg := emptySettings()
 	for _, o := range opts {
 		o(cfg)
 	}
@@ -55,8 +67,14 @@ func WithDocRootPrefix(prefix string) Option {
 	}
 }
 
+func WithLoggerFormat(format string) Option {
+	return func(cfg *Settings) {
+		cfg.Logger.Format = format
+	}
+}
+
 func WithLoggerOutput(o io.Writer) Option {
 	return func(cfg *Settings) {
-		cfg.LoggerOutput = o
+		cfg.Logger.Output = o
 	}
 }

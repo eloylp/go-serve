@@ -33,11 +33,7 @@ type Server struct {
 }
 
 func New(cfg *config.Settings) *Server {
-	logger := logrus.New()
-	if cfg.LoggerOutput != nil {
-		logger.SetOutput(cfg.LoggerOutput)
-	}
-
+	logger := loggerFrom(cfg.Logger)
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	logger.Info(serverIdentity)
 	logger.Infof("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr)
