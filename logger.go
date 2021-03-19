@@ -1,6 +1,8 @@
 package server
 
 import (
+	"time"
+
 	"github.com/sirupsen/logrus"
 
 	"github.com/eloylp/go-serve/config"
@@ -12,9 +14,13 @@ func loggerFrom(cfg *config.LoggerSettings) *logrus.Logger {
 		l.SetOutput(cfg.Output)
 	}
 	if cfg.Format == "json" {
-		l.SetFormatter(&logrus.JSONFormatter{})
+		l.SetFormatter(&logrus.JSONFormatter{
+			TimestampFormat: time.RFC3339Nano,
+		})
 	} else {
-		l.SetFormatter(&logrus.TextFormatter{})
+		l.SetFormatter(&logrus.TextFormatter{
+			TimestampFormat: time.RFC3339Nano,
+		})
 	}
 	return l
 }
