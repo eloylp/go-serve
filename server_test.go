@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	SutListenAddress = "localhost:9090"
-	SutHTTPAddress   = "http://" + SutListenAddress
-	TestDocRoot      = "tests/root"
-	TuxTestFileMD5   = "a0e6e27f7e31fd0bd549ea936033bf28"
+	ListenAddress  = "localhost:9090"
+	HTTPAddress    = "http://" + ListenAddress
+	DocRoot        = "tests/root"
+	TuxTestFileMD5 = "a0e6e27f7e31fd0bd549ea936033bf28"
 )
 
 func init() {
@@ -29,14 +29,14 @@ func init() {
 func TestServingContent(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
 	cfg := config.ForOptions(
-		config.WithListenAddr(SutListenAddress),
-		config.WithDocRoot(TestDocRoot),
+		config.WithListenAddr(ListenAddress),
+		config.WithDocRoot(DocRoot),
 		config.WithDocRootPrefix("/"),
 		config.WithLoggerOutput(logBuff),
 	)
 	s := server.New(cfg)
 	go s.ListenAndServe()
-	data := BodyFrom(t, SutHTTPAddress+"/tux.png")
+	data := BodyFrom(t, HTTPAddress+"/tux.png")
 	assert.Equal(t, TuxTestFileMD5, md5From(data), "got body: %s", data)
 	err := s.Shutdown(context.Background())
 	assert.NoError(t, err)
@@ -52,5 +52,5 @@ func AssertNoProblemsInLogs(t *testing.T, logs string) {
 
 func AssertStartupLogs(t *testing.T, logs string) {
 	assert.Contains(t, logs, "programName v1.0.0 af09 1988-01-21")
-	assert.Contains(t, logs, fmt.Sprintf("Starting to serve %s at %s ...", TestDocRoot, SutListenAddress))
+	assert.Contains(t, logs, fmt.Sprintf("Starting to serve %s at %s ...", DocRoot, ListenAddress))
 }
