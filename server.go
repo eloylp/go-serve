@@ -10,11 +10,9 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 
 	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/handler"
 )
 
 var (
@@ -36,17 +34,7 @@ func New(cfg *config.Settings) *Server {
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	logger.Info(serverIdentity)
 	logger.Infof("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr)
-	m := mux.NewRouter()
-	middlewares := []mux.MiddlewareFunc{
-		handler.ServerHeader(Version),
-		handler.RequestLogger(logger),
-	}
-	m.Use(middlewares...)
-	if cfg.AuthFile != "" {
-		m.Use(handler.AuthChecker(serverIdentity, cfg.AuthFile))
-	}
-	fileHandler := http.FileServer(http.Dir(cfg.DocRoot))
-	m.PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
+	m := router(cfg, logger, serverIdentity)
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      m,
