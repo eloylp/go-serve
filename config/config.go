@@ -3,34 +3,30 @@
 package config
 
 import (
-	"flag"
+	"fmt"
 	"io"
-	"os"
 	"time"
+
+	"github.com/kelseyhightower/envconfig"
 )
 
 type Option func(cfg *Settings)
 
 type Settings struct {
-	DocRoot, Prefix, ListenAddr, AuthFile string
-	ShutdownTimeout                       time.Duration
-	LoggerOutput                          io.Writer
+	ListenAddr      string `default:"0.0.0.0:8080"`
+	DocRoot         string `default:"."`
+	Prefix          string `default:"/"`
+	AuthFile        string
+	ShutdownTimeout time.Duration `default:"1s"`
+	LoggerOutput    io.Writer
 }
 
-// FromArgs will receive and argument list as parameter, including
-// the program name and returning the proper variables with all the values.
-func FromArgs(args []string) (s Settings, err error) {
-	currentDir, err := os.Getwd()
-	if err != nil {
-		return
+func FromEnv() (*Settings, error) {
+	s := &Settings{}
+	if err := envconfig.Process("GOSERVE", s); err != nil {
+		return nil, fmt.Errorf("config: %w", err)
 	}
-	flag.StringVar(&s.DocRoot, "d", currentDir, "Defines the document root")
-	flag.StringVar(&s.Prefix, "p", "/", "Defines prefix to use for serve files")
-	flag.StringVar(&s.ListenAddr, "l", "0.0.0.0:8080", "Defines the listen address")
-	flag.StringVar(&s.AuthFile, "a", "", "Defines the .htpasswd file path for auth")
-	argsFiltered := args[1:] // exclude program name
-	err = flag.CommandLine.Parse(argsFiltered)
-	return
+	return s, nil
 }
 
 func WithListenAddr(addr string) Option {

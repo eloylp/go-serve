@@ -34,7 +34,9 @@ type Server struct {
 
 func New(cfg *config.Settings) *Server {
 	logger := logrus.New()
-	logger.SetOutput(cfg.LoggerOutput)
+	if cfg.LoggerOutput != nil {
+		logger.SetOutput(cfg.LoggerOutput)
+	}
 
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	logger.Info(serverIdentity)
