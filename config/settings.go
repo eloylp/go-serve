@@ -10,8 +10,6 @@ import (
 	"github.com/kelseyhightower/envconfig"
 )
 
-type Option func(cfg *Settings)
-
 type Settings struct {
 	ListenAddr      string `default:"0.0.0.0:8080"`
 	DocRoot         string `default:"."`
@@ -39,42 +37,4 @@ func emptySettings() *Settings {
 		Logger: &LoggerSettings{},
 	}
 	return s
-}
-
-func WithListenAddr(addr string) Option {
-	return func(cfg *Settings) {
-		cfg.ListenAddr = addr
-	}
-}
-
-func WithDocRoot(docRoot string) Option {
-	return func(cfg *Settings) {
-		cfg.DocRoot = docRoot
-	}
-}
-
-func ForOptions(opts ...Option) *Settings {
-	cfg := emptySettings()
-	for _, o := range opts {
-		o(cfg)
-	}
-	return cfg
-}
-
-func WithDocRootPrefix(prefix string) Option {
-	return func(cfg *Settings) {
-		cfg.Prefix = prefix
-	}
-}
-
-func WithLoggerFormat(format string) Option {
-	return func(cfg *Settings) {
-		cfg.Logger.Format = format
-	}
-}
-
-func WithLoggerOutput(o io.Writer) Option {
-	return func(cfg *Settings) {
-		cfg.Logger.Output = o
-	}
 }
