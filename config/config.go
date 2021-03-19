@@ -4,6 +4,7 @@ package config
 
 import (
 	"flag"
+	"io"
 	"os"
 	"time"
 )
@@ -13,6 +14,7 @@ type Option func(cfg *Settings)
 type Settings struct {
 	DocRoot, Prefix, ListenAddr, AuthFile string
 	ShutdownTimeout                       time.Duration
+	LoggerOutput                          io.Writer
 }
 
 // FromArgs will receive and argument list as parameter, including
@@ -54,5 +56,11 @@ func ForOptions(opts ...Option) *Settings {
 func WithDocRootPrefix(prefix string) Option {
 	return func(cfg *Settings) {
 		cfg.Prefix = prefix
+	}
+}
+
+func WithLoggerOutput(o io.Writer) Option {
+	return func(cfg *Settings) {
+		cfg.LoggerOutput = o
 	}
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/stretchr/testify/assert"
 
 	"github.com/eloylp/go-serve/handler"
-	"github.com/eloylp/go-serve/logging/mock"
 )
 
 const handlerFixtureBody = "Handle wrote this"
@@ -60,24 +59,6 @@ func newTestRequest(t *testing.T, method, url string, body io.Reader) *http.Requ
 		t.Fatal(err)
 	}
 	return request
-}
-
-func TestRequestLogger(t *testing.T) {
-	rec := httptest.NewRecorder()
-	logger := mock.NewFakeLogger()
-	middleware := handler.RequestLogger(logger)
-	h := handlerFixture(t)
-
-	chain := middleware(h)
-	request := newTestRequest(t, "GET", "/path", nil)
-	request.RemoteAddr = "127.0.0.1"
-	logger.On("Infof", "%s %s from client %s",
-		request.Method, "/path", request.RemoteAddr).Return()
-
-	chain.ServeHTTP(rec, request)
-
-	logger.AssertExpectations(t)
-	assertHandlerFixtureExecution(t, rec.Result().Body)
 }
 
 const htpasswdTestFile = "./.htpasswd-test"

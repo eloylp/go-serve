@@ -7,8 +7,8 @@ import (
 	"net/http"
 
 	auth "github.com/abbot/go-http-auth"
+	"github.com/sirupsen/logrus"
 
-	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
 )
 
@@ -25,7 +25,7 @@ func ServerHeader(version string) www.Middleware {
 
 // RequestLogger will log the client connection
 // information on each request.
-func RequestLogger(logger logging.Logger) www.Middleware {
+func RequestLogger(logger *logrus.Logger) www.Middleware {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			logger.Infof("%s %s from client %s", r.Method, r.URL.String(), r.RemoteAddr)

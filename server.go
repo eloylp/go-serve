@@ -11,9 +11,10 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/sirupsen/logrus"
+
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/handler"
-	"github.com/eloylp/go-serve/logging"
 	"github.com/eloylp/go-serve/www"
 )
 
@@ -26,17 +27,19 @@ var (
 
 type Server struct {
 	internalHTTPServer *http.Server
-	logger             logging.Logger
-	cfg                config.Settings
-	wg                 sync.WaitGroup
+	logger             *logrus.Logger
+	cfg                *config.Settings
+	wg                 *sync.WaitGroup
 }
 
 func New(cfg *config.Settings) *Server {
+	logger := logrus.New()
+	logger.SetOutput(cfg.LoggerOutput)
+
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
-	fmt.Println(serverIdentity)
-	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr))
+	logger.Info(serverIdentity)
+	logger.Infof("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr)
 	fileHandler := http.FileServer(http.Dir(cfg.DocRoot))
-	logger := logging.NewConsoleLogger()
 
 	middlewares := []www.Middleware{
 		handler.ServerHeader(Version),
@@ -56,6 +59,8 @@ func New(cfg *config.Settings) *Server {
 	server := &Server{
 		internalHTTPServer: s,
 		logger:             logger,
+		cfg:                cfg,
+		wg:                 &sync.WaitGroup{},
 	}
 	return server
 }
