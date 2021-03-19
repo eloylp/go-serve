@@ -1,4 +1,4 @@
-package main
+package server
 
 import (
 	"context"
@@ -17,6 +17,13 @@ import (
 	"github.com/eloylp/go-serve/www"
 )
 
+var (
+	Name      string
+	Version   string
+	Build     string
+	BuildTime string
+)
+
 type Server struct {
 	internalHTTPServer *http.Server
 	logger             logging.Logger
@@ -24,7 +31,7 @@ type Server struct {
 	wg                 sync.WaitGroup
 }
 
-func NewServer(cfg *config.Settings) *Server {
+func New(cfg *config.Settings) *Server {
 	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	fmt.Println(serverIdentity)
 	log.Println(fmt.Sprintf("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr))

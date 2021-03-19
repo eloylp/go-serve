@@ -1,11 +1,13 @@
-package main
+package server_test
 
 import (
 	"context"
 	"testing"
 
-	"github.com/eloylp/go-serve/config"
 	"github.com/stretchr/testify/assert"
+
+	"github.com/eloylp/go-serve"
+	"github.com/eloylp/go-serve/config"
 )
 
 const (
@@ -21,7 +23,7 @@ func TestServingContent(t *testing.T) {
 		config.WithDocRoot(TestDocRoot),
 		config.WithDocRootPrefix("/"),
 	)
-	s := NewServer(cfg)
+	s := server.New(cfg)
 	go s.ListenAndServe()
 	defer s.Shutdown(context.Background())
 	data := BodyFrom(t, SutHTTPAddress+"/tux.png")

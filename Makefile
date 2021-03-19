@@ -9,10 +9,10 @@ BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
 LDFLAGS=-ldflags "-s -w \
-		-X=main.Name=$(PROJECT_NAME) \
-		-X=main.Version=$(VERSION) \
-		-X=main.Build=$(BUILD) \
-		-X=main.BuildTime=$(TIME)"
+		-X=server.Name=$(PROJECT_NAME) \
+		-X=server.Version=$(VERSION) \
+		-X=server.Build=$(BUILD) \
+		-X=server.BuildTime=$(TIME)"
 FLAGS=-trimpath
 
 .DEFAULT_GOAL := build
