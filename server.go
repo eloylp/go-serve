@@ -3,7 +3,6 @@ package server
 import (
 	"context"
 	"fmt"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
@@ -78,19 +77,19 @@ func (s *Server) awaitShutdownSignal() {
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM)
 	<-signals
-	log.Println("started gracefully shutdown of server ...")
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := s.Shutdown(ctx); err != nil {
 		s.logger.Error("await shutdown: " + err.Error())
 		return
 	}
-	log.Println("server shutdown gracefully")
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
+	s.logger.Info("started gracefully shutdown of server ...")
 	if err := s.internalHTTPServer.Shutdown(ctx); err != nil {
 		return fmt.Errorf("shutdown: %w", err)
 	}
+	s.logger.Info("server is now shutdown !")
 	return nil
 }
