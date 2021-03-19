@@ -3,6 +3,7 @@ package config_test
 import (
 	"flag"
 	"testing"
+	"time"
 
 	"github.com/stretchr/testify/assert"
 
@@ -24,7 +25,9 @@ func TestFromArgs(t *testing.T) {
 				"/root",
 				"/prefix",
 				"127.0.0.1:8080",
-				"./.htpasswd"},
+				"./.htpasswd",
+				time.Second,
+			},
 			nil,
 		},
 		{
@@ -33,7 +36,9 @@ func TestFromArgs(t *testing.T) {
 			config.Settings{"^(.*)/go-serve/config$",
 				"/",
 				"0.0.0.0:8080",
-				""},
+				"",
+				time.Second,
+			},
 			nil,
 		},
 		{
@@ -43,7 +48,9 @@ func TestFromArgs(t *testing.T) {
 				"^(.*)/go-serve/config$",
 				"/",
 				"0.0.0.0:8080",
-				""},
+				"",
+				time.Second,
+			},
 			flag.ErrHelp,
 		}, {
 			"Invoke help with -help must cause errHelp",
@@ -52,6 +59,7 @@ func TestFromArgs(t *testing.T) {
 				"/",
 				"0.0.0.0:8080",
 				"",
+				time.Second,
 			},
 			flag.ErrHelp,
 		},

@@ -5,10 +5,14 @@ package config
 import (
 	"flag"
 	"os"
+	"time"
 )
+
+type Option func(cfg *Settings)
 
 type Settings struct {
 	DocRoot, Prefix, ListenAddr, AuthFile string
+	ShutdownTimeout                       time.Duration
 }
 
 // FromArgs will receive and argument list as parameter, including
@@ -25,4 +29,30 @@ func FromArgs(args []string) (s Settings, err error) {
 	argsFiltered := args[1:] // exclude program name
 	err = flag.CommandLine.Parse(argsFiltered)
 	return
+}
+
+func WithListenAddr(addr string) Option {
+	return func(cfg *Settings) {
+		cfg.ListenAddr = addr
+	}
+}
+
+func WithDocRoot(docRoot string) Option {
+	return func(cfg *Settings) {
+		cfg.DocRoot = docRoot
+	}
+}
+
+func ForOptions(opts ...Option) *Settings {
+	cfg := &Settings{}
+	for _, o := range opts {
+		o(cfg)
+	}
+	return cfg
+}
+
+func WithDocRootPrefix(prefix string) Option {
+	return func(cfg *Settings) {
+		cfg.Prefix = prefix
+	}
 }
