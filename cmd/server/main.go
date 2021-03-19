@@ -3,7 +3,7 @@ package main
 import (
 	"log"
 
-	"github.com/eloylp/go-serve"
+	server "github.com/eloylp/go-serve"
 	"github.com/eloylp/go-serve/config"
 )
 

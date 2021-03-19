@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/eloylp/go-serve"
+	server "github.com/eloylp/go-serve"
 	"github.com/eloylp/go-serve/config"
 )
 
