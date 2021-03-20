@@ -63,7 +63,7 @@ func (s *Server) ListenAndServe() error {
 	s.logger.Infof("Starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
 	go s.awaitShutdownSignal()
 	if err := s.internalHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
-		return err
+		return fmt.Errorf("go-serve: %w", err)
 	}
 	s.wg.Wait()
 	return nil
@@ -85,7 +85,7 @@ func (s *Server) awaitShutdownSignal() {
 func (s *Server) Shutdown(ctx context.Context) error {
 	s.logger.Info("started gracefully shutdown of server ...")
 	if err := s.internalHTTPServer.Shutdown(ctx); err != nil {
-		return fmt.Errorf("shutdown: %w", err)
+		return fmt.Errorf("go-serve: shutdown: %w", err)
 	}
 	s.logger.Info("server is now shutdown !")
 	return nil
