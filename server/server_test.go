@@ -3,6 +3,8 @@ package server_test
 import (
 	"bytes"
 	"context"
+	"io/ioutil"
+	"net/http"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -80,4 +82,19 @@ func TestServingContentAlternatePath(t *testing.T) {
 	AssertNoProblemsInLogs(t, logs)
 	AssertStartupLogs(t, logs)
 	AssertShutdownLogs(t, logs)
+}
+
+func TestSeverIdentity(t *testing.T) {
+	cfg := config.ForOptions(
+		config.WithListenAddr(ListenAddress),
+		config.WithLoggerOutput(ioutil.Discard),
+	)
+	s, err := server.New(cfg)
+	assert.NoError(t, err)
+	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
+	resp, err := http.Get(HTTPAddress)
+	assert.NoError(t, err)
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	assert.Equal(t, "go-serve v1.0.0", resp.Header.Get("server"))
 }
