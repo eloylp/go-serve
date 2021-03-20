@@ -5,6 +5,7 @@ import (
 	"context"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -20,6 +21,8 @@ const (
 	HTTPAddress    = "http://" + ListenAddress
 	DocRoot        = "../tests/root"
 	TuxTestFileMD5 = "a0e6e27f7e31fd0bd549ea936033bf28"
+	GnuTestFileMD5 = "0073978283cb69d470ec2ea1b66f1988"
+	DocRootTARGZ   = "../tests/doc-root.tar.gz"
 )
 
 func init() {
@@ -108,4 +111,46 @@ func TestSeverIdentity(t *testing.T) {
 	assert.NoError(t, err)
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Equal(t, "go-serve v1.0.0", resp.Header.Get("server"))
+}
+
+func TestTARGZUpload(t *testing.T) {
+	logBuff := bytes.NewBuffer(nil)
+	var cfg = config.ForOptions(
+		config.WithListenAddr(ListenAddress),
+		config.WithDocRoot(t.TempDir()),
+		config.WithLoggerOutput(logBuff),
+		config.WithUploadEndpoint("/upload"),
+	)
+	s, err := server.New(cfg)
+	assert.NoError(t, err)
+
+	go s.ListenAndServe()
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
+	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
+	tarGZFile, err := os.Open(DocRootTARGZ)
+	assert.NoError(t, err)
+	defer tarGZFile.Close()
+
+	// Prepare request
+	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
+	assert.NoError(t, err)
+	req.Header.Add("Content-Type", "application/tar+gzip")
+	req.Header.Add("GoServe-Deploy-Path", "/sub-root/images")
+
+	resp, err := http.DefaultClient.Do(req)
+	assert.NoError(t, err)
+	defer req.Body.Close()
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	data, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	assert.Equal(t, "upload complete !", string(data))
+
+	tux := BodyFrom(t, HTTPAddress+"/sub-root/images/tux.png")
+	assert.Equal(t, TuxTestFileMD5, md5From(tux), "got body: %s", tux)
+
+	gnu := BodyFrom(t, HTTPAddress+"/sub-root/images/gnu.png")
+	assert.Equal(t, GnuTestFileMD5, md5From(gnu), "got body: %s", gnu)
+
 }

@@ -3,8 +3,13 @@
 package handler
 
 import (
+	"archive/tar"
+	"compress/gzip"
 	"fmt"
+	"io"
 	"net/http"
+	"os"
+	"path/filepath"
 
 	auth "github.com/abbot/go-http-auth"
 	"github.com/gorilla/mux"
@@ -61,4 +66,66 @@ func AuthChecker(realm, authFilePath string) mux.MiddlewareFunc {
 			h.ServeHTTP(w, r)
 		})
 	}
+}
+
+func UploadHandler(docRoot string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		deployPath := r.Header.Get("GoServe-Deploy-Path")
+		uncompressedStream, err := gzip.NewReader(r.Body)
+		if err != nil {
+			msg := "failed reading compressed gzip: " + err.Error()
+			reply(w, http.StatusBadRequest, msg)
+			return
+		}
+		tarReader := tar.NewReader(uncompressedStream)
+		for {
+			header, err := tarReader.Next()
+			if err == io.EOF {
+				break
+			}
+			if err != nil {
+				msg := "failed reading next part of tar: " + err.Error()
+				reply(w, http.StatusInternalServerError, msg)
+				return
+			}
+			switch header.Typeflag {
+			case tar.TypeDir:
+				path := filepath.Join(docRoot, deployPath, header.Name)
+				if err := os.MkdirAll(path, 0755); err != nil {
+					msg := "failed reading next part of tar: " + err.Error()
+					reply(w, http.StatusInternalServerError, msg)
+					return
+				}
+			case tar.TypeReg:
+				path := filepath.Join(docRoot, deployPath, header.Name)
+				if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
+					msg := "failed creating dir for next part of tar: " + err.Error()
+					reply(w, http.StatusInternalServerError, msg)
+					return
+				}
+				outFile, err := os.Create(path)
+				if err != nil {
+					msg := "failed creating file part of tar: " + err.Error()
+					reply(w, http.StatusInternalServerError, msg)
+					return
+				}
+				if _, err := io.Copy(outFile, tarReader); err != nil {
+					msg := "failed copying data part of tar: " + err.Error()
+					reply(w, http.StatusInternalServerError, msg)
+					return
+				}
+				_ = outFile.Close()
+			default:
+				msg := fmt.Sprintf("unknown part of tar: type: %v in %s", header.Typeflag, header.Name)
+				reply(w, http.StatusBadRequest, msg)
+				return
+			}
+		}
+		reply(w, http.StatusOK, "upload complete !")
+	}
+}
+
+func reply(w http.ResponseWriter, statusCode int, message string) {
+	w.WriteHeader(statusCode)
+	_, _ = w.Write([]byte(message))
 }

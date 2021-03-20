@@ -45,6 +45,12 @@ func WithDocRootPrefix(prefix string) Option {
 	}
 }
 
+func WithUploadEndpoint(path string) Option {
+	return func(cfg *Settings) {
+		cfg.UploadEndpoint = path
+	}
+}
+
 func WithLoggerFormat(format string) Option {
 	return func(cfg *Settings) {
 		cfg.Logger.Format = format

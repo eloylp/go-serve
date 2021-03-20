@@ -21,6 +21,9 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot, serverIdentity
 		r.Use(handler.AuthChecker(serverIdentity, cfg.AuthFile))
 	}
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	r.PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
+	r.Methods(http.MethodGet).PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
+	if cfg.UploadEndpoint != "" {
+		r.Methods(http.MethodPost).Path(cfg.UploadEndpoint).HandlerFunc(handler.UploadHandler(cfg.DocRoot))
+	}
 	return r
 }
