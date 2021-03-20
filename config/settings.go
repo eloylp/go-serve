@@ -1,5 +1,3 @@
-// Package config is a local use package for grouping
-// app config related functions
 package config
 
 import (
