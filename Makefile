@@ -9,10 +9,10 @@ BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
 LDFLAGS=-ldflags "-s -w \
-		-X=server.Name=$(PROJECT_NAME) \
-		-X=server.Version=$(VERSION) \
-		-X=server.Build=$(BUILD) \
-		-X=server.BuildTime=$(TIME)"
+		-X=github.com/eloylp/go-serve/server.Name=$(PROJECT_NAME) \
+		-X=github.com/eloylp/go-serve/server.Version=$(VERSION) \
+		-X=github.com/eloylp/go-serve/server.Build=$(BUILD) \
+		-X=github.com/eloylp/go-serve/server.BuildTime=$(TIME)"
 FLAGS=-trimpath
 
 .DEFAULT_GOAL := build
