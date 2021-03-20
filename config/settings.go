@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
+	"github.com/sirupsen/logrus"
 )
 
 type Settings struct {
@@ -26,6 +27,7 @@ type Settings struct {
 type LoggerSettings struct {
 	Format string `default:"json"`
 	Output io.Writer
+	Level  string `default:"info"`
 }
 
 func FromEnv() (*Settings, error) {
@@ -43,6 +45,7 @@ func defaultSettings() *Settings {
 		Prefix:          "/",
 		ShutdownTimeout: time.Second,
 		Logger: &LoggerSettings{
+			Level:  logrus.InfoLevel.String(),
 			Format: "text",
 			Output: os.Stderr,
 		},

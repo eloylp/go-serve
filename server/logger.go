@@ -1,6 +1,7 @@
 package server
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/sirupsen/logrus"
@@ -8,9 +9,14 @@ import (
 	"github.com/eloylp/go-serve/config"
 )
 
-func loggerFrom(cfg *config.LoggerSettings) *logrus.Logger {
+func loggerFrom(cfg *config.LoggerSettings) (*logrus.Logger, error) {
 	l := logrus.New()
 	l.SetOutput(cfg.Output)
+	level, err := logrus.ParseLevel(cfg.Level)
+	if err != nil {
+		return nil, fmt.Errorf("logger: %w", err)
+	}
+	l.SetLevel(level)
 	if cfg.Format == "json" {
 		l.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: time.RFC3339Nano,
@@ -20,5 +26,5 @@ func loggerFrom(cfg *config.LoggerSettings) *logrus.Logger {
 			TimestampFormat: time.RFC3339Nano,
 		})
 	}
-	return l
+	return l, nil
 }

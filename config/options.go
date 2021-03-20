@@ -51,6 +51,12 @@ func WithUploadEndpoint(path string) Option {
 	}
 }
 
+func WithLoggerLevel(level string) Option {
+	return func(cfg *Settings) {
+		cfg.Logger.Level = level
+	}
+}
+
 func WithLoggerFormat(format string) Option {
 	return func(cfg *Settings) {
 		cfg.Logger.Format = format
