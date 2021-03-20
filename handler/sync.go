@@ -5,7 +5,7 @@ import (
 	"sync"
 )
 
-func SyncWrite(h http.Handler, lock *sync.RWMutex) http.Handler { //nolint: interfacer
+func SyncWrite(h http.Handler, lock sync.Locker) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		lock.Lock()
 		defer lock.Unlock()
