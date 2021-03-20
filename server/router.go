@@ -11,16 +11,16 @@ import (
 )
 
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot, serverIdentity string) http.Handler {
-	m := mux.NewRouter()
+	r := mux.NewRouter()
 	middlewares := []mux.MiddlewareFunc{
 		handler.ServerHeader(Version),
 		handler.RequestLogger(logger),
 	}
-	m.Use(middlewares...)
+	r.Use(middlewares...)
 	if cfg.AuthFile != "" {
-		m.Use(handler.AuthChecker(serverIdentity, cfg.AuthFile))
+		r.Use(handler.AuthChecker(serverIdentity, cfg.AuthFile))
 	}
 	fileHandler := http.FileServer(http.Dir(docRoot))
-	m.PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
-	return m
+	r.PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
+	return r
 }
