@@ -37,7 +37,7 @@ test-bench:
 	go test -v -bench=. ./...
 build:
 	mkdir -p $(DIST_FOLDER)
-	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) -o $(BINARY_OUTPUT)
+	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) -o $(BINARY_OUTPUT) ./cmd/server
 	@echo "Binary output at $(BINARY_OUTPUT)"
 build-docker:
 	docker run -e "CGO_ENABLED=0" --rm -v ${CURDIR}:/usr/src/code -w /usr/src/code golang:$(GO_VERSION) make build
