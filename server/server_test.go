@@ -25,7 +25,7 @@ func init() {
 	server.BuildTime = "1988-01-21"
 }
 
-func TestServingContent(t *testing.T) {
+func TestServingContentDefaults(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
 	cfg := config.ForOptions(
 		config.WithListenAddr(ListenAddress),
