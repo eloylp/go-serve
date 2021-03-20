@@ -10,16 +10,13 @@ import (
 	"github.com/eloylp/go-serve/handler"
 )
 
-func router(cfg *config.Settings, logger *logrus.Logger, docRoot, serverIdentity string) http.Handler {
+func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Handler {
 	r := mux.NewRouter()
 	middlewares := []mux.MiddlewareFunc{
 		handler.ServerHeader(Version),
 		handler.RequestLogger(logger),
 	}
 	r.Use(middlewares...)
-	if cfg.AuthFile != "" {
-		r.Use(handler.AuthChecker(serverIdentity, cfg.AuthFile))
-	}
 	fileHandler := http.FileServer(http.Dir(docRoot))
 	r.Methods(http.MethodGet).PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
 	if cfg.UploadEndpoint != "" {

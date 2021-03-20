@@ -17,7 +17,6 @@ type Settings struct {
 	DocRoot         string `required:"."`
 	Prefix          string `default:"/"`
 	UploadEndpoint  string
-	AuthFile        string
 	ShutdownTimeout time.Duration `default:"1s"`
 	Logger          *LoggerSettings
 	ReadTimeout     time.Duration `default:"5s"`
