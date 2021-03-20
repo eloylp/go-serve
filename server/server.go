@@ -30,10 +30,14 @@ type Server struct {
 	logger             *logrus.Logger
 	cfg                *config.Settings
 	wg                 *sync.WaitGroup
+	lock               *sync.RWMutex
 }
 
 func New(cfg *config.Settings) (*Server, error) {
-	logger := loggerFrom(cfg.Logger)
+	logger, err := loggerFrom(cfg.Logger)
+	if err != nil {
+		return nil, fmt.Errorf("go-serve: %w", err)
+	}
 	identity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
 	docRoot, err := filepath.Abs(cfg.DocRoot)
 	if err != nil {
@@ -53,6 +57,7 @@ func New(cfg *config.Settings) (*Server, error) {
 		cfg:                cfg,
 		wg:                 &sync.WaitGroup{},
 		servingRoot:        docRoot,
+		lock:               &sync.RWMutex{},
 	}
 	return server, nil
 }

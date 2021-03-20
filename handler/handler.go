@@ -10,6 +10,7 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
+	"strings"
 
 	auth "github.com/abbot/go-http-auth"
 	"github.com/gorilla/mux"
@@ -68,15 +69,17 @@ func AuthChecker(realm, authFilePath string) mux.MiddlewareFunc {
 	}
 }
 
-func UploadHandler(docRoot string) http.HandlerFunc {
+func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
 		uncompressedStream, err := gzip.NewReader(r.Body)
 		if err != nil {
 			msg := "failed reading compressed gzip: " + err.Error()
+			logger.Error(msg)
 			reply(w, http.StatusBadRequest, msg)
 			return
 		}
+		var writtenBytes int64
 		tarReader := tar.NewReader(uncompressedStream)
 		for {
 			header, err := tarReader.Next()
@@ -85,44 +88,73 @@ func UploadHandler(docRoot string) http.HandlerFunc {
 			}
 			if err != nil {
 				msg := "failed reading next part of tar: " + err.Error()
+				logger.Error(msg)
 				reply(w, http.StatusInternalServerError, msg)
 				return
 			}
+			// Check that path does not go outside the document root
+			path := filepath.Join(docRoot, deployPath, header.Name) // nolinter: gosec
+			if err := checkPath(docRoot, path); err != nil {
+				msg := "incorrect upload path: " + err.Error()
+				logger.Debug(msg)
+				reply(w, http.StatusBadRequest, msg)
+				return
+			}
+			// Start processing types
 			switch header.Typeflag {
 			case tar.TypeDir:
-				path := filepath.Join(docRoot, deployPath, header.Name)
 				if err := os.MkdirAll(path, 0755); err != nil {
-					msg := "failed reading next part of tar: " + err.Error()
+					msg := fmt.Sprintf("failed creating dir %s part of tar: "+err.Error(), path)
+					logger.Error(msg)
 					reply(w, http.StatusInternalServerError, msg)
 					return
 				}
 			case tar.TypeReg:
-				path := filepath.Join(docRoot, deployPath, header.Name)
-				if err := os.MkdirAll(filepath.Dir(path), 0755); err != nil {
-					msg := "failed creating dir for next part of tar: " + err.Error()
+				dir := filepath.Dir(path)
+				if err := os.MkdirAll(dir, 0755); err != nil {
+					msg := fmt.Sprintf("failed creating dir %s part of tar: "+err.Error(), dir)
+					logger.Error(msg)
 					reply(w, http.StatusInternalServerError, msg)
 					return
 				}
 				outFile, err := os.Create(path)
 				if err != nil {
-					msg := "failed creating file part of tar: " + err.Error()
+					msg := fmt.Sprintf("failed creating file part of tar: "+err.Error(), path)
+					logger.Error(msg)
 					reply(w, http.StatusInternalServerError, msg)
 					return
 				}
-				if _, err := io.Copy(outFile, tarReader); err != nil {
-					msg := "failed copying data part of tar: " + err.Error()
+				fileBytes, err := io.Copy(outFile, tarReader) // nolinter: gosec (controlled by read/write timeouts)
+				if err != nil {
+					msg := fmt.Sprintf("failed copying data of file %s part of tar: %v", path, err)
+					logger.Error(msg)
 					reply(w, http.StatusInternalServerError, msg)
 					return
 				}
+				writtenBytes += fileBytes
 				_ = outFile.Close()
 			default:
 				msg := fmt.Sprintf("unknown part of tar: type: %v in %s", header.Typeflag, header.Name)
+				logger.Error(msg)
 				reply(w, http.StatusBadRequest, msg)
 				return
 			}
 		}
-		reply(w, http.StatusOK, "upload complete !")
+		msg := fmt.Sprintf("upload of tar.gz complete ! Bytes written: %d", writtenBytes)
+		logger.Debug(msg)
+		reply(w, http.StatusOK, msg)
 	}
+}
+
+func checkPath(docRoot, path string) error {
+	abs, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(abs, docRoot) {
+		return fmt.Errorf("the path you provided %s is not a suitable one", path)
+	}
+	return nil
 }
 
 func reply(w http.ResponseWriter, statusCode int, message string) {
