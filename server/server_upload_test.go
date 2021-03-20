@@ -79,6 +79,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 			config.WithDocRoot(t.TempDir()),
 			config.WithLoggerOutput(logBuff),
 			config.WithUploadEndpoint("/upload"),
+			config.WithLoggerLevel(logrus.DebugLevel.String()),
 		),
 	)
 	assert.NoError(t, err)
@@ -111,4 +112,5 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	parentDocRoot := filepath.Join(docRootDirParts[0:]...)
 	expectedMessage := fmt.Sprintf("incorrect upload path: the path you provided %s/gnu.png is not a suitable one", parentDocRoot)
 	assert.Equal(t, expectedMessage, string(data))
+	assert.Contains(t, logBuff.String(), expectedMessage)
 }
