@@ -38,13 +38,14 @@ func init() {
 
 func TestServingContentDefaults(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	cfg := config.ForOptions(
-		config.WithListenAddr(ListenAddress),
-		config.WithDocRoot(DocRoot),
-		config.WithDocRootPrefix("/"),
-		config.WithLoggerOutput(logBuff),
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithDocRoot(DocRoot),
+			config.WithDocRootPrefix("/"),
+			config.WithLoggerOutput(logBuff),
+		),
 	)
-	s, err := server.New(cfg)
 	assert.NoError(t, err)
 	go s.ListenAndServe()
 
@@ -77,13 +78,14 @@ func AssertShutdownLogs(t *testing.T, logs string) {
 
 func TestServingContentAlternatePath(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	cfg := config.ForOptions(
-		config.WithListenAddr(ListenAddress),
-		config.WithDocRoot(DocRoot),
-		config.WithDocRootPrefix("/alternate"),
-		config.WithLoggerOutput(logBuff),
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithDocRoot(DocRoot),
+			config.WithDocRootPrefix("/alternate"),
+			config.WithLoggerOutput(logBuff),
+		),
 	)
-	s, err := server.New(cfg)
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
@@ -100,11 +102,12 @@ func TestServingContentAlternatePath(t *testing.T) {
 }
 
 func TestSeverIdentity(t *testing.T) {
-	cfg := config.ForOptions(
-		config.WithListenAddr(ListenAddress),
-		config.WithLoggerOutput(ioutil.Discard),
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithLoggerOutput(ioutil.Discard),
+		),
 	)
-	s, err := server.New(cfg)
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
@@ -120,14 +123,15 @@ func TestSeverIdentity(t *testing.T) {
 
 func TestTARGZUpload(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	var cfg = config.ForOptions(
-		config.WithListenAddr(ListenAddress),
-		config.WithDocRoot(t.TempDir()),
-		config.WithLoggerOutput(logBuff),
-		config.WithUploadEndpoint("/upload"),
-		config.WithLoggerLevel(logrus.DebugLevel.String()),
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithDocRoot(t.TempDir()),
+			config.WithLoggerOutput(logBuff),
+			config.WithUploadEndpoint("/upload"),
+			config.WithLoggerLevel(logrus.DebugLevel.String()),
+		),
 	)
-	s, err := server.New(cfg)
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
@@ -171,13 +175,14 @@ func TestTARGZUpload(t *testing.T) {
 
 func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	var cfg = config.ForOptions(
-		config.WithListenAddr(ListenAddress),
-		config.WithDocRoot(t.TempDir()),
-		config.WithLoggerOutput(logBuff),
-		config.WithUploadEndpoint("/upload"),
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithDocRoot(t.TempDir()),
+			config.WithLoggerOutput(logBuff),
+			config.WithUploadEndpoint("/upload"),
+		),
 	)
-	s, err := server.New(cfg)
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
