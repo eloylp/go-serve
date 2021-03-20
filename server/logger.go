@@ -10,9 +10,7 @@ import (
 
 func loggerFrom(cfg *config.LoggerSettings) *logrus.Logger {
 	l := logrus.New()
-	if cfg.Output != nil {
-		l.SetOutput(cfg.Output)
-	}
+	l.SetOutput(cfg.Output)
 	if cfg.Format == "json" {
 		l.SetFormatter(&logrus.JSONFormatter{
 			TimestampFormat: time.RFC3339Nano,

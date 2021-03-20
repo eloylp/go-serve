@@ -8,7 +8,7 @@ import (
 type Option func(cfg *Settings)
 
 func ForOptions(opts ...Option) *Settings {
-	cfg := emptySettings()
+	cfg := defaultSettings()
 	for _, o := range opts {
 		o(cfg)
 	}

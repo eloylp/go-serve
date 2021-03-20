@@ -5,6 +5,7 @@ package config
 import (
 	"fmt"
 	"io"
+	"os"
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
@@ -27,16 +28,25 @@ type LoggerSettings struct {
 }
 
 func FromEnv() (*Settings, error) {
-	s := emptySettings()
+	s := defaultSettings()
 	if err := envconfig.Process("GOSERVE", s); err != nil {
 		return nil, fmt.Errorf("config: %w", err)
 	}
 	return s, nil
 }
 
-func emptySettings() *Settings {
+func defaultSettings() *Settings {
 	s := &Settings{
-		Logger: &LoggerSettings{},
+		ListenAddr:      "0.0.0.0:8080",
+		DocRoot:         ".",
+		Prefix:          "/",
+		ShutdownTimeout: time.Second,
+		Logger: &LoggerSettings{
+			Format: "text",
+			Output: os.Stderr,
+		},
+		ReadTimeout:  5 * time.Second,
+		WriteTimeout: 25 * time.Second,
 	}
 	return s
 }
