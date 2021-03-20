@@ -4,6 +4,7 @@ go 1.16
 
 require (
 	github.com/abbot/go-http-auth v0.4.0
+	github.com/eloylp/kit v0.0.0-20210320155329-4eb8a10aa790 // indirect
 	github.com/gorilla/mux v1.8.0
 	github.com/kelseyhightower/envconfig v1.4.0
 	github.com/sirupsen/logrus v1.8.1

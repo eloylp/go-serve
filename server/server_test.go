@@ -6,7 +6,9 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+	"time"
 
+	"github.com/eloylp/kit/test"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/eloylp/go-serve/config"
@@ -38,6 +40,9 @@ func TestServingContentDefaults(t *testing.T) {
 	s, err := server.New(cfg)
 	assert.NoError(t, err)
 	go s.ListenAndServe()
+
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
 	data := BodyFrom(t, HTTPAddress+"/tux.png")
 	assert.Equal(t, TuxTestFileMD5, md5From(data), "got body: %s", data)
 	err = s.Shutdown(context.Background())
@@ -73,7 +78,10 @@ func TestServingContentAlternatePath(t *testing.T) {
 	)
 	s, err := server.New(cfg)
 	assert.NoError(t, err)
+
 	go s.ListenAndServe()
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
 	data := BodyFrom(t, HTTPAddress+"/alternate/tux.png")
 	assert.Equal(t, TuxTestFileMD5, md5From(data), "got body: %s", data)
 	err = s.Shutdown(context.Background())
@@ -91,7 +99,10 @@ func TestSeverIdentity(t *testing.T) {
 	)
 	s, err := server.New(cfg)
 	assert.NoError(t, err)
+
 	go s.ListenAndServe()
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
 	defer s.Shutdown(context.Background())
 	resp, err := http.Get(HTTPAddress)
 	assert.NoError(t, err)
