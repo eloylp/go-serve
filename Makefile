@@ -1,8 +1,8 @@
 PROJECT_NAME := go-serve
 BINARY_NAME := go-serve
 VERSION := $(shell git describe --tags)
-GO_VERSION := 1.14.4
-GO_LINT_CI_VERSION := v1.27.0
+GO_VERSION := 1.16.2
+GO_LINT_CI_VERSION := v1.37.1
 GO_LINT_CI_PATH := $(shell go env GOPATH)/bin
 TIME := $(shell date +%Y-%m-%dT%T%z)
 BUILD := $(shell git rev-parse --short HEAD)
