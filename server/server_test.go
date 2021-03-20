@@ -60,3 +60,24 @@ func AssertShutdownLogs(t *testing.T, logs string) {
 	assert.Contains(t, logs, "started gracefully shutdown of server ...")
 	assert.Contains(t, logs, "server is now shutdown !")
 }
+
+func TestServingContentAlternatePath(t *testing.T) {
+	logBuff := bytes.NewBuffer(nil)
+	cfg := config.ForOptions(
+		config.WithListenAddr(ListenAddress),
+		config.WithDocRoot(DocRoot),
+		config.WithDocRootPrefix("/alternate"),
+		config.WithLoggerOutput(logBuff),
+	)
+	s, err := server.New(cfg)
+	assert.NoError(t, err)
+	go s.ListenAndServe()
+	data := BodyFrom(t, HTTPAddress+"/alternate/tux.png")
+	assert.Equal(t, TuxTestFileMD5, md5From(data), "got body: %s", data)
+	err = s.Shutdown(context.Background())
+	assert.NoError(t, err)
+	logs := logBuff.String()
+	AssertNoProblemsInLogs(t, logs)
+	AssertStartupLogs(t, logs)
+	AssertShutdownLogs(t, logs)
+}
