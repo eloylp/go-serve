@@ -108,9 +108,9 @@ func TestSeverIdentity(t *testing.T) {
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	defer s.Shutdown(context.Background())
 	resp, err := http.Get(HTTPAddress)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
@@ -131,6 +131,7 @@ func TestTARGZUpload(t *testing.T) {
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
@@ -180,6 +181,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	assert.NoError(t, err)
 
 	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	tarGZFile, err := os.Open(DocRootTARGZ)
