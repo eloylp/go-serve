@@ -12,7 +12,7 @@ import (
 
 type Settings struct {
 	ListenAddr      string `default:"0.0.0.0:8080"`
-	DocRoot         string `default:"."`
+	DocRoot         string `required:"."`
 	Prefix          string `default:"/"`
 	AuthFile        string
 	ShutdownTimeout time.Duration `default:"1s"`

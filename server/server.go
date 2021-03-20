@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"path/filepath"
 	"sync"
 	"syscall"
 	"time"
@@ -24,16 +25,21 @@ var (
 
 type Server struct {
 	identity           string
+	servingRoot        string
 	internalHTTPServer *http.Server
 	logger             *logrus.Logger
 	cfg                *config.Settings
 	wg                 *sync.WaitGroup
 }
 
-func New(cfg *config.Settings) *Server {
+func New(cfg *config.Settings) (*Server, error) {
 	logger := loggerFrom(cfg.Logger)
 	identity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
-	m := router(cfg, logger, identity)
+	docRoot, err := filepath.Abs(cfg.DocRoot)
+	if err != nil {
+		return nil, fmt.Errorf("go-serve: %w", err)
+	}
+	m := router(cfg, logger, docRoot, identity)
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      m,
@@ -46,14 +52,15 @@ func New(cfg *config.Settings) *Server {
 		logger:             logger,
 		cfg:                cfg,
 		wg:                 &sync.WaitGroup{},
+		servingRoot:        docRoot,
 	}
-	return server
+	return server, nil
 }
 
 func (s *Server) ListenAndServe() error {
 	s.wg.Add(1)
 	s.logger.Info(s.identity)
-	s.logger.Infof("Starting to serve %s at %s ...", s.cfg.DocRoot, s.cfg.ListenAddr)
+	s.logger.Infof("Starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
 	go s.awaitShutdownSignal()
 	if err := s.internalHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err

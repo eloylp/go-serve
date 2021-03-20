@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	server "github.com/eloylp/go-serve"
 	"github.com/eloylp/go-serve/config"
+	"github.com/eloylp/go-serve/server"
 )
 
 func main() {
@@ -12,7 +12,10 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	s := server.New(settings)
+	s, err := server.New(settings)
+	if err != nil {
+		log.Fatal(err)
+	}
 	if err := s.ListenAndServe(); err != nil {
 		log.Fatal(err)
 	}
