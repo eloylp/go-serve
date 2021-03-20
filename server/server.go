@@ -60,7 +60,7 @@ func New(cfg *config.Settings) (*Server, error) {
 func (s *Server) ListenAndServe() error {
 	s.wg.Add(1)
 	s.logger.Info(s.identity)
-	s.logger.Infof("Starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
+	s.logger.Infof("starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
 	go s.awaitShutdownSignal()
 	if err := s.internalHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
 		return fmt.Errorf("go-serve: %w", err)
