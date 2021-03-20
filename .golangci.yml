@@ -102,6 +102,7 @@ issues:
         - gochecknoinits
         - gosec
         - errcheck
+        - dupl
 
 #run:
 #  skip-dirs:
