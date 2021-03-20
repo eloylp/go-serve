@@ -23,6 +23,7 @@ var (
 )
 
 type Server struct {
+	identity           string
 	internalHTTPServer *http.Server
 	logger             *logrus.Logger
 	cfg                *config.Settings
@@ -31,10 +32,8 @@ type Server struct {
 
 func New(cfg *config.Settings) *Server {
 	logger := loggerFrom(cfg.Logger)
-	serverIdentity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
-	logger.Info(serverIdentity)
-	logger.Infof("Starting to serve %s at %s ...", cfg.DocRoot, cfg.ListenAddr)
-	m := router(cfg, logger, serverIdentity)
+	identity := fmt.Sprintf("%s %s %s %s", Name, Version, Build, BuildTime)
+	m := router(cfg, logger, identity)
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      m,
@@ -42,6 +41,7 @@ func New(cfg *config.Settings) *Server {
 		WriteTimeout: 15 * time.Second,
 	}
 	server := &Server{
+		identity:           identity,
 		internalHTTPServer: s,
 		logger:             logger,
 		cfg:                cfg,
@@ -52,6 +52,8 @@ func New(cfg *config.Settings) *Server {
 
 func (s *Server) ListenAndServe() error {
 	s.wg.Add(1)
+	s.logger.Info(s.identity)
+	s.logger.Infof("Starting to serve %s at %s ...", s.cfg.DocRoot, s.cfg.ListenAddr)
 	go s.awaitShutdownSignal()
 	if err := s.internalHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
 		return err
