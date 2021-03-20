@@ -11,12 +11,12 @@ import (
 	"testing"
 	"time"
 
+	"github.com/eloylp/kit/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
-	"github.com/eloylp/kit/test"
 )
 
 func TestTARGZUpload(t *testing.T) {
