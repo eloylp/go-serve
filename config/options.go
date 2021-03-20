@@ -2,6 +2,7 @@ package config
 
 import (
 	"io"
+	"time"
 )
 
 type Option func(cfg *Settings)
@@ -17,6 +18,18 @@ func ForOptions(opts ...Option) *Settings {
 func WithListenAddr(addr string) Option {
 	return func(cfg *Settings) {
 		cfg.ListenAddr = addr
+	}
+}
+
+func WithReadTimeout(duration time.Duration) Option {
+	return func(cfg *Settings) {
+		cfg.ReadTimeout = duration
+	}
+}
+
+func WithWriteTimeout(duration time.Duration) Option {
+	return func(cfg *Settings) {
+		cfg.WriteTimeout = duration
 	}
 }
 

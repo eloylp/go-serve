@@ -17,6 +17,8 @@ type Settings struct {
 	AuthFile        string
 	ShutdownTimeout time.Duration `default:"1s"`
 	Logger          *LoggerSettings
+	ReadTimeout     time.Duration `default:"5s"`
+	WriteTimeout    time.Duration `default:"25s"`
 }
 
 type LoggerSettings struct {

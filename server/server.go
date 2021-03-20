@@ -43,8 +43,8 @@ func New(cfg *config.Settings) (*Server, error) {
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      m,
-		ReadTimeout:  15 * time.Second,
-		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  cfg.ReadTimeout,
+		WriteTimeout: cfg.WriteTimeout,
 	}
 	server := &Server{
 		identity:           identity,
