@@ -34,7 +34,7 @@ type Server struct {
 }
 
 func New(cfg *config.Settings) (*Server, error) {
-	logger, err := loggerFrom(cfg.Logger)
+	logger, err := logger(cfg.Logger)
 	if err != nil {
 		return nil, fmt.Errorf("go-serve: %w", err)
 	}

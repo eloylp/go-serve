@@ -9,7 +9,7 @@ import (
 	"github.com/eloylp/go-serve/config"
 )
 
-func loggerFrom(cfg *config.LoggerSettings) (*logrus.Logger, error) {
+func logger(cfg *config.LoggerSettings) (*logrus.Logger, error) {
 	l := logrus.New()
 	l.SetOutput(cfg.Output)
 	level, err := logrus.ParseLevel(cfg.Level)
