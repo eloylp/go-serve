@@ -30,7 +30,6 @@ type Server struct {
 	logger             *logrus.Logger
 	cfg                *config.Settings
 	wg                 *sync.WaitGroup
-	globalLock         *sync.RWMutex
 }
 
 func New(cfg *config.Settings) (*Server, error) {
@@ -43,8 +42,7 @@ func New(cfg *config.Settings) (*Server, error) {
 	if err != nil {
 		return nil, fmt.Errorf("go-serve: %w", err)
 	}
-	globalLock := &sync.RWMutex{}
-	handler := router(cfg, logger, docRoot, globalLock)
+	handler := router(cfg, logger, docRoot)
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      handler,
@@ -58,7 +56,6 @@ func New(cfg *config.Settings) (*Server, error) {
 		cfg:                cfg,
 		wg:                 &sync.WaitGroup{},
 		servingRoot:        docRoot,
-		globalLock:         globalLock,
 	}
 	return server, nil
 }
