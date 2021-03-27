@@ -1,9 +1,10 @@
 package server
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
-	"net/http"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/handler"

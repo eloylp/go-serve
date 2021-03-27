@@ -110,7 +110,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	// This is due to the previous 	req.Header.Add("GoServe-Deploy-Path", "..") statement.
 	docRootDirParts := filepath.SplitList(filepath.Dir(t.TempDir()))
 	parentDocRoot := filepath.Join(docRootDirParts[0:]...)
-	expectedMessage := fmt.Sprintf("incorrect upload path: the path you provided %s/gnu.png is not a suitable one", parentDocRoot)
+	expectedMessage := fmt.Sprintf("incorrect deploy path: the path you provided %s/gnu.png is not a suitable one", parentDocRoot)
 	assert.Equal(t, expectedMessage, string(data))
 	assert.Contains(t, logBuff.String(), expectedMessage)
 }
