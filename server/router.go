@@ -22,7 +22,8 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 	if cfg.UploadEndpoint != "" {
 		r.Methods(http.MethodPost).
 			Path(cfg.UploadEndpoint).
-			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot))
+			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot)).
+			Headers("Content-Type", "application/tar+gzip")
 	}
 	return r
 }
