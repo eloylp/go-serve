@@ -2,6 +2,7 @@ package server
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -25,5 +26,41 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot)).
 			Headers("Content-Type", "application/tar+gzip")
 	}
+	if cfg.DownloadEndpoint != "" {
+		r.Methods(http.MethodGet).
+			Path(cfg.DownloadEndpoint).
+			Handler(handler.DownloadTARGZHandler(logger, cfg.DocRoot)).
+			Headers("Accept", "application/tar+gzip")
+	}
+	debugRouter(r, logger)
 	return r
+}
+
+func debugRouter(r *mux.Router, logger *logrus.Logger) {
+	err := r.Walk(func(route *mux.Route, router *mux.Router, ancestors []*mux.Route) error {
+		pathTemplate, err := route.GetPathTemplate()
+		if err == nil {
+			logger.Debugf("router: registering ROUTE: %s", pathTemplate)
+		}
+		pathRegexp, err := route.GetPathRegexp()
+		if err == nil {
+			logger.Debugf("router: path regexp: %s", pathRegexp)
+		}
+		queriesTemplates, err := route.GetQueriesTemplates()
+		if err == nil {
+			logger.Debugf("router: queries templates: %s", strings.Join(queriesTemplates, ","))
+		}
+		queriesRegexps, err := route.GetQueriesRegexp()
+		if err == nil {
+			logger.Debugf("router: Queries regexps: %s", strings.Join(queriesRegexps, ","))
+		}
+		methods, err := route.GetMethods()
+		if err == nil {
+			logger.Debugf("router: methods: %s", strings.Join(methods, ","))
+		}
+		return nil
+	})
+	if err != nil {
+		panic(err)
+	}
 }
