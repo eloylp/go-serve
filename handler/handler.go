@@ -26,7 +26,12 @@ func ServerHeader(version string) mux.MiddlewareFunc {
 func RequestLogger(logger *logrus.Logger) mux.MiddlewareFunc {
 	return func(h http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			logger.Infof("%s %s from client %s", r.Method, r.URL.String(), r.RemoteAddr)
+			logger.WithFields(logrus.Fields{
+				"path":    r.URL.String(),
+				"method":  r.Method,
+				"ip":      r.RemoteAddr,
+				"headers": r.Header,
+			}).Info("request from client")
 			h.ServeHTTP(w, r)
 		})
 	}
