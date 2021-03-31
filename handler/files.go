@@ -5,6 +5,7 @@ import (
 	"compress/gzip"
 	"fmt"
 	"io"
+	"io/fs"
 	"os"
 	"path/filepath"
 	"strings"
@@ -59,11 +60,15 @@ func ProcessTARGZStream(stream io.Reader, root, deployPath string) (int64, error
 }
 
 func checkPath(docRoot, path string) error {
-	abs, err := filepath.Abs(path)
+	absRoot, err := filepath.Abs(docRoot)
 	if err != nil {
 		return err
 	}
-	if !strings.HasPrefix(abs, docRoot) {
+	absPath, err := filepath.Abs(path)
+	if err != nil {
+		return err
+	}
+	if !strings.HasPrefix(absPath, absRoot) {
 		return fmt.Errorf("the path you provided %s is not a suitable one", path)
 	}
 	return nil
