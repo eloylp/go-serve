@@ -83,7 +83,7 @@ func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 			if err != nil {
 				return 0, fmt.Errorf("ExtractTARGZ(): failed creating file part %s of tar: %w", path, err)
 			}
-			fileBytes, err := io.Copy(outFile, tarReader) // nolinter: gosec (controlled by read/write timeouts)
+			fileBytes, err := io.Copy(outFile, tarReader) // nolinter: gosec (must be controlled by read/write timeouts)
 			if err != nil {
 				return 0, fmt.Errorf("ExtractTARGZ(): failed copying data of file %s part of tar: %v", path, err)
 			}
