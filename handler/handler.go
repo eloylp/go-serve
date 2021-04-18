@@ -4,6 +4,7 @@ package handler
 
 import (
 	"fmt"
+	"github.com/eloylp/go-serve/packer"
 	"net/http"
 	"path/filepath"
 
@@ -62,7 +63,7 @@ func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := WriteTARGZ(w, downloadAbsolutePath)
+		writtenBytes, err := packer.WriteTARGZ(w, downloadAbsolutePath)
 		if err != nil {
 			logger.WithError(err).Error("fail writing tar.gz to wire")
 			return
