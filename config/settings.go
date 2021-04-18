@@ -11,14 +11,15 @@ import (
 )
 
 type Settings struct {
-	ListenAddr      string `default:"0.0.0.0:8080"`
-	DocRoot         string `required:"."`
-	Prefix          string `default:"/"`
-	UploadEndpoint  string
-	ShutdownTimeout time.Duration `default:"1s"`
-	Logger          *LoggerSettings
-	ReadTimeout     time.Duration `default:"5s"`
-	WriteTimeout    time.Duration `default:"25s"`
+	ListenAddr       string `default:"0.0.0.0:8080"`
+	DocRoot          string `required:"."`
+	Prefix           string `default:"/"`
+	UploadEndpoint   string
+	DownloadEndpoint string
+	ShutdownTimeout  time.Duration `default:"1s"`
+	Logger           *LoggerSettings
+	ReadTimeout      time.Duration `default:"5s"`
+	WriteTimeout     time.Duration `default:"25s"`
 }
 
 type LoggerSettings struct {

@@ -59,3 +59,56 @@ func Test_checkPath(t *testing.T) {
 		})
 	}
 }
+
+func Test_headerName(t *testing.T) {
+	type args struct {
+		root         string
+		requiredPath string
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    string
+		wantErr bool
+	}{
+		{
+			name: "Test subdirectory of root",
+			args: args{
+				root:         "/var/www/html",
+				requiredPath: "/var/www/html/static",
+			},
+			want:    "static",
+			wantErr: false,
+		},
+		{
+			name: "Test file of subdir of root",
+			args: args{
+				root:         "/var/www/html",
+				requiredPath: "/var/www/html/static/main.js",
+			},
+			want:    "static/main.js",
+			wantErr: false,
+		},
+		{
+			name: "Test file of subdir of root (dir traversal)",
+			args: args{
+				root:         "/var/www/html",
+				requiredPath: "/var/www/html/static/sub/../main.js",
+			},
+			want:    "static/main.js",
+			wantErr: false,
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			got, err := headerName(tt.args.root, tt.args.requiredPath)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("headerName() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if got != tt.want {
+				t.Errorf("headerName() got = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}

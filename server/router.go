@@ -18,20 +18,20 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 		handler.RequestLogger(logger),
 	}
 	r.Use(middlewares...)
-	fileHandler := http.FileServer(http.Dir(docRoot))
-	r.Methods(http.MethodGet).PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
-	if cfg.UploadEndpoint != "" {
-		r.Methods(http.MethodPost).
-			Path(cfg.UploadEndpoint).
-			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot)).
-			Headers("Content-Type", "application/tar+gzip")
-	}
 	if cfg.DownloadEndpoint != "" {
 		r.Methods(http.MethodGet).
 			Path(cfg.DownloadEndpoint).
 			Handler(handler.DownloadTARGZHandler(logger, cfg.DocRoot)).
 			Headers("Accept", "application/tar+gzip")
 	}
+	if cfg.UploadEndpoint != "" {
+		r.Methods(http.MethodPost).
+			Path(cfg.UploadEndpoint).
+			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot)).
+			Headers("Content-Type", "application/tar+gzip")
+	}
+	fileHandler := http.FileServer(http.Dir(docRoot))
+	r.Methods(http.MethodGet).PathPrefix(cfg.Prefix).Handler(http.StripPrefix(cfg.Prefix, fileHandler))
 	debugRouter(r, logger)
 	return r
 }

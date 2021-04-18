@@ -5,6 +5,7 @@ package handler
 import (
 	"fmt"
 	"net/http"
+	"path/filepath"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
@@ -49,6 +50,24 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 		msg := fmt.Sprintf("upload of tar.gz complete ! Bytes written: %d", writtenBytes)
 		logger.Debug(msg)
 		reply(w, http.StatusOK, msg)
+	}
+}
+
+func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		downloadRelativePath := r.Header.Get("GoServe-Download-Path")
+		downloadAbsolutePath := filepath.Join(root, downloadRelativePath)
+		if err := checkPath(root, downloadAbsolutePath); err != nil {
+			logger.WithError(err).Error("download path violation try")
+			reply(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		writtenBytes, err := WriteTARGZ(w, downloadAbsolutePath)
+		if err != nil {
+			logger.WithError(err).Error("fail writing tar.gz to wire")
+			return
+		}
+		logger.Debugf("sent of tar.gz to %s complete ! Bytes written: %d", r.RemoteAddr, writtenBytes)
 	}
 }
 

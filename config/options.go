@@ -51,6 +51,12 @@ func WithUploadEndpoint(path string) Option {
 	}
 }
 
+func WithDownLoadEndpoint(path string) Option {
+	return func(cfg *Settings) {
+		cfg.DownloadEndpoint = path
+	}
+}
+
 func WithLoggerLevel(level string) Option {
 	return func(cfg *Settings) {
 		cfg.Logger.Level = level
