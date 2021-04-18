@@ -44,7 +44,7 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 	return func(w http.ResponseWriter, r *http.Request) {
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
-		if err := checkPath(docRoot, path); err != nil {
+		if err := packer.PathInRoot(docRoot, path); err != nil {
 			logger.WithError(err).Error("upload path violation try")
 			reply(w, http.StatusBadRequest, err.Error())
 			return
@@ -65,7 +65,7 @@ func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		downloadRelativePath := r.Header.Get("GoServe-Download-Path")
 		downloadAbsolutePath := filepath.Join(root, downloadRelativePath)
-		if err := checkPath(root, downloadAbsolutePath); err != nil {
+		if err := packer.PathInRoot(root, downloadAbsolutePath); err != nil {
 			logger.WithError(err).Error("download path violation try")
 			reply(w, http.StatusBadRequest, err.Error())
 			return

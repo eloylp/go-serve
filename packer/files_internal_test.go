@@ -1,4 +1,4 @@
-package handler
+package packer
 
 import (
 	"testing"
@@ -53,8 +53,8 @@ func Test_checkPath(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if err := checkPath(tt.args.docRoot, tt.args.path); (err != nil) != tt.wantErr {
-				t.Errorf("checkPath() error = %v, wantErr %v", err, tt.wantErr)
+			if err := PathInRoot(tt.args.docRoot, tt.args.path); (err != nil) != tt.wantErr {
+				t.Errorf("PathInRoot() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}
@@ -101,13 +101,13 @@ func Test_headerName(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got, err := headerName(tt.args.root, tt.args.requiredPath)
+			got, err := RelativePath(tt.args.root, tt.args.requiredPath)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("headerName() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("RelativePath() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if got != tt.want {
-				t.Errorf("headerName() got = %v, want %v", got, tt.want)
+				t.Errorf("RelativePath() got = %v, want %v", got, tt.want)
 			}
 		})
 	}

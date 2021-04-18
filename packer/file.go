@@ -1,4 +1,4 @@
-package handler
+package packer
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-func checkPath(docRoot, path string) error {
+func PathInRoot(docRoot, path string) error {
 	absRoot, err := filepath.Abs(docRoot)
 	if err != nil {
 		return err
@@ -21,7 +21,7 @@ func checkPath(docRoot, path string) error {
 	return nil
 }
 
-func headerName(root, requiredPath string) (string, error) {
+func RelativePath(root, requiredPath string) (string, error) {
 	rel, err := filepath.Rel(root, requiredPath)
 	if err != nil {
 		return "", err
