@@ -55,7 +55,7 @@ func TestTARGZUpload(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
-	expectedSuccessMessage := "upload of tar.gz complete ! Bytes written: 533742"
+	expectedSuccessMessage := "upload of tar.gz complete ! Bytes written: 533766"
 	assert.Equal(t, expectedSuccessMessage, string(data))
 
 	// Check that files are served correctly.
@@ -67,6 +67,9 @@ func TestTARGZUpload(t *testing.T) {
 
 	notes := BodyFrom(t, HTTPAddress+"/sub-root/test/notes/notes.txt")
 	assert.Equal(t, NotesTestFileMD5, md5From(notes), "got body: %s", notes)
+
+	subNotes := BodyFrom(t, HTTPAddress+"/sub-root/test/notes/subnotes/notes.txt")
+	assert.Equal(t, SubNotesTestFileMD5, md5From(subNotes), "got body: %s", notes)
 
 	assert.Contains(t, logBuff.String(), expectedSuccessMessage)
 }
@@ -110,7 +113,10 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	// This is due to the previous 	req.Header.Add("GoServe-Deploy-Path", "..") statement.
 	docRootDirParts := filepath.SplitList(filepath.Dir(t.TempDir()))
 	parentDocRoot := filepath.Join(docRootDirParts[0:]...)
-	expectedMessage := fmt.Sprintf("incorrect deploy path: the path you provided %s/gnu.png is not a suitable one", parentDocRoot)
+	expectedMessage := fmt.Sprintf("the path you provided %s is not a suitable one", parentDocRoot)
 	assert.Equal(t, expectedMessage, string(data))
-	assert.Contains(t, logBuff.String(), expectedMessage)
+	logs := logBuff.String()
+	assert.Contains(t, logs, expectedMessage)
+	assert.Contains(t, logs, "upload path violation try")
+
 }

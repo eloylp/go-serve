@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ProcessTARGZStream(stream io.Reader, root, deployPath string) (int64, error) {
+func ProcessTARGZStream(stream io.Reader, path string) (int64, error) {
 	uncompressedStream, err := gzip.NewReader(stream)
 	if err != nil {
 		return 0, fmt.Errorf("failed reading compressed gzip: %w " + err.Error())
@@ -25,23 +25,19 @@ func ProcessTARGZStream(stream io.Reader, root, deployPath string) (int64, error
 		if err != nil {
 			return 0, fmt.Errorf("failed reading next part of tar: %w", err)
 		}
-		// Check that path does not go outside the document root
-		path := filepath.Join(root, deployPath, header.Name) // nolinter: gosec
-		if err := checkPath(root, path); err != nil {
-			return 0, fmt.Errorf("incorrect deploy path: %w", err)
-		}
+		extractionPath := filepath.Join(path, header.Name)
 		// Start processing types
 		switch header.Typeflag {
 		case tar.TypeDir:
-			if err := os.MkdirAll(path, 0755); err != nil {
+			if err := os.MkdirAll(extractionPath, 0755); err != nil {
 				return 0, fmt.Errorf("failed creating dir %s part of tar: %w", path, err)
 			}
 		case tar.TypeReg:
-			dir := filepath.Dir(path)
+			dir := filepath.Dir(extractionPath)
 			if err := os.MkdirAll(dir, 0755); err != nil {
 				return 0, fmt.Errorf("failed creating dir %s part of tar: %w ", dir, err)
 			}
-			outFile, err := os.Create(path)
+			outFile, err := os.Create(extractionPath)
 			if err != nil {
 				return 0, fmt.Errorf("failed creating file part %s of tar: %w", path, err)
 			}

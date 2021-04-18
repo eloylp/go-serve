@@ -42,7 +42,13 @@ func RequestLogger(logger *logrus.Logger) mux.MiddlewareFunc {
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
-		writtenBytes, err := ProcessTARGZStream(r.Body, docRoot, deployPath)
+		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
+		if err := checkPath(docRoot, path); err != nil {
+			logger.WithError(err).Error("upload path violation try")
+			reply(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		writtenBytes, err := ProcessTARGZStream(r.Body, path)
 		if err != nil {
 			logger.Debugf("%v", err)
 			reply(w, http.StatusBadRequest, err.Error())
