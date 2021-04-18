@@ -10,7 +10,7 @@ import (
 	"path/filepath"
 )
 
-func WriteTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
+func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 	gzipStream := gzip.NewWriter(writer)
 	defer gzipStream.Close()
 	tarStream := tar.NewWriter(gzipStream)
@@ -47,7 +47,7 @@ func WriteTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		return nil
 	})
 	if err != nil {
-		return 0, fmt.Errorf("WriteTARGZ(): %w", err)
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err)
 	}
 	return bytesWritten, nil
 }

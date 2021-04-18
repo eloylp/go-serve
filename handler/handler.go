@@ -42,7 +42,7 @@ func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := file.WriteTARGZ(w, downloadAbsolutePath)
+		writtenBytes, err := file.CreateTARGZ(w, downloadAbsolutePath)
 		if err != nil {
 			logger.WithError(err).Error("fail writing tar.gz to wire")
 			return
