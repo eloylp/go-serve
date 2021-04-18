@@ -88,7 +88,9 @@ func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 				return 0, fmt.Errorf("ExtractTARGZ(): failed copying data of file %s part of tar: %v", path, err)
 			}
 			writtenBytes += fileBytes
-			_ = outFile.Close()
+			if err := outFile.Close(); err != nil {
+				return writtenBytes, fmt.Errorf("ExtractTARGZ(): failed closing file %s part of tar: %v", path, err)
+			}
 		default:
 			return 0, fmt.Errorf("ExtractTARGZ(): unknown part of tar: type: %v in %s", header.Typeflag, header.Name)
 		}
