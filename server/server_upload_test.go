@@ -118,5 +118,4 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	logs := logBuff.String()
 	assert.Contains(t, logs, expectedMessage)
 	assert.Contains(t, logs, "upload path violation try")
-
 }

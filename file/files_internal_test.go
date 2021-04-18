@@ -4,6 +4,7 @@ import (
 	"testing"
 )
 
+//nolint:scopelint
 func Test_checkPath(t *testing.T) {
 	type args struct {
 		docRoot string
@@ -60,6 +61,7 @@ func Test_checkPath(t *testing.T) {
 	}
 }
 
+//nolint:scopelint
 func Test_headerName(t *testing.T) {
 	type args struct {
 		root         string

@@ -29,7 +29,7 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		if err != nil {
 			return err
 		}
-		if err = tarStream.WriteHeader(header); err != nil {
+		if err := tarStream.WriteHeader(header); err != nil {
 			return err
 		}
 		if !info.IsDir() {
@@ -47,7 +47,7 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		return nil
 	})
 	if err != nil {
-		return 0, fmt.Errorf("CreateTARGZ(): %w", err)
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
 	}
 	return bytesWritten, nil
 }
@@ -67,7 +67,7 @@ func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 		if err != nil {
 			return 0, fmt.Errorf("failed reading next part of tar: %w", err)
 		}
-		extractionPath := filepath.Join(path, header.Name)
+		extractionPath := filepath.Join(path, header.Name) //nolint:gosec
 		// Start processing types
 		switch header.Typeflag {
 		case tar.TypeDir:
