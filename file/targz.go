@@ -25,7 +25,7 @@ func WriteTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		if err != nil {
 			return err
 		}
-		header.Name, err = pathDiff(path, currentPath)
+		header.Name, err = RelativePath(path, currentPath)
 		if err != nil {
 			return err
 		}
@@ -50,15 +50,6 @@ func WriteTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		return 0, fmt.Errorf("WriteTARGZ(): %w", err)
 	}
 	return bytesWritten, nil
-}
-
-func pathDiff(root, requiredPath string) (string, error) {
-	rel, err := filepath.Rel(root, requiredPath)
-	if err != nil {
-		return "", err
-	}
-	result := filepath.ToSlash(rel)
-	return result, nil
 }
 
 func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
