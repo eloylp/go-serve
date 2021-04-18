@@ -4,12 +4,13 @@ package handler
 
 import (
 	"fmt"
-	"github.com/eloylp/go-serve/packer"
 	"net/http"
 	"path/filepath"
 
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
+
+	"github.com/eloylp/go-serve/packer"
 )
 
 // ServerHeader will grab server information in the
@@ -48,7 +49,7 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := ExtractTARGZ(r.Body, path)
+		writtenBytes, err := packer.ExtractTARGZ(r.Body, path)
 		if err != nil {
 			logger.Debugf("%v", err)
 			reply(w, http.StatusBadRequest, err.Error())
