@@ -9,19 +9,19 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/eloylp/go-serve/packer"
+	"github.com/eloylp/go-serve/file"
 )
 
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
-		if err := packer.PathInRoot(docRoot, path); err != nil {
+		if err := file.PathInRoot(docRoot, path); err != nil {
 			logger.WithError(err).Error("upload path violation try")
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := packer.ExtractTARGZ(r.Body, path)
+		writtenBytes, err := file.ExtractTARGZ(r.Body, path)
 		if err != nil {
 			logger.Debugf("%v", err)
 			reply(w, http.StatusBadRequest, err.Error())
@@ -37,12 +37,12 @@ func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		downloadRelativePath := r.Header.Get("GoServe-Download-Path")
 		downloadAbsolutePath := filepath.Join(root, downloadRelativePath)
-		if err := packer.PathInRoot(root, downloadAbsolutePath); err != nil {
+		if err := file.PathInRoot(root, downloadAbsolutePath); err != nil {
 			logger.WithError(err).Error("download path violation try")
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := packer.WriteTARGZ(w, downloadAbsolutePath)
+		writtenBytes, err := file.WriteTARGZ(w, downloadAbsolutePath)
 		if err != nil {
 			logger.WithError(err).Error("fail writing tar.gz to wire")
 			return
