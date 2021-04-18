@@ -10,7 +10,7 @@ import (
 	"strings"
 )
 
-func ProcessTARGZStream(stream io.Reader, path string) (int64, error) {
+func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 	uncompressedStream, err := gzip.NewReader(stream)
 	if err != nil {
 		return 0, fmt.Errorf("failed reading compressed gzip: %w " + err.Error())

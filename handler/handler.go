@@ -48,7 +48,7 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := ProcessTARGZStream(r.Body, path)
+		writtenBytes, err := ExtractTARGZ(r.Body, path)
 		if err != nil {
 			logger.Debugf("%v", err)
 			reply(w, http.StatusBadRequest, err.Error())
