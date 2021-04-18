@@ -55,7 +55,7 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 	uncompressedStream, err := gzip.NewReader(stream)
 	if err != nil {
-		return 0, fmt.Errorf("failed reading compressed gzip: %w " + err.Error())
+		return 0, fmt.Errorf("ExtractTARGZ(): failed reading compressed gzip: %w " + err.Error())
 	}
 	var writtenBytes int64
 	tarReader := tar.NewReader(uncompressedStream)
@@ -65,32 +65,32 @@ func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 			break
 		}
 		if err != nil {
-			return 0, fmt.Errorf("failed reading next part of tar: %w", err)
+			return 0, fmt.Errorf("ExtractTARGZ(): failed reading next part of tar: %w", err)
 		}
 		extractionPath := filepath.Join(path, header.Name) //nolint:gosec
 		// Start processing types
 		switch header.Typeflag {
 		case tar.TypeDir:
 			if err := os.MkdirAll(extractionPath, 0755); err != nil {
-				return 0, fmt.Errorf("failed creating dir %s part of tar: %w", path, err)
+				return 0, fmt.Errorf("ExtractTARGZ(): failed creating dir %s part of tar: %w", path, err)
 			}
 		case tar.TypeReg:
 			dir := filepath.Dir(extractionPath)
 			if err := os.MkdirAll(dir, 0755); err != nil {
-				return 0, fmt.Errorf("failed creating dir %s part of tar: %w ", dir, err)
+				return 0, fmt.Errorf("ExtractTARGZ(): failed creating dir %s part of tar: %w ", dir, err)
 			}
 			outFile, err := os.Create(extractionPath)
 			if err != nil {
-				return 0, fmt.Errorf("failed creating file part %s of tar: %w", path, err)
+				return 0, fmt.Errorf("ExtractTARGZ(): failed creating file part %s of tar: %w", path, err)
 			}
 			fileBytes, err := io.Copy(outFile, tarReader) // nolinter: gosec (controlled by read/write timeouts)
 			if err != nil {
-				return 0, fmt.Errorf("failed copying data of file %s part of tar: %v", path, err)
+				return 0, fmt.Errorf("ExtractTARGZ(): failed copying data of file %s part of tar: %v", path, err)
 			}
 			writtenBytes += fileBytes
 			_ = outFile.Close()
 		default:
-			return 0, fmt.Errorf("unknown part of tar: type: %v in %s", header.Typeflag, header.Name)
+			return 0, fmt.Errorf("ExtractTARGZ(): unknown part of tar: type: %v in %s", header.Typeflag, header.Name)
 		}
 	}
 	return writtenBytes, nil
