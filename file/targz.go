@@ -73,15 +73,15 @@ func tarFromFile(path string, tarStream *tar.Writer) (int64, error) {
 	}
 	header, err := tar.FileInfoHeader(fileInfo, "")
 	if err != nil {
-		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+		return 0, err
 	}
 	header.Name = filepath.Base(path)
 	if err := tarStream.WriteHeader(header); err != nil {
-		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+		return 0, err
 	}
 	b, err := appendToWriter(tarStream, path)
 	if err != nil {
-		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+		return 0, err
 	}
 	return b, nil
 }
