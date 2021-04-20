@@ -15,13 +15,32 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 	defer gzipStream.Close()
 	tarStream := tar.NewWriter(gzipStream)
 	defer tarStream.Close()
-	var bytesWritten int64
 
-	err = filepath.Walk(path, func(currentPath string, info fs.FileInfo, err error) error {
+	pathFileInfo, err := os.Stat(path)
+	if err != nil {
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+	}
+	if !pathFileInfo.IsDir() {
+		b, err := tarFromFile(path, tarStream)
+		if err != nil {
+			return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+		}
+		return b, nil
+	}
+	bytes, err := tarFromDir(path, tarStream)
+	if err != nil {
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+	}
+	return bytes, nil
+}
+
+func tarFromDir(path string, tarStream *tar.Writer) (int64, error) {
+	var totalBytes int64
+	err := filepath.Walk(path, func(currentPath string, fileInfo fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		header, err := tar.FileInfoHeader(info, "")
+		header, err := tar.FileInfoHeader(fileInfo, "")
 		if err != nil {
 			return err
 		}
@@ -32,13 +51,8 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		if err := tarStream.WriteHeader(header); err != nil {
 			return err
 		}
-		if !info.IsDir() {
-			file, err := os.Open(currentPath)
-			if err != nil {
-				return err
-			}
-			defer file.Close()
-			bytesWritten, err = io.Copy(tarStream, file)
+		if !fileInfo.IsDir() {
+			bytesWritten, err := appendToWriter(tarStream, currentPath)
 			if err != nil {
 				return err
 			}
@@ -47,9 +61,42 @@ func CreateTARGZ(writer io.Writer, path string) (totalBytes int64, err error) {
 		return nil
 	})
 	if err != nil {
+		return 0, err //nolint:golint
+	}
+	return totalBytes, nil
+}
+
+func tarFromFile(path string, tarStream *tar.Writer) (int64, error) {
+	fileInfo, err := os.Stat(path)
+	if err != nil {
+		return 0, err
+	}
+	header, err := tar.FileInfoHeader(fileInfo, "")
+	if err != nil {
 		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
 	}
-	return bytesWritten, nil
+	header.Name = filepath.Base(path)
+	if err := tarStream.WriteHeader(header); err != nil {
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+	}
+	b, err := appendToWriter(tarStream, path)
+	if err != nil {
+		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
+	}
+	return b, nil
+}
+
+func appendToWriter(w io.Writer, path string) (int64, error) {
+	file, err := os.Open(path)
+	if err != nil {
+		return 0, err
+	}
+	defer file.Close()
+	b, err := io.Copy(w, file)
+	if err != nil {
+		return 0, err
+	}
+	return b, nil
 }
 
 func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
