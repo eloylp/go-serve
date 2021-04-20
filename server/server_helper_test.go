@@ -44,7 +44,7 @@ func Copy(t *testing.T, source, dest string) {
 			return err
 		}
 		if info.IsDir() {
-			err = os.MkdirAll(filepath.Join(dest, sourceRel), 0777)
+			err = os.MkdirAll(filepath.Join(dest, sourceRel), 0775)
 			if err != nil {
 				return err
 			}
