@@ -24,7 +24,6 @@ import (
 
 func TestTARGZDownload(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	defer t.Log(logBuff)
 	testDocRoot := t.TempDir()
 	s, err := server.New(
 		config.ForOptions(
@@ -66,7 +65,6 @@ func TestTARGZDownload(t *testing.T) {
 
 func TestTARGZDownloadForSingleFile(t *testing.T) {
 	logBuff := bytes.NewBuffer(nil)
-	defer t.Log(logBuff)
 	testDocRoot := t.TempDir()
 	s, err := server.New(
 		config.ForOptions(
