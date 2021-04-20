@@ -11,36 +11,36 @@ import (
 )
 
 func CreateTARGZ(writer io.Writer, path string) (int64, error) {
-	gzipStream := gzip.NewWriter(writer)
-	defer gzipStream.Close()
-	tarStream := tar.NewWriter(gzipStream)
-	defer tarStream.Close()
+	gzipReader := gzip.NewWriter(writer)
+	defer gzipReader.Close()
+	tarReader := tar.NewWriter(gzipReader)
+	defer tarReader.Close()
 
-	pathFileInfo, err := os.Stat(path)
+	pathInfo, err := os.Stat(path)
 	if err != nil {
 		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
 	}
-	if !pathFileInfo.IsDir() {
-		b, err := tarFromFile(path, tarStream)
+	if !pathInfo.IsDir() {
+		b, err := tarFromFile(path, tarReader)
 		if err != nil {
 			return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
 		}
 		return b, nil
 	}
-	bytes, err := tarFromDir(path, tarStream)
+	b, err := tarFromDir(path, tarReader)
 	if err != nil {
 		return 0, fmt.Errorf("CreateTARGZ(): %w", err) //nolint:golint
 	}
-	return bytes, nil
+	return b, nil
 }
 
-func tarFromDir(path string, tarStream *tar.Writer) (int64, error) {
+func tarFromDir(path string, tarWriter *tar.Writer) (int64, error) {
 	var totalFileBytes int64
-	err := filepath.Walk(path, func(currentPath string, fileInfo fs.FileInfo, err error) error {
+	err := filepath.Walk(path, func(currentPath string, info fs.FileInfo, err error) error {
 		if err != nil {
 			return err
 		}
-		header, err := tar.FileInfoHeader(fileInfo, "")
+		header, err := tar.FileInfoHeader(info, "")
 		if err != nil {
 			return err
 		}
@@ -48,11 +48,11 @@ func tarFromDir(path string, tarStream *tar.Writer) (int64, error) {
 		if err != nil {
 			return err
 		}
-		if err := tarStream.WriteHeader(header); err != nil {
+		if err := tarWriter.WriteHeader(header); err != nil {
 			return err
 		}
-		if !fileInfo.IsDir() {
-			b, err := appendToWriter(tarStream, currentPath)
+		if !info.IsDir() {
+			b, err := appendToWriter(tarWriter, currentPath)
 			if err != nil {
 				return err
 			}
@@ -100,12 +100,12 @@ func appendToWriter(w io.Writer, path string) (int64, error) {
 }
 
 func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
-	uncompressedStream, err := gzip.NewReader(stream)
+	gzipReader, err := gzip.NewReader(stream)
 	if err != nil {
 		return 0, fmt.Errorf("ExtractTARGZ(): failed reading compressed gzip: %w " + err.Error())
 	}
-	var writtenBytes int64
-	tarReader := tar.NewReader(uncompressedStream)
+	tarReader := tar.NewReader(gzipReader)
+	var totalFileBytes int64
 	for {
 		header, err := tarReader.Next()
 		if err == io.EOF {
@@ -130,17 +130,17 @@ func ExtractTARGZ(stream io.Reader, path string) (int64, error) {
 			if err != nil {
 				return 0, fmt.Errorf("ExtractTARGZ(): failed creating file part %s of tar: %w", path, err) //nolint:golint
 			}
-			fileBytes, err := io.Copy(outFile, tarReader) // nolinter: gosec (must be controlled by read/write timeouts)
+			b, err := io.Copy(outFile, tarReader) // nolinter: gosec (must be controlled by read/write timeouts)
 			if err != nil {
 				return 0, fmt.Errorf("ExtractTARGZ(): failed copying data of file %s part of tar: %v", path, err) //nolint:golint
 			} //nolint:golint
-			writtenBytes += fileBytes
+			totalFileBytes += b
 			if err := outFile.Close(); err != nil {
-				return writtenBytes, fmt.Errorf("ExtractTARGZ(): failed closing file %s part of tar: %v", path, err) //nolint:golint
+				return totalFileBytes, fmt.Errorf("ExtractTARGZ(): failed closing file %s part of tar: %v", path, err) //nolint:golint
 			} //nolint:golint
 		default:
 			return 0, fmt.Errorf("ExtractTARGZ(): unknown part of tar: type: %v in %s", header.Typeflag, header.Name) //nolint:golint
 		}
 	}
-	return writtenBytes, nil
+	return totalFileBytes, nil
 }
