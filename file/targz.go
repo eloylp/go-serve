@@ -35,7 +35,7 @@ func CreateTARGZ(writer io.Writer, path string) (int64, error) {
 }
 
 func tarFromDir(path string, tarStream *tar.Writer) (int64, error) {
-	var totalBytes int64
+	var totalFileBytes int64
 	err := filepath.Walk(path, func(currentPath string, fileInfo fs.FileInfo, err error) error {
 		if err != nil {
 			return err
@@ -52,18 +52,18 @@ func tarFromDir(path string, tarStream *tar.Writer) (int64, error) {
 			return err
 		}
 		if !fileInfo.IsDir() {
-			bytesWritten, err := appendToWriter(tarStream, currentPath)
+			b, err := appendToWriter(tarStream, currentPath)
 			if err != nil {
 				return err
 			}
-			totalBytes += bytesWritten
+			totalFileBytes += b
 		}
 		return nil
 	})
 	if err != nil {
 		return 0, err //nolint:golint
 	}
-	return totalBytes, nil
+	return totalFileBytes, nil
 }
 
 func tarFromFile(path string, tarStream *tar.Writer) (int64, error) {
