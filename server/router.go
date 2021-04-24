@@ -1,9 +1,11 @@
 package server
 
 import (
+	"fmt"
 	"net/http"
 	"strings"
 
+	"github.com/eloylp/kit/http/middleware"
 	"github.com/gorilla/mux"
 	"github.com/sirupsen/logrus"
 
@@ -14,8 +16,8 @@ import (
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Handler {
 	r := mux.NewRouter()
 	middlewares := []mux.MiddlewareFunc{
-		handler.ServerHeader(Version),
-		handler.RequestLogger(logger),
+		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
+		mux.MiddlewareFunc(middleware.RequestLogger(logger)),
 	}
 	r.Use(middlewares...)
 	if cfg.DownloadEndpoint != "" {
