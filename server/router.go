@@ -29,13 +29,12 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 			WithMethod(http.MethodPost).
 			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
 	}
-	middlewares := []mux.MiddlewareFunc{
-		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
+	r.Use(
 		mux.MiddlewareFunc(middleware.RequestLogger(logger)),
+		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
 		mux.MiddlewareFunc(middleware.AuthChecker(authReadCfg)),
 		mux.MiddlewareFunc(middleware.AuthChecker(authWriteCfg)),
-	}
-	r.Use(middlewares...)
+	)
 	if cfg.DownloadEndpoint != "" {
 		r.Methods(http.MethodGet).
 			Path(cfg.DownloadEndpoint).
