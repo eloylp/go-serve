@@ -11,6 +11,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 
 	"github.com/eloylp/go-serve/config"
@@ -24,12 +25,13 @@ var (
 )
 
 type Server struct {
-	identity           string
-	servingRoot        string
-	internalHTTPServer *http.Server
-	logger             *logrus.Logger
-	cfg                *config.Settings
-	wg                 *sync.WaitGroup
+	identity                     string
+	servingRoot                  string
+	internalHTTPServer           *http.Server
+	alternativeMetricsHTTPServer *http.Server
+	logger                       *logrus.Logger
+	cfg                          *config.Settings
+	wg                           *sync.WaitGroup
 }
 
 func New(cfg *config.Settings) (*Server, error) {
@@ -64,7 +66,10 @@ func (s *Server) ListenAndServe() error {
 	s.wg.Add(1)
 	s.logger.Info(s.identity)
 	s.logger.Infof("starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
-	go s.awaitShutdownSignal()
+	if s.cfg.MetricsEnabled && s.cfg.MetricsAlternativeListenAddr != "" {
+		s.startAlternateMetricsServer()
+	}
+	go s.awaitShutdownSignalFor(s.internalHTTPServer)
 	if err := s.internalHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
 		return fmt.Errorf("go-serve: %w", err)
 	}
@@ -72,14 +77,34 @@ func (s *Server) ListenAndServe() error {
 	return nil
 }
 
-func (s *Server) awaitShutdownSignal() {
+func (s *Server) startAlternateMetricsServer() {
+	s.wg.Add(1)
+	s.logger.Infof("starting to serve metrics at %s ...", s.cfg.MetricsAlternativeListenAddr)
+	h := promhttp.HandlerFor(s.cfg.PrometheusRegistry, promhttp.HandlerOpts{})
+	mux := http.NewServeMux()
+	mux.Handle(s.cfg.MetricsPath, h)
+	s.alternativeMetricsHTTPServer = &http.Server{
+		Handler: mux,
+		Addr:    s.cfg.MetricsAlternativeListenAddr,
+	}
+	go s.awaitShutdownSignalFor(s.alternativeMetricsHTTPServer)
+	go func() {
+		if err := s.alternativeMetricsHTTPServer.ListenAndServe(); err != http.ErrServerClosed {
+			s.logger.WithError(err).Error("go-serve: metrics: server error")
+		}
+	}()
+}
+
+// TOdo, this function is leaking resources. Pass context and
+// react on its cancellation.
+func (s *Server) awaitShutdownSignalFor(instance *http.Server) {
 	defer s.wg.Done()
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM)
 	<-signals
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
-	if err := s.Shutdown(ctx); err != nil {
+	if err := instance.Shutdown(ctx); err != nil {
 		s.logger.Error("await shutdown: " + err.Error())
 		return
 	}
@@ -89,6 +114,11 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	s.logger.Info("started gracefully shutdown of server ...")
 	if err := s.internalHTTPServer.Shutdown(ctx); err != nil {
 		return fmt.Errorf("go-serve: shutdown: %w", err)
+	}
+	if s.cfg.MetricsEnabled && s.cfg.MetricsAlternativeListenAddr != "" {
+		if err := s.alternativeMetricsHTTPServer.Shutdown(ctx); err != nil {
+			return fmt.Errorf("go-serve: metrics: shutdown: %w", err)
+		}
 	}
 	s.logger.Info("server is now shutdown !")
 	return nil

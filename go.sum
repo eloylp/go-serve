@@ -48,8 +48,8 @@ github.com/eapache/go-resiliency v1.1.0/go.mod h1:kFI+JgMyC7bLPUVY133qvEBtVayf5m
 github.com/eapache/go-xerial-snappy v0.0.0-20180814174437-776d5712da21/go.mod h1:+020luEh2TKB4/GOp8oxxtq0Daoen/Cii55CzbTV6DU=
 github.com/eapache/queue v1.1.0/go.mod h1:6eCeP0CKFpHLu8blIFXhExK/dRa7WDZfr6jVFPTqq+I=
 github.com/edsrzf/mmap-go v1.0.0/go.mod h1:YO35OhQPt3KJa3ryjFM5Bs14WD66h8eGKpfaBNrHW5M=
-github.com/eloylp/kit v0.0.0-20210425163242-0f6feb68c5ae h1:xlT6qWNfPx52PBBOcdBSsHMx/NldUS8ozzy6IQ8iySQ=
-github.com/eloylp/kit v0.0.0-20210425163242-0f6feb68c5ae/go.mod h1:MfyPXhwbLES/HKbLXHBlVquJvrtQCWcBFrsU+zt9VTs=
+github.com/eloylp/kit v0.0.0-20210425171913-9a7872ecc3b5 h1:g8XgYvyFJ/OHCkjUy166RvU+rt1ZjnhquELkjwYetkc=
+github.com/eloylp/kit v0.0.0-20210425171913-9a7872ecc3b5/go.mod h1:MfyPXhwbLES/HKbLXHBlVquJvrtQCWcBFrsU+zt9VTs=
 github.com/envoyproxy/go-control-plane v0.6.9/go.mod h1:SBwIajubJHhxtWwsL9s8ss4safvEdbitLhGGK48rN6g=
 github.com/envoyproxy/go-control-plane v0.9.1-0.20191026205805-5f8ba28d4473/go.mod h1:YTl/9mNaCwkRvm6d1a2C3ymFceY/DCBVvsKhRF0iEA4=
 github.com/envoyproxy/protoc-gen-validate v0.1.0/go.mod h1:iSmxcyjqTsJpI2R4NaDN7+kN2VEUnK/pcBlmesArF7c=

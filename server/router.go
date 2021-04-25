@@ -7,6 +7,7 @@ import (
 
 	"github.com/eloylp/kit/http/middleware"
 	"github.com/gorilla/mux"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 
 	"github.com/eloylp/go-serve/config"
@@ -29,8 +30,14 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 			WithMethod(http.MethodPost).
 			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
 	}
+	r.Use(mux.MiddlewareFunc(middleware.RequestLogger(logger)))
+	if cfg.MetricsEnabled && cfg.MetricsAlternativeListenAddr == "" {
+		r.Use(mux.MiddlewareFunc(middleware.RequestDurationObserver("goserve", cfg.PrometheusRegistry, cfg.MetricsRequestDurationBuckets)))
+		r.Methods(http.MethodGet).
+			Path(cfg.MetricsPath).
+			Handler(promhttp.HandlerFor(cfg.PrometheusRegistry, promhttp.HandlerOpts{}))
+	}
 	r.Use(
-		mux.MiddlewareFunc(middleware.RequestLogger(logger)),
 		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
 		mux.MiddlewareFunc(middleware.AuthChecker(authReadCfg)),
 		mux.MiddlewareFunc(middleware.AuthChecker(authWriteCfg)),
