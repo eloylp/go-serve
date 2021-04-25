@@ -70,7 +70,7 @@ func TestTARGZUpload(t *testing.T) {
 
 	subNotes := BodyFrom(t, HTTPAddress+"/sub-root/test/notes/subnotes/notes.txt")
 	assert.Equal(t, SubNotesTestFileMD5, md5From(subNotes), "got body: %s", notes)
-
+	s.Shutdown(context.Background()) // Force shutdown here in order to avoid data race with the logger buffer
 	assert.Contains(t, logBuff.String(), expectedSuccessMessage)
 }
 
