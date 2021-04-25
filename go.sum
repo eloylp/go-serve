@@ -3,6 +3,10 @@ github.com/davecgh/go-spew v1.1.1 h1:vj9j/u1bqnvCEfJOwUhtlOARqs3+rkHYY13jYWTU97c
 github.com/davecgh/go-spew v1.1.1/go.mod h1:J7Y8YcW2NihsgmVo/mv3lAwl/skON4iLHjSsI+c5H38=
 github.com/eloylp/kit v0.0.0-20210424162024-1a58dce970a6 h1:zixZXf3e17b9de7v0We8docd+2MzzT+3/JCGA5GTXvQ=
 github.com/eloylp/kit v0.0.0-20210424162024-1a58dce970a6/go.mod h1:LOXk9Xaok/kCsFWKY95G0Xl1FOVasMstlXtbJufjVAA=
+github.com/eloylp/kit v0.0.0-20210424171010-c81acb7e41c7 h1:IxDBR9xQUScW+x/lCqcNHHiTFVEHHUp0FkGkHOkbPMU=
+github.com/eloylp/kit v0.0.0-20210424171010-c81acb7e41c7/go.mod h1:LOXk9Xaok/kCsFWKY95G0Xl1FOVasMstlXtbJufjVAA=
+github.com/eloylp/kit v0.0.0-20210425081752-df60197d6df9 h1:83eC5CU/0sBhFYLc4y4Y9c80AOfuo5KK4lUM5ZRLvaI=
+github.com/eloylp/kit v0.0.0-20210425081752-df60197d6df9/go.mod h1:LOXk9Xaok/kCsFWKY95G0Xl1FOVasMstlXtbJufjVAA=
 github.com/google/uuid v1.1.1/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gorilla/mux v1.8.0 h1:i40aqfkR1h2SlN9hojwV5ZA91wcXFOvkdNIeFDP5koI=
 github.com/gorilla/mux v1.8.0/go.mod h1:DVbg23sWSpFRCP0SfiEN6jmj59UnW/n46BH5rLB71So=
@@ -22,6 +26,8 @@ golang.org/x/net v0.0.0-20210226172049-e18ecbb05110/go.mod h1:m0MpNAwzfU5UDzcl9v
 golang.org/x/sys v0.0.0-20191026070338-33540a1f6037/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68 h1:nxC68pudNYkKU6jWhgrqdreuFiOQWj1Fs7T3VrH4Pjw=
 golang.org/x/sys v0.0.0-20201119102817-f84b799fce68/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
+golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7 h1:iGu644GcxtEcrInvDsQRCwJjtCIOlT2V7IRt6ah2Whw=
+golang.org/x/sys v0.0.0-20210423185535-09eb48e85fd7/go.mod h1:h1NjWce9XRLGQEsW7wpKNCjG9DtNlClVuFLEZdDNbEs=
 golang.org/x/term v0.0.0-20201126162022-7de9c90e9dd1/go.mod h1:bj7SfCRtBDWHUb9snDiAeCFNEtKQo2Wmx5Cou7ajbmo=
 golang.org/x/text v0.3.3/go.mod h1:5Zoc/QRtKVWzQhOtBMvqHzDpF6irO9z98xDceosuGiQ=
 golang.org/x/tools v0.0.0-20180917221912-90fa682c2a6e/go.mod h1:n7NCudcB/nEzxVGmLbDWY5pfWTLqBcC2KZ6jyYvM4mQ=

@@ -15,9 +15,25 @@ import (
 
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Handler {
 	r := mux.NewRouter()
+	var authReadCfg *middleware.AuthConfig
+	if cfg.ReadAuthorizations != nil {
+		authReadCfg = middleware.NewAuthConfig().
+			WithAuth(middleware.Authorization(cfg.ReadAuthorizations)).
+			WithMethod(http.MethodGet).
+			WithPathRegex(".*")
+	}
+	var authWriteCfg *middleware.AuthConfig
+	if cfg.WriteAuthorizations != nil {
+		authWriteCfg = middleware.NewAuthConfig().
+			WithAuth(middleware.Authorization(cfg.WriteAuthorizations)).
+			WithMethod(http.MethodPost).
+			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
+	}
 	middlewares := []mux.MiddlewareFunc{
 		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
 		mux.MiddlewareFunc(middleware.RequestLogger(logger)),
+		mux.MiddlewareFunc(middleware.AuthChecker(authReadCfg)),
+		mux.MiddlewareFunc(middleware.AuthChecker(authWriteCfg)),
 	}
 	r.Use(middlewares...)
 	if cfg.DownloadEndpoint != "" {

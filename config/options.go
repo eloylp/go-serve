@@ -74,3 +74,15 @@ func WithLoggerOutput(o io.Writer) Option {
 		cfg.Logger.Output = o
 	}
 }
+
+func WithReadAuthorizations(auth Authorization) Option {
+	return func(cfg *Settings) {
+		cfg.ReadAuthorizations = auth
+	}
+}
+
+func WithWriteAuthorizations(auth Authorization) Option {
+	return func(cfg *Settings) {
+		cfg.WriteAuthorizations = auth
+	}
+}

@@ -1,6 +1,7 @@
 package server_test
 
 import (
+	"os"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -18,6 +19,14 @@ const (
 	SubNotesTestFileMD5 = "0ff6da62cf7875cce432f7b955008953"
 	DocRootTARGZ        = "../tests/doc-root.tar.gz"
 )
+
+var sampleTARGZContent = func() []byte {
+	file, err := os.ReadFile(DocRootTARGZ)
+	if err != nil {
+		panic(err)
+	}
+	return file
+}()
 
 func init() {
 	server.Name = "programName"
