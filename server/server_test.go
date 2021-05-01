@@ -2,9 +2,6 @@ package server_test
 
 import (
 	"os"
-	"testing"
-
-	"github.com/stretchr/testify/assert"
 
 	"github.com/eloylp/go-serve/server"
 )
@@ -33,19 +30,4 @@ func init() {
 	server.Version = "v1.0.0"
 	server.Build = "af09"
 	server.BuildTime = "1988-01-21"
-}
-
-func AssertNoProblemsInLogs(t *testing.T, logs string) {
-	assert.NotContains(t, logs, "level=warning")
-	assert.NotContains(t, logs, "level=error")
-}
-
-func AssertStartupLogs(t *testing.T, logs string) {
-	assert.Contains(t, logs, "programName v1.0.0 af09 1988-01-21")
-	assert.Contains(t, logs, "starting to serve")
-}
-
-func AssertShutdownLogs(t *testing.T, logs string) {
-	assert.Contains(t, logs, "started gracefully shutdown of server ...")
-	assert.Contains(t, logs, "server is now shutdown !")
 }

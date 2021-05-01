@@ -1,13 +1,9 @@
 package server_test
 
 import (
-	"archive/tar"
 	"bytes"
-	"compress/gzip"
 	"context"
-	"crypto/md5"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net/http"
 	"path/filepath"
@@ -99,33 +95,6 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 			"notes.txt": NotesTestFileMD5,
 		})
 	}
-}
-
-func AssertTARGZMD5Sums(t *testing.T, r io.Reader, expectedElems map[string]string) {
-	gzipReader, err := gzip.NewReader(r)
-	assert.NoError(t, err)
-	tarReader := tar.NewReader(gzipReader)
-	elems := map[string]string{}
-	for {
-		h, err := tarReader.Next()
-		if err == io.EOF {
-			break
-		}
-		if err != nil {
-			t.Fatal(err)
-		}
-		sum := md5.New()
-		if !h.FileInfo().IsDir() {
-			_, err = io.Copy(sum, tarReader)
-			if err != nil {
-				t.Fatal(err)
-			}
-			elems[h.Name] = fmt.Sprintf("%x", sum.Sum(nil))
-			continue
-		}
-		elems[h.Name] = ""
-	}
-	assert.Equal(t, expectedElems, elems)
 }
 
 func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
