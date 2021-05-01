@@ -36,7 +36,7 @@ func TestTARGZDownload(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	Copy(t, DocRoot, testDocRoot)
+	test.Copy(t, DocRoot, testDocRoot)
 
 	go s.ListenAndServe()
 	defer s.Shutdown(context.Background())
@@ -77,7 +77,7 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 	)
 	assert.NoError(t, err)
 
-	Copy(t, DocRoot, testDocRoot)
+	test.Copy(t, DocRoot, testDocRoot)
 
 	go s.ListenAndServe()
 	defer s.Shutdown(context.Background())
