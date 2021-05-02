@@ -3,11 +3,9 @@ package server_test
 import (
 	"bytes"
 	"context"
-	"fmt"
 	"io/ioutil"
 	"net/http"
 	"os"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -107,15 +105,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	data, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
-	// We need to calculate one directory up to the doc root to check the message is correct.
-	// This is due to the previous 	req.Header.Add("GoServe-Deploy-Path", "..") statement.
-	docRootDirParts := filepath.SplitList(filepath.Dir(t.TempDir()))
-	parentDocRoot := filepath.Join(docRootDirParts[0:]...)
-	expectedMessage := fmt.Sprintf("the path you provided %s is not a suitable one", parentDocRoot)
-	assert.Equal(t, expectedMessage, string(data))
 	logs := logBuff.String()
-	assert.Contains(t, logs, expectedMessage)
 	assert.Contains(t, logs, "upload path violation try")
 }

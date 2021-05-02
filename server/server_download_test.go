@@ -3,10 +3,7 @@ package server_test
 import (
 	"bytes"
 	"context"
-	"fmt"
-	"io/ioutil"
 	"net/http"
-	"path/filepath"
 	"testing"
 	"time"
 
@@ -126,14 +123,6 @@ func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	data, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
-	// We need to calculate one directory up to the doc root to check the message is correct.
-	// This is due to the previous 	req.Header.Add("GoServe-Download-Path", "..") statement.
-	docRootDirParts := filepath.SplitList(filepath.Dir(t.TempDir()))
-	parentDocRoot := filepath.Join(docRootDirParts[0:]...)
-	expectedMessage := fmt.Sprintf("the path you provided %s is not a suitable one", parentDocRoot)
-	assert.Equal(t, expectedMessage, string(data))
-	assert.Contains(t, logBuff.String(), expectedMessage)
-	assert.Contains(t, logBuff.String(), "download path violation try")
+	logs := logBuff.String()
+	assert.Contains(t, logs, "download path violation try")
 }
