@@ -32,6 +32,8 @@ type Server struct {
 	logger                       *logrus.Logger
 	cfg                          *config.Settings
 	wg                           *sync.WaitGroup
+	ctx                          context.Context
+	cancl                        context.CancelFunc
 }
 
 func New(cfg *config.Settings) (*Server, error) {
@@ -51,6 +53,7 @@ func New(cfg *config.Settings) (*Server, error) {
 		ReadTimeout:  cfg.ReadTimeout,
 		WriteTimeout: cfg.WriteTimeout,
 	}
+	ctx, cancl := context.WithCancel(context.Background())
 	server := &Server{
 		identity:           identity,
 		internalHTTPServer: s,
@@ -58,6 +61,8 @@ func New(cfg *config.Settings) (*Server, error) {
 		cfg:                cfg,
 		wg:                 &sync.WaitGroup{},
 		servingRoot:        docRoot,
+		ctx:                ctx,
+		cancl:              cancl,
 	}
 	return server, nil
 }
@@ -95,13 +100,16 @@ func (s *Server) startAlternateMetricsServer() {
 	}()
 }
 
-// TOdo, this function is leaking resources. Pass context and
-// react on its cancellation.
 func (s *Server) awaitShutdownSignalFor(instance *http.Server) {
 	defer s.wg.Done()
 	signals := make(chan os.Signal, 1)
 	signal.Notify(signals, os.Interrupt, syscall.SIGHUP, syscall.SIGTERM)
-	<-signals
+	select {
+	case <-s.ctx.Done():
+		return
+	case <-signals:
+		break
+	}
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
 	defer cancel()
 	if err := instance.Shutdown(ctx); err != nil {
@@ -111,6 +119,7 @@ func (s *Server) awaitShutdownSignalFor(instance *http.Server) {
 }
 
 func (s *Server) Shutdown(ctx context.Context) error {
+	s.cancl()
 	s.logger.Info("started gracefully shutdown of server ...")
 	if err := s.internalHTTPServer.Shutdown(ctx); err != nil {
 		return fmt.Errorf("go-serve: shutdown: %w", err)
