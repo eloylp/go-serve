@@ -1,15 +1,11 @@
-PROJECT_NAME := go-serve
 BINARY_NAME := go-serve
 VERSION := $(shell git describe --tags)
-GO_VERSION := 1.16.2
-GO_LINT_CI_VERSION := v1.37.1
-GO_LINT_CI_PATH := $(shell go env GOPATH)/bin
 TIME := $(shell date +%Y-%m-%dT%T%z)
 BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
 LDFLAGS=-ldflags "-s -w \
-		-X=github.com/eloylp/go-serve/server.Name=$(PROJECT_NAME) \
+		-X=github.com/eloylp/go-serve/server.Name=$(BINARY_NAME) \
 		-X=github.com/eloylp/go-serve/server.Version=$(VERSION) \
 		-X=github.com/eloylp/go-serve/server.Build=$(BUILD) \
 		-X=github.com/eloylp/go-serve/server.BuildTime=$(TIME)"
@@ -21,11 +17,10 @@ lint:
 	golangci-lint run -v
 lint-fix:
 	golangci-lint run -v --fix
-linter-install:
-	wget -O- -nv https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | sh -s -- -b $(GO_LINT_CI_PATH) $(GO_LINT_CI_VERSION)
+
 all: lint test build
 
-test: test-unit test-integration test-bench
+test: test-unit test-integration test-racy
 
 test-unit:
 	go test -race -v --tags="unit" ./...
@@ -33,15 +28,9 @@ test-integration:
 	go test -race -v --tags="integration" ./...
 test-racy:
 	go test -race -v --tags="racy" ./...
-test-bench:
-	go test -v -bench=. ./...
 build:
 	mkdir -p $(DIST_FOLDER)
 	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) -o $(BINARY_OUTPUT) ./cmd/server
 	@echo "Binary output at $(BINARY_OUTPUT)"
-build-docker:
-	docker run -e "CGO_ENABLED=0" --rm -v ${CURDIR}:/usr/src/code -w /usr/src/code golang:$(GO_VERSION) make build
-install:
-	go install
 clean:
 	rm -rf $(DIST_FOLDER)
