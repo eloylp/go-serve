@@ -30,10 +30,10 @@ jobs:
       - name: Run unit tests
         run: make test-unit
 
-      - name: Run unit tests
+      - name: Run integration tests
         run: make test-integration
 
-      - name: Run unit tests
+      - name: Run racy tests
         run: make test-racy
 
   publish:
