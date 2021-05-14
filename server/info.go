@@ -1,21 +1,11 @@
 package server
 
 var (
-	Name        string
-	Version     string
-	Build       string
-	BuildTime   string
-	Information Info
+	Name      string
+	Version   string
+	Build     string
+	BuildTime string
 )
-
-func init() {
-	Information = Info{
-		Name:      Name,
-		Version:   Version,
-		Build:     Build,
-		BuildTime: BuildTime,
-	}
-}
 
 type Info struct {
 	Name      string `json:"name"`

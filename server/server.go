@@ -39,7 +39,12 @@ func New(cfg *config.Settings) (*Server, error) {
 	if err != nil {
 		return nil, fmt.Errorf("go-serve: %w", err)
 	}
-	handler := router(cfg, logger, docRoot, Information)
+	handler := router(cfg, logger, docRoot, Info{
+		Name:      Name,
+		Version:   Version,
+		Build:     Build,
+		BuildTime: BuildTime,
+	})
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      handler,

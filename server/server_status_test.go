@@ -18,12 +18,6 @@ import (
 )
 
 func TestSeverStatusEndpoint(t *testing.T) {
-	server.Information = server.Info{
-		Name:      server.Name,
-		Version:   server.Version,
-		Build:     server.Build,
-		BuildTime: server.BuildTime,
-	}
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
