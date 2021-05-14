@@ -16,14 +16,14 @@ import (
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info Info) http.Handler {
 	r := mux.NewRouter()
 	var authReadCfg *middleware.AuthConfig
-	if cfg.ReadAuthorizations != nil {
+	if len(cfg.ReadAuthorizations) > 0 {
 		authReadCfg = middleware.NewAuthConfig().
 			WithAuth(middleware.Authorization(cfg.ReadAuthorizations)).
 			WithMethod(http.MethodGet).
 			WithPathRegex(".*")
 	}
 	var authWriteCfg *middleware.AuthConfig
-	if cfg.WriteAuthorizations != nil {
+	if len(cfg.WriteAuthorizations) > 0 {
 		authWriteCfg = middleware.NewAuthConfig().
 			WithAuth(middleware.Authorization(cfg.WriteAuthorizations)).
 			WithMethod(http.MethodPost).
