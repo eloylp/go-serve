@@ -46,7 +46,7 @@ func AssertNoProblemsInLogs(t *testing.T, logs string) {
 }
 
 func AssertStartupLogs(t *testing.T, logs string) {
-	assert.Contains(t, logs, "programName v1.0.0 af09 1988-01-21")
+	assert.Contains(t, logs, "go-serve v1.0.0 af09 1988-01-21")
 	assert.Contains(t, logs, "starting to serve")
 }
 
