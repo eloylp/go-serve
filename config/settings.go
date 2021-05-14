@@ -55,11 +55,13 @@ func defaultSettings() *Settings {
 			Format: "text",
 			Output: os.Stderr,
 		},
-		ReadTimeout:        5 * time.Second,
-		WriteTimeout:       25 * time.Second,
-		MetricsEnabled:     true,
-		MetricsPath:        "/metrics",
-		PrometheusRegistry: prometheus.NewRegistry(),
+		ReadTimeout:         5 * time.Second,
+		WriteTimeout:        25 * time.Second,
+		WriteAuthorizations: Authorization{},
+		ReadAuthorizations:  Authorization{},
+		MetricsEnabled:      true,
+		MetricsPath:         "/metrics",
+		PrometheusRegistry:  prometheus.NewRegistry(),
 	}
 	return s
 }
