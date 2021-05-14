@@ -10,6 +10,7 @@ LDFLAGS=-ldflags "-s -w \
 		-X=github.com/eloylp/go-serve/server.Build=$(BUILD) \
 		-X=github.com/eloylp/go-serve/server.BuildTime=$(TIME)"
 FLAGS=-trimpath
+TAGS=-tags timetzdata
 
 .DEFAULT_GOAL := build
 
@@ -30,7 +31,7 @@ test-racy:
 	go test -race -v --tags="racy" ./...
 build:
 	mkdir -p $(DIST_FOLDER)
-	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) -o $(BINARY_OUTPUT) ./cmd/server
+	CGO_ENABLED=0 go build $(FLAGS) $(LDFLAGS) $(TAGS) -o $(BINARY_OUTPUT) ./cmd/server
 	@echo "Binary output at $(BINARY_OUTPUT)"
 clean:
 	rm -rf $(DIST_FOLDER)
