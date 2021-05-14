@@ -1,8 +1,7 @@
-// Package handler covers all necessary stuff for
-// running HTTP server logic.
-package handler
+package server
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"path/filepath"
@@ -11,6 +10,19 @@ import (
 	"github.com/eloylp/kit/pathutil"
 	"github.com/sirupsen/logrus"
 )
+
+func StatusHandler(info Info) http.HandlerFunc {
+	type Status struct {
+		Status string `json:"status"`
+		Info   Info   `json:"info"`
+	}
+	return func(w http.ResponseWriter, r *http.Request) {
+		_ = json.NewEncoder(w).Encode(&Status{
+			Status: "ok",
+			Info:   info,
+		})
+	}
+}
 
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {

@@ -26,7 +26,7 @@ var sampleTARGZContent = func() []byte {
 }()
 
 func init() {
-	server.Name = "programName"
+	server.Name = "go-serve"
 	server.Version = "v1.0.0"
 	server.Build = "af09"
 	server.BuildTime = "1988-01-21"

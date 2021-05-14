@@ -11,10 +11,9 @@ import (
 	"github.com/sirupsen/logrus"
 
 	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/handler"
 )
 
-func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Handler {
+func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info Info) http.Handler {
 	r := mux.NewRouter()
 	var authReadCfg *middleware.AuthConfig
 	if cfg.ReadAuthorizations != nil {
@@ -37,6 +36,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 			Path(cfg.MetricsPath).
 			Handler(promhttp.HandlerFor(cfg.PrometheusRegistry, promhttp.HandlerOpts{}))
 	}
+	r.Methods(http.MethodGet).Path("/status").Handler(StatusHandler(info))
 	r.Use(
 		mux.MiddlewareFunc(middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version))),
 		mux.MiddlewareFunc(middleware.AuthChecker(authReadCfg)),
@@ -45,13 +45,13 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string) http.Ha
 	if cfg.DownloadEndpoint != "" {
 		r.Methods(http.MethodGet).
 			Path(cfg.DownloadEndpoint).
-			Handler(handler.DownloadTARGZHandler(logger, cfg.DocRoot)).
+			Handler(DownloadTARGZHandler(logger, cfg.DocRoot)).
 			Headers("Accept", "application/tar+gzip")
 	}
 	if cfg.UploadEndpoint != "" {
 		r.Methods(http.MethodPost).
 			Path(cfg.UploadEndpoint).
-			Handler(handler.UploadTARGZHandler(logger, cfg.DocRoot)).
+			Handler(UploadTARGZHandler(logger, cfg.DocRoot)).
 			Headers("Content-Type", "application/tar+gzip")
 	}
 	fileHandler := http.FileServer(http.Dir(docRoot))

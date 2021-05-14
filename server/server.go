@@ -17,13 +17,6 @@ import (
 	"github.com/eloylp/go-serve/config"
 )
 
-var (
-	Name      string
-	Version   string
-	Build     string
-	BuildTime string
-)
-
 type Server struct {
 	identity                     string
 	servingRoot                  string
@@ -46,7 +39,7 @@ func New(cfg *config.Settings) (*Server, error) {
 	if err != nil {
 		return nil, fmt.Errorf("go-serve: %w", err)
 	}
-	handler := router(cfg, logger, docRoot)
+	handler := router(cfg, logger, docRoot, Information)
 	s := &http.Server{
 		Addr:         cfg.ListenAddr,
 		Handler:      handler,
