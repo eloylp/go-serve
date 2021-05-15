@@ -2,10 +2,10 @@ before:
   hooks:
     - go mod download
 builds:
-
   - binary: go-serve
+    main: ./cmd/server/main.go
     ldflags:
-      - -s -w -X main.Name=go-serve -X main.Version={{.Version}} -X main.Build={{.ShortCommit}} -X main.BuildTime={{.Date}}
+      - -s -w -X main.Name=go-serve -X server.Version={{.Version}} -X server.Build={{.ShortCommit}} -X server.BuildTime={{.Date}}
     env:
       - CGO_ENABLED=0
     goos:
