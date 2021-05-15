@@ -1,9 +1,15 @@
+env:
+  - GO111MODULE=on
 before:
   hooks:
-    - go mod download
+    - go mod tidy
 builds:
   - binary: go-serve
     main: ./cmd/server/main.go
+    tags:
+      - timetzdata
+    flags:
+      - -trimpath
     ldflags:
       - -s -w -X main.Name=go-serve -X server.Version={{.Version}} -X server.Build={{.ShortCommit}} -X server.BuildTime={{.Date}}
     env:
