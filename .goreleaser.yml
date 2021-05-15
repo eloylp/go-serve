@@ -6,10 +6,9 @@ before:
 builds:
   - binary: go-serve
     main: ./cmd/server/main.go
-    tags:
-      - timetzdata
     flags:
       - -trimpath
+      - -tags=timetzdata
     ldflags:
       - -s -w -X main.Name=go-serve -X server.Version={{.Version}} -X server.Build={{.ShortCommit}} -X server.BuildTime={{.Date}}
     env:
