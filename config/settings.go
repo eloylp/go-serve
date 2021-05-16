@@ -17,7 +17,7 @@ type Settings struct {
 	Prefix                        string `default:"/"`
 	UploadEndpoint                string
 	DownloadEndpoint              string
-	ShutdownTimeout               time.Duration `default:"1s"`
+	ShutdownTimeout               time.Duration `default:"5s"`
 	Logger                        *LoggerSettings
 	ReadTimeout                   time.Duration `default:"0s"`
 	WriteTimeout                  time.Duration `default:"0s"`
