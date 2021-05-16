@@ -19,8 +19,8 @@ type Settings struct {
 	DownloadEndpoint              string
 	ShutdownTimeout               time.Duration `default:"1s"`
 	Logger                        *LoggerSettings
-	ReadTimeout                   time.Duration `default:"5s"`
-	WriteTimeout                  time.Duration `default:"25s"`
+	ReadTimeout                   time.Duration `default:"0s"`
+	WriteTimeout                  time.Duration `default:"0s"`
 	ReadAuthorizations            Authorization
 	WriteAuthorizations           Authorization
 	PrometheusRegistry            *prometheus.Registry
@@ -55,8 +55,8 @@ func defaultSettings() *Settings {
 			Format: "text",
 			Output: os.Stderr,
 		},
-		ReadTimeout:         5 * time.Second,
-		WriteTimeout:        25 * time.Second,
+		ReadTimeout:         0,
+		WriteTimeout:        0,
 		WriteAuthorizations: Authorization{},
 		ReadAuthorizations:  Authorization{},
 		MetricsEnabled:      true,
