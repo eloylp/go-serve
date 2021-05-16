@@ -1,59 +1,163 @@
-# go-serve
+# Go Serve
 
-HTTP server for serving local files to the network simply.
+Just a static HTTP server with some vitamins.
 
-### Motivation
+## Table of contents
 
-- Simple design (only makes use of Go std lib) and easy configuration
-- Low memory footprint
-- Low startup and shutdown times
-- Share files among machines easily
-- Share files on embedded devices (like routers)
-- Static web server for applications
-- Artifact or assets server for CI/CD pipelines
+1. [Main features](#main-features)
+2. [Binary distributions](#binary-distributions)
+3. [Docker images](#docker-images)
+4. [Use cases](#use-cases)
+   1. [Upload tar.gz file](#upload-targz-file)
+   2. [File download](#ordinary-file-download)
+   3. [Download a directory](#download-a-directory)
+5. [Configuration](#configuration)
+   1. [Setting up authorization](#setting-up-authorization)
+6. [Prometheus metrics](#prometheus-metrics)
+7. [The status endpoint](#the-status-endpoint)
+8. [Contributing](./CONTRIBUTING.md)
 
-### How to install
+### Main features
 
-You can go to the [releases](https://github.com/eloylp/go-serve/releases/latest) page for specific OS and 
-architecture requirements and download binaries.
+* Serve specified folder via the HTTP protocol.
+* Add users authorization for `READ` and `WRITE` operations independently.
+* Upload `tar.gz` files and deploy them under the specified path in the document root.
+* Download folders and files of your document root using `tar.gz` files as archive.
+* Basic Prometheus metrics out of the box.
+* Option to serve metrics on an alternative port.
+* Status endpoint.
+
+### Binary distributions
+
+You can go to the [releases](https://github.com/eloylp/go-serve/releases/latest) page for specific OS and architecture requirements and
+download binaries.
 
 An example install for a Linux machine could be:
+
 ```bash
-sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v1.3.1/go-serve_1.3.1_Linux_x86_64" \
+sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v2.0.0/go-serve_2.0.0_Linux_x86_64" \
 -o /usr/local/bin/go-serve \
 && sudo chmod +x /usr/local/bin/go-serve
 ```
 
-### How to use it
+Environment vars are the chosen method for configuration. See this section for more info about [configuration](#configuration).
 
-By default, "go-serve" command will serve the current working dir as 
-its document root and serve its content in all interfaces on port 8080.
+### Docker images
+
+There's an available docker image at [eloylp/go-serve](https://hub.docker.com/r/eloylp/go-serve) docker hub repository. You can get a
+functional server, serving the current content root just by:
 
 ```bash
-$ cd ~
-$ go-serve
-go-serve v1.3.1
-2019/09/02 18:45:02 Starting to serve /home/user at 0.0.0.0:8080 ...
+docker run --rm \
+ -e GOSERVE_DOCROOT=/mnt/data \
+ -p 8080:8080 \
+ -v $(pwd):/mnt/data \
+  eloylp/goserve
 ```
 
-Of course, you can customize these parameters as in this full example:
-```bash
-$ go-serve -l 0.0.0.0:3000 -d /tmp -p /assets
-go-serve v1.3.1
-2019/09/02 18:47:02 Starting to serve /tmp at 0.0.0.0:3000 ...
-```
-**Note that the last option is the prefix from where the files will be served.**
+As you may notice, environment vars are the chosen method for configuration. See this section for more info
+about [configuration](#configuration).
 
-#### Basic Authorization
-If you need to protect your server with a basic authorization https://tools.ietf.org/html/rfc7617, 
-you need to create an .htpasswd file as the following example:
-```bash
-htpasswd -c users-db user
-go-serve -a users-db
-```
-**The server will watch this file for hot reload**
+### Use cases
 
-### How to run tests
+This section will explain some common use cases that are currently covered by Go Serve.
+
+#### Upload tar.gz file
+
+You can upload files to the document root of the server at runtime. Just create your tar.gz and push it to the designated **upload
+endpoint**. Read how to configure such endpoint in the [configuration](#configuration) section.
+
 ```bash
-go test ./...
+curl -X POST --location "http://localhost:8080/upload" \
+    -H "GoServe-Deploy-Path: /v1.2.3" \
+    -H "Content-Type: application/tar+gzip" \
+    -d @tests/doc-root.tar.gz
 ```
+
+The `GoServe-Deploy-Path` value its always relative to the document root.
+
+#### Ordinary file download
+
+Once service is up and running, you can fetch resources as usual you will do with any HTTP server:
+
+```bash
+curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
+    --output ./gnu.png
+```
+
+#### Download a directory
+
+You can download a directory by just fetching the **download endpoint** and requesting the server what type of archive you would like to get. Currently, only `tar.gz` is supported. Read how to configure such endpoint in the [configuration](#configuration) section:
+
+```bash
+curl -X GET --location "http://localhost:8080/download" \
+    -H "GoServe-Download-Path: /v1.2.3" \
+    -H "Accept: application/tar+gzip" \
+    --output ./v1.2.4.tar.gz
+```
+
+The `GoServe-Download-Path` value its always relative to the document root.
+
+### Configuration
+
+Go serve uses environment variables to configure its internals. Here is a table of the current customizable parts of the server:
+
+
+
+| Variable                              | Description                                                  | Default                                           |
+| ------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------- |
+| GOSERVE_LISTENADDR                    | The socket where the server will listen for connections.     | "0.0.0.0:8080"                                    |
+| GOSERVE_DOCROOT                       | Path to the  document root we are going to serve.            | "."                                               |
+| GOSERVE_PREFIX                        | The prefix path under all files will be served. In some cases the value is "/static" when using the same domain of a client application. | "/"                                               |
+| GOSERVE_UPLOADENDPOINT                | The path in the server where all uploads will take place. If not defined, it will be disabled. By default is **disabled** . | ""                                                |
+| GOSERVE_DOWNLOADENDPOINT              | The path in the server where all downloads will take place. If not defined, it will be disabled. By default is **disabled** . | ""                                                |
+| GOSERVE_SHUTDOWNTIMEOUT               | The number of seconds that the server will wait to terminate pending active connections before closing. | "5s"                                              |
+| GOSERVE_READTIMEOUT                   | The maximum duration for reading the entire request, including the body. Default is **unlimited**. | "0s"                                              |
+| GOSERVE_WRITETIMEOUT                  | The maximum duration before timing out writes of the response. Default is **unlimited**. | "0s"                                              |
+| GOSERVE_READAUTHORIZATIONS            | Configures which users are allowed to make idempotent requests to the server. It expects a **base64** string containing a users table generated by the **htpasswd** utility. By default, read authorization is **disabled** so all users can read the entire server. See [read authorization](#read-athorization) for more details. | ""                                                |
+| GOSERVE_WRITEAUTHORIZATIONS           | Configures which users are allowed to make  *non* idempotent requests to the server. It expects a **base64** string containing a users table generated by the **htpasswd** utility. By default, write authorization is **disabled** so unauthorized users can upload files if the  **GOSERVE_UPLOADENDPOINT** variable is defined. See [write authorization](#write-athorization) for more details. | ""                                                |
+| GOSERVE_METRICSENABLED                | Configures if the Prometheus metrics are enabled or disabled. | true                                              |
+| GOSERVE_METRICSPATH                   | Configures in which endpoint the metrics should be served. This can help to hide the metrics endpoint by introducing a more complicated path that only systems will know. | "/metrics"                                        |
+| GOSERVE_METRICSALTERNATIVELISTENADDR  | If configured, another sidecar server will be configured exclusively for serving metrics. This is **disabled** by default. An example of value could be: "0.0.0.0:9091" . | ""                                                |
+| GOSERVE_METRICSREQUESTDURATIONBUCKETS | Default metrics on this server is a histogram of request duration time. Here a user can customize the buckets where distribution ranges are going to be defined. | "0.005,0.01,0.025, 0.05,0.1,0.25,0.5, 1,2.5,5,10" |
+
+#### Setting up authorization
+
+Both type of authorizations, *GOSERVE_READAUTHORIZATIONS* and  *GOSERVE_WRITEAUTHORIZATIONS* are configured in the same manner. Those variables expects a **base64** encoded file generated by the tool [**htpasswd**](https://httpd.apache.org/docs/2.4/programs/htpasswd.html) . The passwords must be encrypted by using the **bcrypt** algorithm. The following is an example for creating such value for the user "alice" with password "password":
+
+```bash
+$ htpasswd -B -c auth.txt alice
+New password: password           ## note this is an interactive step
+Re-type new password: password   ## note this is an interactive step
+Adding password for user alice
+
+$ cat auth.txt  ## Check the content of the file
+alice:$2y$05$039J5egx9S9ayeGQTYQ5nex3SmMuXho7oXbIMInW9EX9UIywjIJJa
+
+## Create the needed value for GOSERVE_READAUTHORIZATIONS or GOSERVE_WRITEAUTHORIZATIONS
+$ cat auth.txt | base64
+YWxpY2U6JDJ5JDA1JDAzOUo1ZWd4OVM5YXllR1FUWVE1bmV4M1NtTXVYaG83b1hiSU1Jblc5RVg5
+VUl5d2pJSkphCg==
+```
+
+Once the file is created following the above steps, we can also add more users with the following command and continue with the same previous steps.
+
+```bash
+htpasswd -B auth.txt bob
+```
+
+F.A.Q: In [Kubernetes secrets](https://kubernetes.io/es/docs/concepts/configuration/secret/) you need to double encode in base64 the value, as Kubernetes requires to wrap all the secrets in this encoding.
+
+#### Using authorization in requests
+
+The authorization frontend in compatible with [rfc7617]( https://tools.ietf.org/html/rfc7617) basic authorization scheme. This is an example from a curl request:
+
+```bash
+curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
+    --basic --user alice:password \
+    --output ./gnu.png
+```
+
+### Prometheus metrics
+
+By default this server provides basic Prometheus metrics. It includes an [histogram](https://prometheus.io/docs/practices/histograms/) that represents the request duration in seconds. By default you can scrape this metrics at `/metrics` once the server was started.  It is possible to have a sidecar HTTP server dedicated to metrics. See the [configuration](#configuration) section for more details.
