@@ -24,7 +24,7 @@ Just a static HTTP server with some vitamins.
 * Upload `tar.gz` files and deploy them under the specified path in the document root.
 * Download folders and files of your document root using `tar.gz` files as archive.
 * Basic Prometheus metrics out of the box.
-* Option to serve metrics on an alternative port.
+* Optionally serve metrics on an alternative port.
 * Status endpoint.
 
 ### Binary distributions
@@ -178,3 +178,8 @@ curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
 By default this server provides basic Prometheus metrics. It includes an [histogram](https://prometheus.io/docs/practices/histograms/) that
 represents the request duration in seconds. By default you can scrape this metrics at `/metrics` once the server was started. It is possible
 to have a sidecar HTTP server dedicated to metrics. See the [configuration](#configuration) section for more details.
+
+
+* metrics are counting status endpoint
+* metrics are not showing go process data. Make it optional??
+* metrics add error metrics
