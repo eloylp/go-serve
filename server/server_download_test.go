@@ -9,9 +9,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"

@@ -9,8 +9,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
@@ -29,7 +29,7 @@ func TestSeverIdentity(t *testing.T) {
 	defer s.Shutdown(context.Background())
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	resp, err := http.Get(HTTPAddress)
+	resp, err := http.Get(HTTPAddressStatic)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)

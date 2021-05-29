@@ -14,7 +14,7 @@ import (
 type Settings struct {
 	ListenAddr                    string `default:"0.0.0.0:8080"`
 	DocRoot                       string `required:"."`
-	Prefix                        string `default:"/"`
+	Prefix                        string `default:"/static"`
 	UploadEndpoint                string
 	DownloadEndpoint              string
 	ShutdownTimeout               time.Duration `default:"5s"`
@@ -48,7 +48,7 @@ func defaultSettings() *Settings {
 	s := &Settings{
 		ListenAddr:      "0.0.0.0:8080",
 		DocRoot:         ".",
-		Prefix:          "/",
+		Prefix:          "/static",
 		ShutdownTimeout: time.Second,
 		Logger: &LoggerSettings{
 			Level:  logrus.InfoLevel.String(),

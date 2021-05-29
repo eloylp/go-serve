@@ -6,10 +6,12 @@ import (
 	"net/http"
 	"path/filepath"
 
-	"github.com/eloylp/kit/archive"
-	"github.com/eloylp/kit/pathutil"
 	"github.com/sirupsen/logrus"
+	"go.eloylp.dev/kit/archive"
+	"go.eloylp.dev/kit/pathutil"
 )
+
+const ContentTypeTarGzip = "application/tar+gzip"
 
 func StatusHandler(info Info) http.HandlerFunc {
 	type Status struct {
@@ -26,6 +28,10 @@ func StatusHandler(info Info) http.HandlerFunc {
 
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Content-Type") != ContentTypeTarGzip {
+			http.NotFound(w, r)
+			return
+		}
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
 		if err := pathutil.PathInRoot(docRoot, path); err != nil {
@@ -47,6 +53,10 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 
 func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		if r.Header.Get("Accept") != ContentTypeTarGzip {
+			http.NotFound(w, r)
+			return
+		}
 		downloadRelativePath := r.Header.Get("GoServe-Download-Path")
 		downloadAbsolutePath := filepath.Join(root, downloadRelativePath)
 		if err := pathutil.PathInRoot(root, downloadAbsolutePath); err != nil {

@@ -8,8 +8,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
@@ -21,7 +21,6 @@ func TestServingContentDefaults(t *testing.T) {
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
 			config.WithDocRoot(DocRoot),
-			config.WithDocRootPrefix("/"),
 			config.WithLoggerOutput(logBuff),
 		),
 	)
@@ -30,7 +29,7 @@ func TestServingContentDefaults(t *testing.T) {
 
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	data := BodyFrom(t, HTTPAddress+"/tux.png")
+	data := BodyFrom(t, HTTPAddressStatic+"/tux.png")
 	assert.Equal(t, TuxTestFileMD5, md5From(data), "got body: %s", data)
 	err = s.Shutdown(context.Background())
 	assert.NoError(t, err)

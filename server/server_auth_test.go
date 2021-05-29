@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
@@ -36,7 +36,7 @@ func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress, nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
 	req.SetBasicAuth("user", "password")
 	resp, err := http.DefaultClient.Do(req)
@@ -60,7 +60,7 @@ func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
 
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress, nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
 	resp, err := http.DefaultClient.Do(req)
 	assert.NoError(t, err)
@@ -83,7 +83,7 @@ func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
 
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress, nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
 	req.SetBasicAuth("user", "bad-password")
 	resp, err := http.DefaultClient.Do(req)

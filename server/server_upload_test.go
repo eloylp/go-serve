@@ -11,9 +11,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
@@ -59,16 +59,16 @@ func TestTARGZUpload(t *testing.T) {
 	assert.Equal(t, expectedSuccessMessage, string(data))
 
 	// Check that files are served correctly.
-	tux := BodyFrom(t, HTTPAddress+"/sub-root/test/tux.png")
+	tux := BodyFrom(t, HTTPAddressStatic+"/sub-root/test/tux.png")
 	assert.Equal(t, TuxTestFileMD5, md5From(tux), "got body: %s", tux)
 
-	gnu := BodyFrom(t, HTTPAddress+"/sub-root/test/gnu.png")
+	gnu := BodyFrom(t, HTTPAddressStatic+"/sub-root/test/gnu.png")
 	assert.Equal(t, GnuTestFileMD5, md5From(gnu), "got body: %s", gnu)
 
-	notes := BodyFrom(t, HTTPAddress+"/sub-root/test/notes/notes.txt")
+	notes := BodyFrom(t, HTTPAddressStatic+"/sub-root/test/notes/notes.txt")
 	assert.Equal(t, NotesTestFileMD5, md5From(notes), "got body: %s", notes)
 
-	subNotes := BodyFrom(t, HTTPAddress+"/sub-root/test/notes/subnotes/notes.txt")
+	subNotes := BodyFrom(t, HTTPAddressStatic+"/sub-root/test/notes/subnotes/notes.txt")
 	assert.Equal(t, SubNotesTestFileMD5, md5From(subNotes), "got body: %s", notes)
 	s.Shutdown(context.Background()) // Force shutdown here in order to avoid data race with the logger buffer
 	assert.Contains(t, logBuff.String(), expectedSuccessMessage)

@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/eloylp/kit/test"
 	"github.com/stretchr/testify/assert"
+	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
 	"github.com/eloylp/go-serve/server"
@@ -50,7 +50,7 @@ func TestMetricsAreObserving(t *testing.T) {
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Make a request.
-	resp, err := http.Get(HTTPAddress + "/")
+	resp, err := http.Get(HTTPAddressStatic)
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 
