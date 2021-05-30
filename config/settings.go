@@ -45,6 +45,8 @@ func FromEnv() (*Settings, error) {
 }
 
 func defaultSettings() *Settings {
+	promRegistry := prometheus.NewRegistry()
+	promRegistry.MustRegister(prometheus.NewGoCollector())
 	s := &Settings{
 		ListenAddr:      "0.0.0.0:8080",
 		DocRoot:         ".",
@@ -61,7 +63,7 @@ func defaultSettings() *Settings {
 		ReadAuthorizations:  Authorization{},
 		MetricsEnabled:      true,
 		MetricsPath:         "/metrics",
-		PrometheusRegistry:  prometheus.NewRegistry(),
+		PrometheusRegistry:  promRegistry,
 	}
 	return s
 }
