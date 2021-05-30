@@ -69,7 +69,7 @@ func (s *Server) ListenAndServe() error {
 	s.wg.Add(1)
 	s.logger.Info(s.identity)
 	s.logger.Infof("starting to serve %s at %s ...", s.servingRoot, s.cfg.ListenAddr)
-	if s.cfg.MetricsEnabled && s.cfg.MetricsAlternativeListenAddr != "" {
+	if s.cfg.MetricsEnabled && s.cfg.MetricsListenAddr != "" {
 		s.startAlternateMetricsServer()
 	}
 	go s.awaitShutdownSignalFor(s.internalHTTPServer)
@@ -82,13 +82,13 @@ func (s *Server) ListenAndServe() error {
 
 func (s *Server) startAlternateMetricsServer() {
 	s.wg.Add(1)
-	s.logger.Infof("starting to serve metrics at %s ...", s.cfg.MetricsAlternativeListenAddr)
+	s.logger.Infof("starting to serve metrics at %s ...", s.cfg.MetricsListenAddr)
 	h := promhttp.HandlerFor(s.cfg.PrometheusRegistry, promhttp.HandlerOpts{})
 	mux := http.NewServeMux()
 	mux.Handle(s.cfg.MetricsPath, h)
 	s.alternativeMetricsHTTPServer = &http.Server{
 		Handler: mux,
-		Addr:    s.cfg.MetricsAlternativeListenAddr,
+		Addr:    s.cfg.MetricsListenAddr,
 	}
 	go s.awaitShutdownSignalFor(s.alternativeMetricsHTTPServer)
 	go func() {
@@ -122,7 +122,7 @@ func (s *Server) Shutdown(ctx context.Context) error {
 	if err := s.internalHTTPServer.Shutdown(ctx); err != nil {
 		return fmt.Errorf("go-serve: shutdown: %w", err)
 	}
-	if s.cfg.MetricsEnabled && s.cfg.MetricsAlternativeListenAddr != "" {
+	if s.cfg.MetricsEnabled && s.cfg.MetricsListenAddr != "" {
 		if err := s.alternativeMetricsHTTPServer.Shutdown(ctx); err != nil {
 			return fmt.Errorf("go-serve: metrics: shutdown: %w", err)
 		}

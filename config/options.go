@@ -103,7 +103,7 @@ func WithPrometheusRegistry(r *prometheus.Registry) Option {
 
 func WithMetricsAlternativeListenAddr(addr string) Option {
 	return func(cfg *Settings) {
-		cfg.MetricsAlternativeListenAddr = addr
+		cfg.MetricsListenAddr = addr
 	}
 }
 

@@ -29,7 +29,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
 	}
 	var userMiddlewares []middleware.Middleware
-	if cfg.MetricsEnabled && cfg.MetricsAlternativeListenAddr == "" {
+	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
 		observer := middleware.RequestDurationObserver("goserve", cfg.PrometheusRegistry, cfg.MetricsRequestDurationBuckets)
 		userMiddlewares = append(userMiddlewares, observer)
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.HandlerFor(cfg.PrometheusRegistry, promhttp.HandlerOpts{}))

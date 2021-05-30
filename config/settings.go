@@ -12,22 +12,22 @@ import (
 )
 
 type Settings struct {
-	ListenAddr                    string `default:"0.0.0.0:8080"`
-	DocRoot                       string `required:"."`
-	Prefix                        string `default:"/static"`
-	UploadEndpoint                string
-	DownloadEndpoint              string
-	ShutdownTimeout               time.Duration `default:"5s"`
-	Logger                        *LoggerSettings
-	ReadTimeout                   time.Duration `default:"0s"`
-	WriteTimeout                  time.Duration `default:"0s"`
-	ReadAuthorizations            Authorization
-	WriteAuthorizations           Authorization
+	ListenAddr                    string          `default:"0.0.0.0:8080" split_words:"true"`
+	DocRoot                       string          `required:"." split_words:"true"`
+	Prefix                        string          `default:"/static" split_words:"true"`
+	UploadEndpoint                string          `split_words:"true"`
+	DownloadEndpoint              string          `split_words:"true"`
+	ShutdownTimeout               time.Duration   `default:"5s" split_words:"true"`
+	Logger                        *LoggerSettings `split_words:"true"`
+	ReadTimeout                   time.Duration   `default:"0s" split_words:"true"`
+	WriteTimeout                  time.Duration   `default:"0s" split_words:"true"`
+	ReadAuthorizations            Authorization   `split_words:"true"`
+	WriteAuthorizations           Authorization   `split_words:"true"`
 	PrometheusRegistry            *prometheus.Registry
-	MetricsEnabled                bool   `default:"true"`
-	MetricsPath                   string `default:"/metrics"`
-	MetricsAlternativeListenAddr  string
-	MetricsRequestDurationBuckets []float64
+	MetricsEnabled                bool      `default:"true" split_words:"true"`
+	MetricsPath                   string    `default:"/metrics" split_words:"true"`
+	MetricsListenAddr             string    `split_words:"true"`
+	MetricsRequestDurationBuckets []float64 `split_words:"true"`
 }
 
 type LoggerSettings struct {
