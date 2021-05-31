@@ -2,6 +2,11 @@
 
 Just a static HTTP server with some vitamins.
 
+<img src="art/gopher.png" alt="go-serve" width="300"/>
+
+<span style="color:silver;float:right">From the original gopher by Renee French.
+</span>
+
 ## Table of contents
 
 1. [Main features](#main-features)
