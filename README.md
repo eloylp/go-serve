@@ -1,13 +1,12 @@
 # Go Serve
 
-Just a static HTTP server with some vitamins.
+Just a static HTTP server with some vitamins.	
 <p align="center">
 <img src="art/gopher.png" alt="go-serve" width="300"/>
 </p>
 
-<p align="right">
-<span style="color:silver">From the original gopher by Renee French.
-</span>
+<p align="right" style="color:silver">
+From the original gopher by Renee French.
 </p>
 
 ## Table of contents
