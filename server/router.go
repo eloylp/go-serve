@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
+	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/http/middleware"
@@ -30,9 +31,9 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
-		observer := middleware.RequestDurationObserver("goserve", cfg.PrometheusRegistry, cfg.MetricsRequestDurationBuckets)
+		observer := middleware.RequestDurationObserver("", prometheus.DefaultRegisterer, cfg.MetricsRequestDurationBuckets)
 		userMiddlewares = append(userMiddlewares, observer)
-		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.HandlerFor(cfg.PrometheusRegistry, promhttp.HandlerOpts{}))
+		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
 	}
 	userMiddlewares = append(userMiddlewares,
 		middleware.RequestLogger(logger),

@@ -22,6 +22,7 @@ var testUserCredentials = map[string]string{
 }
 
 func TestReadAuthorizedUserIsAccepted(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -46,6 +47,7 @@ func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 }
 
 func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -69,6 +71,7 @@ func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
 }
 
 func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -93,6 +96,7 @@ func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
 }
 
 func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -119,6 +123,7 @@ func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
 }
 
 func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -145,6 +150,7 @@ func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
 }
 
 func TestWriteBadlyAuthorizedUserIsRefused(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),

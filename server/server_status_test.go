@@ -4,13 +4,13 @@ package server_test
 
 import (
 	"context"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"testing"
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
@@ -18,6 +18,7 @@ import (
 )
 
 func TestSeverStatusEndpoint(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),

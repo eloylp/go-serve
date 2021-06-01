@@ -83,7 +83,7 @@ func (s *Server) ListenAndServe() error {
 func (s *Server) startAlternateMetricsServer() {
 	s.wg.Add(1)
 	s.logger.Infof("starting to serve metrics at %s ...", s.cfg.MetricsListenAddr)
-	h := promhttp.HandlerFor(s.cfg.PrometheusRegistry, promhttp.HandlerOpts{})
+	h := promhttp.Handler()
 	mux := http.NewServeMux()
 	mux.Handle(s.cfg.MetricsPath, h)
 	s.alternativeMetricsHTTPServer = &http.Server{

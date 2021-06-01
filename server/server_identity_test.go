@@ -17,6 +17,7 @@ import (
 )
 
 func TestSeverIdentity(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),

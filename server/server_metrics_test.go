@@ -18,6 +18,7 @@ import (
 )
 
 func TestMetricsAreServedByDefault(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -37,6 +38,7 @@ func TestMetricsAreServedByDefault(t *testing.T) {
 }
 
 func TestMetricsAreObserving(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -61,10 +63,11 @@ func TestMetricsAreObserving(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	metrics := string(body)
-	assert.Contains(t, metrics, "goserve_http_request_duration_seconds_count 1")
+	assert.Contains(t, metrics, "http_request_duration_seconds_count 1")
 }
 
 func TestMetricsCanBeDisabled(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -89,6 +92,7 @@ func AssertDefaultMetricsPathConfigured(t *testing.T) {
 }
 
 func TestMetricsCanBeServedOnAlternativePort(t *testing.T) {
+	BeforeEach(t)
 	loggerOutput := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(
@@ -113,6 +117,7 @@ func TestMetricsCanBeServedOnAlternativePort(t *testing.T) {
 }
 
 func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),
@@ -135,12 +140,13 @@ func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
 	assert.NoError(t, err)
 	metrics := string(data)
 
-	assert.Contains(t, metrics, "goserve_http_request_duration_seconds_bucket{le=\"0.1\"} 0")
-	assert.Contains(t, metrics, "goserve_http_request_duration_seconds_bucket{le=\"0.5\"} 0")
-	assert.Contains(t, metrics, "goserve_http_request_duration_seconds_bucket{le=\"1\"} 0")
+	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"0.1\"} 0")
+	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"0.5\"} 0")
+	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"1\"} 0")
 }
 
 func TestMetricsCanBeServedAlternativePath(t *testing.T) {
+	BeforeEach(t)
 	s, err := server.New(
 		config.ForOptions(
 			config.WithListenAddr(ListenAddress),

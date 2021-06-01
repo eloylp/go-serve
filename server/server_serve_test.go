@@ -16,6 +16,7 @@ import (
 )
 
 func TestServingContentDefaults(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(
@@ -40,6 +41,7 @@ func TestServingContentDefaults(t *testing.T) {
 }
 
 func TestServingContentAlternatePath(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(

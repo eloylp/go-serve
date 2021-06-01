@@ -18,6 +18,7 @@ import (
 )
 
 func TestTARGZDownload(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	testDocRoot := t.TempDir()
 	s, err := server.New(
@@ -59,6 +60,7 @@ func TestTARGZDownload(t *testing.T) {
 }
 
 func TestTARGZDownloadForSingleFile(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	testDocRoot := t.TempDir()
 	s, err := server.New(
@@ -97,6 +99,7 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 }
 
 func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(

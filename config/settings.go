@@ -7,7 +7,6 @@ import (
 	"time"
 
 	"github.com/kelseyhightower/envconfig"
-	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
 )
 
@@ -23,11 +22,10 @@ type Settings struct {
 	WriteTimeout                  time.Duration   `default:"0s" split_words:"true"`
 	ReadAuthorizations            Authorization   `split_words:"true"`
 	WriteAuthorizations           Authorization   `split_words:"true"`
-	PrometheusRegistry            *prometheus.Registry
-	MetricsEnabled                bool      `default:"true" split_words:"true"`
-	MetricsPath                   string    `default:"/metrics" split_words:"true"`
-	MetricsListenAddr             string    `split_words:"true"`
-	MetricsRequestDurationBuckets []float64 `split_words:"true"`
+	MetricsEnabled                bool            `default:"true" split_words:"true"`
+	MetricsPath                   string          `default:"/metrics" split_words:"true"`
+	MetricsListenAddr             string          `split_words:"true"`
+	MetricsRequestDurationBuckets []float64       `split_words:"true"`
 }
 
 type LoggerSettings struct {
@@ -45,8 +43,6 @@ func FromEnv() (*Settings, error) {
 }
 
 func defaultSettings() *Settings {
-	promRegistry := prometheus.NewRegistry()
-	promRegistry.MustRegister(prometheus.NewGoCollector())
 	s := &Settings{
 		ListenAddr:      "0.0.0.0:8080",
 		DocRoot:         ".",
@@ -63,7 +59,6 @@ func defaultSettings() *Settings {
 		ReadAuthorizations:  Authorization{},
 		MetricsEnabled:      true,
 		MetricsPath:         "/metrics",
-		PrometheusRegistry:  promRegistry,
 	}
 	return s
 }

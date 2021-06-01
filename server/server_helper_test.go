@@ -8,7 +8,15 @@ import (
 	"io/ioutil"
 	"net/http"
 	"testing"
+
+	"github.com/prometheus/client_golang/prometheus"
 )
+
+func BeforeEach(t *testing.T) {
+	registry := prometheus.NewRegistry()
+	prometheus.DefaultRegisterer = registry
+	prometheus.DefaultGatherer = registry
+}
 
 func BodyFrom(t *testing.T, url string) []byte {
 	resp, err := http.Get(url)

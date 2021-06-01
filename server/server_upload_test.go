@@ -20,6 +20,7 @@ import (
 )
 
 func TestTARGZUpload(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(
@@ -75,6 +76,7 @@ func TestTARGZUpload(t *testing.T) {
 }
 
 func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
+	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
 		config.ForOptions(

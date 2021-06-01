@@ -3,8 +3,6 @@ package config
 import (
 	"io"
 	"time"
-
-	"github.com/prometheus/client_golang/prometheus"
 )
 
 type Option func(cfg *Settings)
@@ -92,12 +90,6 @@ func WithWriteAuthorizations(auth Authorization) Option {
 func WithMetricsEnabled(enabled bool) Option {
 	return func(cfg *Settings) {
 		cfg.MetricsEnabled = enabled
-	}
-}
-
-func WithPrometheusRegistry(r *prometheus.Registry) Option {
-	return func(cfg *Settings) {
-		cfg.PrometheusRegistry = r
 	}
 }
 
