@@ -31,7 +31,12 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
-		observer := middleware.RequestDurationObserver("", prometheus.DefaultRegisterer, cfg.MetricsRequestDurationBuckets)
+		observer := middleware.RequestDurationObserver(
+			"",
+			prometheus.DefaultRegisterer,
+			cfg.MetricsRequestDurationBuckets,
+			configureEndpointMapper(cfg),
+		)
 		userMiddlewares = append(userMiddlewares, observer)
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
 	}
@@ -54,4 +59,16 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 		middleware.InFrontOf(fileHandler, userMiddlewares...).ServeHTTP(w, r)
 	})
 	return r
+}
+
+func configureEndpointMapper(cfg *config.Settings) *endpointMapper {
+	em := newEndpointMapper()
+	em.Declare(cfg.Prefix, cfg.Prefix)
+	if cfg.UploadEndpoint != "" {
+		em.Declare(cfg.UploadEndpoint, cfg.UploadEndpoint)
+	}
+	if cfg.DownloadEndpoint != "" {
+		em.Declare(cfg.DownloadEndpoint, cfg.DownloadEndpoint)
+	}
+	return em
 }

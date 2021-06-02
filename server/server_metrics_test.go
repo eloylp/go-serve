@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
@@ -63,7 +64,7 @@ func TestMetricsAreObserving(t *testing.T) {
 	body, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
 	metrics := string(body)
-	assert.Contains(t, metrics, "http_request_duration_seconds_count 1")
+	assert.Contains(t, metrics, `http_request_duration_seconds_count{code="200",endpoint="/static",method="GET"} 1`)
 }
 
 func TestMetricsCanBeDisabled(t *testing.T) {
@@ -131,7 +132,12 @@ func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
 	defer s.Shutdown(context.Background())
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
-	resp, err := http.Get(HTTPAddress + "/metrics")
+	// Make a request.
+	resp, err := http.Get(HTTPAddressStatic)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	resp, err = http.Get(HTTPAddress + "/metrics")
 	assert.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
@@ -140,9 +146,9 @@ func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
 	assert.NoError(t, err)
 	metrics := string(data)
 
-	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"0.1\"} 0")
-	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"0.5\"} 0")
-	assert.Contains(t, metrics, "http_request_duration_seconds_bucket{le=\"1\"} 0")
+	assert.Contains(t, metrics, `http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.1"} 1`)
+	assert.Contains(t, metrics, `http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.5"} 1`)
+	assert.Contains(t, metrics, `http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="1"} 1`)
 }
 
 func TestMetricsCanBeServedAlternativePath(t *testing.T) {
