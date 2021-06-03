@@ -11,7 +11,7 @@ require (
 	github.com/prometheus/common v0.25.0 // indirect
 	github.com/sirupsen/logrus v1.8.1
 	github.com/stretchr/testify v1.5.1
-	go.eloylp.dev/kit v0.0.0-20210602185435-c5e5824fc9dd
+	go.eloylp.dev/kit v0.0.0-20210602220629-14c7e5439cfd
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
 	golang.org/x/sys v0.0.0-20210601080250-7ecdf8ef093b // indirect
 )

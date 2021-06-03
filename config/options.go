@@ -110,3 +110,9 @@ func WithMetricsRequestDurationBuckets(buckets []float64) Option {
 		cfg.MetricsRequestDurationBuckets = buckets
 	}
 }
+
+func WithMetricsSizeBuckets(buckets []float64) Option {
+	return func(cfg *Settings) {
+		cfg.MetricsSizeBuckets = buckets
+	}
+}

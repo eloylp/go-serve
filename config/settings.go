@@ -26,6 +26,7 @@ type Settings struct {
 	MetricsPath                   string          `default:"/metrics" split_words:"true"`
 	MetricsListenAddr             string          `split_words:"true"`
 	MetricsRequestDurationBuckets []float64       `split_words:"true"`
+	MetricsSizeBuckets            []float64       `split_words:"true"`
 }
 
 type LoggerSettings struct {
@@ -53,12 +54,14 @@ func defaultSettings() *Settings {
 			Format: "text",
 			Output: os.Stderr,
 		},
-		ReadTimeout:         0,
-		WriteTimeout:        0,
-		WriteAuthorizations: Authorization{},
-		ReadAuthorizations:  Authorization{},
-		MetricsEnabled:      true,
-		MetricsPath:         "/metrics",
+		ReadTimeout:                   0,
+		WriteTimeout:                  0,
+		WriteAuthorizations:           Authorization{},
+		ReadAuthorizations:            Authorization{},
+		MetricsEnabled:                true,
+		MetricsPath:                   "/metrics",
+		MetricsRequestDurationBuckets: []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10},
+		MetricsSizeBuckets:            []float64{1_000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 2_000_000, 4_000_000, 8_000_000},
 	}
 	return s
 }

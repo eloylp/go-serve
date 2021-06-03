@@ -151,6 +151,40 @@ func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
 	assert.Contains(t, metrics, `http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="1"} 1`)
 }
 
+func TestMetricsResponseSizeBucketsConfig(t *testing.T) {
+	BeforeEach(t)
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithLoggerOutput(ioutil.Discard),
+			config.WithMetricsSizeBuckets([]float64{1, 4, 6}),
+		),
+	)
+	require.NoError(t, err)
+
+	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
+	// Make a request.
+	resp, err := http.Get(HTTPAddressStatic)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	resp, err = http.Get(HTTPAddress + "/metrics")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	data, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	metrics := string(data)
+
+	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="1"} 0`)
+	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="4"} 0`)
+	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="6"} 0`)
+}
+
 func TestMetricsCanBeServedAlternativePath(t *testing.T) {
 	BeforeEach(t)
 	s, err := server.New(

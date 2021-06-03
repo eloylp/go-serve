@@ -31,13 +31,21 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
-		observer := middleware.RequestDurationObserver(
+		mapper := configureEndpointMapper(cfg)
+		durationObserver := middleware.RequestDurationObserver(
 			"",
 			prometheus.DefaultRegisterer,
 			cfg.MetricsRequestDurationBuckets,
-			configureEndpointMapper(cfg),
+			mapper,
 		)
-		userMiddlewares = append(userMiddlewares, observer)
+		userMiddlewares = append(userMiddlewares, durationObserver)
+		responseSizeObserver := middleware.ResponseSizeObserver(
+			"",
+			prometheus.DefaultRegisterer,
+			cfg.MetricsSizeBuckets,
+			mapper,
+		)
+		userMiddlewares = append(userMiddlewares, responseSizeObserver)
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
 	}
 	userMiddlewares = append(userMiddlewares,
