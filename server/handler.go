@@ -9,6 +9,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/archive"
 	"go.eloylp.dev/kit/pathutil"
+
+	"github.com/eloylp/go-serve/metrics"
 )
 
 const ContentTypeTarGzip = "application/tar+gzip"
@@ -47,6 +49,9 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 		}
 		msg := fmt.Sprintf("upload of tar.gz complete ! Bytes written: %d", writtenBytes)
 		logger.Debug(msg)
+		if metrics.UploadSize != nil {
+			metrics.UploadSize.WithLabelValues().Observe(float64(writtenBytes))
+		}
 		reply(w, http.StatusOK, msg)
 	}
 }

@@ -11,6 +11,7 @@ import (
 	"go.eloylp.dev/kit/http/middleware"
 
 	"github.com/eloylp/go-serve/config"
+	"github.com/eloylp/go-serve/metrics"
 )
 
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info Info) http.Handler {
@@ -31,6 +32,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
+		metrics.Initialize(cfg)
 		mapper := configureEndpointMapper(cfg)
 		durationObserver := middleware.RequestDurationObserver(
 			"",

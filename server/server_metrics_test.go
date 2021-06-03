@@ -7,6 +7,7 @@ import (
 	"context"
 	"io/ioutil"
 	"net/http"
+	"os"
 	"testing"
 	"time"
 
@@ -183,6 +184,52 @@ func TestMetricsResponseSizeBucketsConfig(t *testing.T) {
 	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="1"} 0`)
 	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="4"} 0`)
 	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="6"} 0`)
+}
+
+func TestMetricsUploadSizeBucketsConfig(t *testing.T) {
+	BeforeEach(t)
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithLoggerOutput(ioutil.Discard),
+			config.WithUploadEndpoint("/upload"),
+			config.WithDocRoot(t.TempDir()),
+			config.WithMetricsSizeBuckets([]float64{100_000, 600_000, 1_000_000}),
+		),
+	)
+	require.NoError(t, err)
+
+	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
+	tarGZFile, err := os.Open(DocRootTARGZ)
+	require.NoError(t, err)
+	defer tarGZFile.Close()
+
+	// Prepare request
+	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
+	require.NoError(t, err)
+	req.Header.Add("Content-Type", "application/tar+gzip")
+	req.Header.Add("GoServe-Deploy-Path", "/deploy")
+
+	// Send tar.gz to the upload endpoint
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+
+	resp, err = http.Get(HTTPAddress + "/metrics")
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	require.Equal(t, http.StatusOK, resp.StatusCode)
+
+	data, err := ioutil.ReadAll(resp.Body)
+	require.NoError(t, err)
+	metrics := string(data)
+
+	require.Contains(t, metrics, `goserve_upload_size_bucket{le="100000"} 0`)
+	require.Contains(t, metrics, `goserve_upload_size_bucket{le="600000"} 1`)
+	require.Contains(t, metrics, `goserve_upload_size_bucket{le="1e+06"} 1`)
 }
 
 func TestMetricsCanBeServedAlternativePath(t *testing.T) {
