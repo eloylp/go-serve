@@ -115,7 +115,6 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 }
 
 func TestUpload(t *testing.T) {
-	t.Skip()
 	BeforeEach(t)
 	logBuff := bytes.NewBuffer(nil)
 	s, err := server.New(
@@ -152,7 +151,7 @@ func TestUpload(t *testing.T) {
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)
 	assert.NoError(t, err)
-	expectedSuccessMessage := "upload of file complete ! Bytes written: 533766"
+	expectedSuccessMessage := "upload complete ! Bytes written: 20"
 	assert.Equal(t, expectedSuccessMessage, string(data))
 
 	// Check that file is served correctly.
