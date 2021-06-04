@@ -1,4 +1,4 @@
-FROM golang:1.16.3 AS build
+FROM golang:1.16.5 AS build
 WORKDIR /src
 COPY . .
 RUN useradd -u 10001 nonprivuser
