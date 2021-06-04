@@ -30,10 +30,6 @@ func StatusHandler(info Info) http.HandlerFunc {
 
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Header.Get("Content-Type") != ContentTypeTarGzip {
-			http.NotFound(w, r)
-			return
-		}
 		deployPath := r.Header.Get("GoServe-Deploy-Path")
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
 		if err := pathutil.PathInRoot(docRoot, path); err != nil {
@@ -41,13 +37,21 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		writtenBytes, err := archive.ExtractTARGZ(r.Body, path)
-		if err != nil {
-			logger.Debugf("%v", err)
-			reply(w, http.StatusBadRequest, err.Error())
+		var writtenBytes int64
+		var err error
+		switch r.Header.Get("Content-Type") {
+		case ContentTypeTarGzip:
+			writtenBytes, err = archive.ExtractTARGZ(r.Body, path)
+			if err != nil {
+				logger.Debugf("%v", err)
+				reply(w, http.StatusBadRequest, err.Error())
+				return
+			}
+		default:
+			http.NotFound(w, r)
 			return
 		}
-		msg := fmt.Sprintf("upload of tar.gz complete ! Bytes written: %d", writtenBytes)
+		msg := fmt.Sprintf("upload complete ! Bytes written: %d", writtenBytes)
 		logger.Debug(msg)
 		if metrics.UploadSize != nil {
 			metrics.UploadSize.WithLabelValues().Observe(float64(writtenBytes))
