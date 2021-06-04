@@ -113,3 +113,51 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	logs := logBuff.String()
 	assert.Contains(t, logs, "upload path violation try")
 }
+
+func TestUpload(t *testing.T) {
+	BeforeEach(t)
+	logBuff := bytes.NewBuffer(nil)
+	s, err := server.New(
+		config.ForOptions(
+			config.WithListenAddr(ListenAddress),
+			config.WithDocRoot(t.TempDir()),
+			config.WithLoggerOutput(logBuff),
+			config.WithUploadEndpoint("/upload"),
+			config.WithLoggerLevel(logrus.DebugLevel.String()),
+		),
+	)
+	assert.NoError(t, err)
+
+	go s.ListenAndServe()
+	defer s.Shutdown(context.Background())
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
+
+	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
+	file, err := os.Open(DocRoot + "/notes/notes.txt")
+	assert.NoError(t, err)
+	defer file.Close()
+
+	// Prepare request
+	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", file)
+	assert.NoError(t, err)
+	req.Header.Add("Content-Type", "application/octet-stream")
+	req.Header.Add("GoServe-Deploy-Path", "/sub-root/notes.txt")
+
+	// Send tar.gz to the upload endpoint
+	resp, err := http.DefaultClient.Do(req)
+	assert.NoError(t, err)
+	defer resp.Body.Close()
+
+	assert.Equal(t, http.StatusOK, resp.StatusCode)
+	data, err := ioutil.ReadAll(resp.Body)
+	assert.NoError(t, err)
+	expectedSuccessMessage := "upload of file complete ! Bytes written: 533766"
+	assert.Equal(t, expectedSuccessMessage, string(data))
+
+	// Check that file is served correctly.
+	notes := BodyFrom(t, HTTPAddressStatic+"/sub-root/notes.txt")
+	assert.Equal(t, NotesTestFileMD5, md5From(notes), "got body: %s", notes)
+
+	s.Shutdown(context.Background()) // Force shutdown here in order to avoid data race with the logger buffer
+	assert.Contains(t, logBuff.String(), expectedSuccessMessage)
+}
