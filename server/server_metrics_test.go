@@ -81,7 +81,7 @@ func TestMetricsCanBeServedOnAlternativePort(t *testing.T) {
 	AssertDefaultMetricsPathConfigured(t)
 
 	resp, err := http.Get("http://localhost:9091/metrics")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	assert.Contains(t, loggerOutput.String(), "starting to serve metrics at 0.0.0.0:9091")
@@ -100,12 +100,12 @@ func TestMetricsRequestDurationBucketsConfig(t *testing.T) {
 	defer resp.Body.Close()
 
 	resp, err = http.Get(HTTPAddress + "/metrics")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 
 	data, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	metrics := string(data)
 
 	assert.Contains(t, metrics, `http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.1"} 1`)
@@ -131,7 +131,7 @@ func TestMetricsResponseSizeBucketsConfig(t *testing.T) {
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	data, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	metrics := string(data)
 
 	require.Contains(t, metrics, `http_response_size_bucket{code="200",endpoint="/static",method="GET",le="1"} 0`)
@@ -183,7 +183,7 @@ func TestMetricsCanBeServedAlternativePath(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	resp, err := http.Get(HTTPAddress + "/metrics-alternate")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }

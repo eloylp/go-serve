@@ -10,6 +10,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 )
 
 func TestTARGZUpload(t *testing.T) {
@@ -21,23 +22,23 @@ func TestTARGZUpload(t *testing.T) {
 
 	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
 	tarGZFile, err := os.Open(DocRootTARGZ)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer tarGZFile.Close()
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "/sub-root/test")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	expectedSuccessMessage := "upload complete ! Bytes written: 533766"
 	assert.Equal(t, expectedSuccessMessage, string(data))
 
@@ -65,22 +66,22 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	tarGZFile, err := os.Open(DocRootTARGZ)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer tarGZFile.Close()
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "..")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	logs := logBuff.String()
 	assert.Contains(t, logs, "upload path violation try")
 }
@@ -94,23 +95,23 @@ func TestUpload(t *testing.T) {
 
 	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
 	file, err := os.Open(DocRoot + "/notes/notes.txt")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer file.Close()
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", file)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/octet-stream")
 	req.Header.Add("GoServe-Deploy-Path", "/sub-root/notes.txt")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	expectedSuccessMessage := "upload complete ! Bytes written: 20"
 	assert.Equal(t, expectedSuccessMessage, string(data))
 

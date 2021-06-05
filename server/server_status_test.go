@@ -20,7 +20,7 @@ func TestSeverStatusEndpoint(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	resp, err := http.Get(HTTPAddress + "/status")
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	require.Equal(t, http.StatusOK, resp.StatusCode)
 	data, err := ioutil.ReadAll(resp.Body)

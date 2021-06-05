@@ -13,6 +13,7 @@ import (
 
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/sirupsen/logrus"
+	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
@@ -68,9 +69,7 @@ func sut(t *testing.T, options ...config.Option) (*server.Server, *bytes.Buffer,
 	}
 	o = append(o, options...)
 	srv, err := server.New(config.ForOptions(o...))
-	if err != nil {
-		t.Fatal(err)
-	}
+	require.NoError(t, err)
 	go srv.ListenAndServe()
 	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 	return srv, logs, docRoot

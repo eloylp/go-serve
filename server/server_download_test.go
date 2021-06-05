@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 )
 
@@ -22,13 +23,13 @@ func TestTARGZDownload(t *testing.T) {
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "/notes")
 
 	// Obtain the tar.gz with the required path
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	if assert.Equal(t, http.StatusOK, resp.StatusCode) {
@@ -52,13 +53,13 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "/notes/notes.txt")
 
 	// Obtain the tar.gz with the required path
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	if assert.Equal(t, http.StatusOK, resp.StatusCode) {
@@ -77,13 +78,13 @@ func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "..")
 
 	// Require tar.gz to the download endpoint
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 
 	assert.Equal(t, http.StatusBadRequest, resp.StatusCode)

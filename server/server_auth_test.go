@@ -9,6 +9,7 @@ import (
 	"testing"
 
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 
 	"github.com/eloylp/go-serve/config"
 )
@@ -25,10 +26,10 @@ func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.SetBasicAuth("user", "password")
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
 }
@@ -41,9 +42,9 @@ func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -56,10 +57,10 @@ func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.SetBasicAuth("user", "bad-password")
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -72,11 +73,11 @@ func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.SetBasicAuth("user", "password")
 	respAuth, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer respAuth.Body.Close()
 	assert.Equal(t, http.StatusOK, respAuth.StatusCode)
 }
@@ -89,11 +90,11 @@ func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 
 	resp, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer resp.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, resp.StatusCode)
 }
@@ -106,11 +107,11 @@ func TestWriteBadlyAuthorizedUserIsRefused(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.SetBasicAuth("user", "bad-password")
 	respAuth, err := http.DefaultClient.Do(req)
-	assert.NoError(t, err)
+	require.NoError(t, err)
 	defer respAuth.Body.Close()
 	assert.Equal(t, http.StatusUnauthorized, respAuth.StatusCode)
 }
