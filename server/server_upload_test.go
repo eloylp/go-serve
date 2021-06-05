@@ -3,39 +3,21 @@
 package server_test
 
 import (
-	"bytes"
 	"context"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"testing"
-	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
-	"go.eloylp.dev/kit/test"
-
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
 )
 
 func TestTARGZUpload(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(t.TempDir()),
-			config.WithLoggerOutput(logBuff),
-			config.WithUploadEndpoint("/upload"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, logBuff, _ := sut(t)
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
 	tarGZFile, err := os.Open(DocRootTARGZ)
@@ -77,21 +59,10 @@ func TestTARGZUpload(t *testing.T) {
 
 func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(t.TempDir()),
-			config.WithLoggerOutput(logBuff),
-			config.WithUploadEndpoint("/upload"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, logBuff, _ := sut(t)
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	tarGZFile, err := os.Open(DocRootTARGZ)
 	assert.NoError(t, err)
@@ -116,21 +87,10 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 
 func TestUpload(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(t.TempDir()),
-			config.WithLoggerOutput(logBuff),
-			config.WithUploadEndpoint("/upload"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, logBuff, _ := sut(t)
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
 	file, err := os.Open(DocRoot + "/notes/notes.txt")

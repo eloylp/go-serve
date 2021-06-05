@@ -4,31 +4,18 @@ package server_test
 
 import (
 	"context"
-	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.eloylp.dev/kit/test"
-
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
 )
 
 func TestSeverIdentity(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t)
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	resp, err := http.Get(HTTPAddressStatic)
 	assert.NoError(t, err)

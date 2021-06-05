@@ -3,40 +3,22 @@
 package server_test
 
 import (
-	"bytes"
 	"context"
 	"net/http"
 	"testing"
-	"time"
 
-	"github.com/sirupsen/logrus"
 	"github.com/stretchr/testify/assert"
 	"go.eloylp.dev/kit/test"
-
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
 )
 
 func TestTARGZDownload(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	testDocRoot := t.TempDir()
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(testDocRoot),
-			config.WithLoggerOutput(logBuff),
-			config.WithDownLoadEndpoint("/download"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
+
+	s, _, testDocRoot := sut(t)
 
 	test.Copy(t, DocRoot, testDocRoot)
 
-	go s.ListenAndServe()
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
@@ -61,24 +43,12 @@ func TestTARGZDownload(t *testing.T) {
 
 func TestTARGZDownloadForSingleFile(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	testDocRoot := t.TempDir()
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(testDocRoot),
-			config.WithLoggerOutput(logBuff),
-			config.WithDownLoadEndpoint("/download"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
+
+	s, _, testDocRoot := sut(t)
 
 	test.Copy(t, DocRoot, testDocRoot)
 
-	go s.ListenAndServe()
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
@@ -100,21 +70,10 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 
 func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
 	BeforeEach(t)
-	logBuff := bytes.NewBuffer(nil)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithDocRoot(t.TempDir()),
-			config.WithLoggerOutput(logBuff),
-			config.WithDownLoadEndpoint("/download"),
-			config.WithLoggerLevel(logrus.DebugLevel.String()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, logBuff, _ := sut(t)
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	// Prepare request
 	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)

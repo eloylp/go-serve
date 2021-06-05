@@ -5,16 +5,12 @@ package server_test
 import (
 	"bytes"
 	"context"
-	"io/ioutil"
 	"net/http"
 	"testing"
-	"time"
 
 	"github.com/stretchr/testify/assert"
-	"go.eloylp.dev/kit/test"
 
 	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
 )
 
 var testUserCredentials = map[string]string{
@@ -23,19 +19,10 @@ var testUserCredentials = map[string]string{
 
 func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithReadAuthorizations(testUserCredentials),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithReadAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
@@ -48,19 +35,10 @@ func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 
 func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithReadAuthorizations(testUserCredentials),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithReadAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
@@ -72,19 +50,10 @@ func TestReadNonAuthorizedUserIsRefused(t *testing.T) {
 
 func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithReadAuthorizations(testUserCredentials),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithReadAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressStatic, nil)
 	assert.NoError(t, err)
@@ -97,20 +66,10 @@ func TestReadBadlyAuthorizedUserIsRefused(t *testing.T) {
 
 func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithWriteAuthorizations(testUserCredentials),
-			config.WithUploadEndpoint("/upload"),
-			config.WithDocRoot(t.TempDir()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithWriteAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
 	assert.NoError(t, err)
@@ -124,20 +83,10 @@ func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
 
 func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithWriteAuthorizations(testUserCredentials),
-			config.WithUploadEndpoint("/upload"),
-			config.WithDocRoot(t.TempDir()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithWriteAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
 	assert.NoError(t, err)
@@ -151,20 +100,10 @@ func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
 
 func TestWriteBadlyAuthorizedUserIsRefused(t *testing.T) {
 	BeforeEach(t)
-	s, err := server.New(
-		config.ForOptions(
-			config.WithListenAddr(ListenAddress),
-			config.WithLoggerOutput(ioutil.Discard),
-			config.WithWriteAuthorizations(testUserCredentials),
-			config.WithUploadEndpoint("/upload"),
-			config.WithDocRoot(t.TempDir()),
-		),
-	)
-	assert.NoError(t, err)
 
-	go s.ListenAndServe()
+	s, _, _ := sut(t, config.WithWriteAuthorizations(testUserCredentials))
+
 	defer s.Shutdown(context.Background())
-	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 
 	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", bytes.NewReader(sampleTARGZContent))
 	assert.NoError(t, err)
