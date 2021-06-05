@@ -19,7 +19,7 @@ import (
 	"github.com/eloylp/go-serve/server"
 )
 
-func BeforeEach(t *testing.T) {
+func BeforeEach(_ *testing.T) {
 	registry := prometheus.NewRegistry()
 	prometheus.DefaultRegisterer = registry
 	prometheus.DefaultGatherer = registry
