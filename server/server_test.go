@@ -1,5 +1,3 @@
-//+build integration
-
 package server_test
 
 import (
@@ -26,13 +24,18 @@ const (
 	DeployPathHeader    = "GoServe-Deploy-Path"
 )
 
-var sampleTARGZContent = func() []byte {
-	file, err := os.ReadFile(DocRootTARGZ)
-	if err != nil {
-		panic(err)
+var (
+	testUserCredentials = map[string]string{
+		"user": "$2y$10$mAx10mlJ/UNbQJCgPp2oLe9n9jViYl9vlT0cYI3Nfop3P3bU1PDay", // Unencrypted value: user:password
 	}
-	return file
-}()
+	sampleTARGZContent = func() []byte {
+		file, err := os.ReadFile(DocRootTARGZ)
+		if err != nil {
+			panic(err)
+		}
+		return file
+	}()
+)
 
 func sampleTARGZContentReader() io.Reader {
 	return bytes.NewReader(sampleTARGZContent)

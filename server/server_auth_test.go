@@ -13,10 +13,6 @@ import (
 	"go.eloylp.dev/go-serve/config"
 )
 
-var testUserCredentials = map[string]string{
-	"user": "$2y$10$mAx10mlJ/UNbQJCgPp2oLe9n9jViYl9vlT0cYI3Nfop3P3bU1PDay", // Unencrypted value: user:password
-}
-
 func TestReadAuthorizedUserIsAccepted(t *testing.T) {
 	BeforeEach(t)
 
