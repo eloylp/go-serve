@@ -6,7 +6,6 @@ import (
 	"context"
 	"io/ioutil"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
@@ -146,12 +145,8 @@ func TestMetricsUploadSizeBucketsConfig(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	tarGZFile, err := os.Open(DocRootTARGZ)
-	require.NoError(t, err)
-	defer tarGZFile.Close()
-
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "/deploy")

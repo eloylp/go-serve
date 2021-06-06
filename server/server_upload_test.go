@@ -20,13 +20,8 @@ func TestTARGZUpload(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	// Get a sample of compressed doc root. It will contain 2 images, tux.png and gnu.png.
-	tarGZFile, err := os.Open(DocRootTARGZ)
-	require.NoError(t, err)
-	defer tarGZFile.Close()
-
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "/sub-root/test")
@@ -54,6 +49,7 @@ func TestTARGZUpload(t *testing.T) {
 
 	subNotes := BodyFrom(t, HTTPAddressStatic+"/sub-root/test/notes/subnotes/notes.txt")
 	assert.Equal(t, SubNotesTestFileMD5, md5From(subNotes), "got body: %s", notes)
+
 	s.Shutdown(context.Background()) // Force shutdown here in order to avoid data race with the logger buffer
 	assert.Contains(t, logBuff.String(), expectedSuccessMessage)
 }
@@ -65,12 +61,8 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	tarGZFile, err := os.Open(DocRootTARGZ)
-	require.NoError(t, err)
-	defer tarGZFile.Close()
-
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "..")

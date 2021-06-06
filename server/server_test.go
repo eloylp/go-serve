@@ -3,6 +3,8 @@
 package server_test
 
 import (
+	"bytes"
+	"io"
 	"os"
 
 	"github.com/eloylp/go-serve/server"
@@ -30,6 +32,10 @@ var sampleTARGZContent = func() []byte {
 	}
 	return file
 }()
+
+func sampleTARGZContentReader() io.Reader {
+	return bytes.NewReader(sampleTARGZContent)
+}
 
 func init() {
 	server.Name = "go-serve"
