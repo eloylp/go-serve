@@ -10,7 +10,7 @@ builds:
       - -trimpath
       - -tags=timetzdata
     ldflags:
-      - -s -w -X main.Name=go-serve -X server.Version={{.Version}} -X server.Build={{.ShortCommit}} -X server.BuildTime={{.Date}}
+      - -s -w -X go.eloylp.dev/go-serve/server.Name=go-serve -X go.eloylp.dev/go-serve/server.Version={{.Version}} -X go.eloylp.dev/go-serve/server.Build={{.ShortCommit}} -X go.eloylp.dev/go-serve/server.BuildTime={{.Date}}
     env:
       - CGO_ENABLED=0
     goos:
