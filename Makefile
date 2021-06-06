@@ -5,10 +5,10 @@ BUILD := $(shell git rev-parse --short HEAD)
 DIST_FOLDER := ./dist
 BINARY_OUTPUT := $(DIST_FOLDER)/$(BINARY_NAME)
 LDFLAGS=-ldflags "-s -w \
-		-X=github.com/eloylp/go-serve/server.Name=$(BINARY_NAME) \
-		-X=github.com/eloylp/go-serve/server.Version=$(VERSION) \
-		-X=github.com/eloylp/go-serve/server.Build=$(BUILD) \
-		-X=github.com/eloylp/go-serve/server.BuildTime=$(TIME)"
+		-X=go.eloylp.dev/go-serve/server.Name=$(BINARY_NAME) \
+		-X=go.eloylp.dev/go-serve/server.Version=$(VERSION) \
+		-X=go.eloylp.dev/go-serve/server.Build=$(BUILD) \
+		-X=go.eloylp.dev/go-serve/server.BuildTime=$(TIME)"
 FLAGS=-trimpath
 TAGS=-tags timetzdata
 

@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 
-	"github.com/eloylp/go-serve/config"
+	"go.eloylp.dev/go-serve/config"
 )
 
 var testUserCredentials = map[string]string{

@@ -12,7 +12,7 @@ import (
 	"go.eloylp.dev/kit/archive"
 	"go.eloylp.dev/kit/pathutil"
 
-	"github.com/eloylp/go-serve/metrics"
+	"go.eloylp.dev/go-serve/metrics"
 )
 
 const (

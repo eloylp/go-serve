@@ -1,4 +1,4 @@
-module github.com/eloylp/go-serve
+module go.eloylp.dev/go-serve
 
 go 1.16
 

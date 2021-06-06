@@ -7,7 +7,7 @@ import (
 	"io"
 	"os"
 
-	"github.com/eloylp/go-serve/server"
+	"go.eloylp.dev/go-serve/server"
 )
 
 const (

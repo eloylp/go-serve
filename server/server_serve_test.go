@@ -10,7 +10,7 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 
-	"github.com/eloylp/go-serve/config"
+	"go.eloylp.dev/go-serve/config"
 )
 
 func TestServingContentDefaults(t *testing.T) {

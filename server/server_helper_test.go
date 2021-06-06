@@ -16,8 +16,8 @@ import (
 	"github.com/stretchr/testify/require"
 	"go.eloylp.dev/kit/test"
 
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
+	"go.eloylp.dev/go-serve/config"
+	"go.eloylp.dev/go-serve/server"
 )
 
 func BeforeEach(_ *testing.T) {

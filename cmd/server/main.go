@@ -3,8 +3,8 @@ package main
 import (
 	"log"
 
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/server"
+	"go.eloylp.dev/go-serve/config"
+	"go.eloylp.dev/go-serve/server"
 )
 
 func main() {

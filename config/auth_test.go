@@ -8,7 +8,7 @@ import (
 
 	"github.com/stretchr/testify/assert"
 
-	"github.com/eloylp/go-serve/config"
+	"go.eloylp.dev/go-serve/config"
 )
 
 func TestAuthorization_Decode(t *testing.T) {

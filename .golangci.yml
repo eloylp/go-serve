@@ -29,7 +29,7 @@ linters-settings:
   gocyclo:
     min-complexity: 15
   goimports:
-    local-prefixes: github.com/eloylp/go-serve
+    local-prefixes: go.eloylp.dev/go-serve
   golint:
     min-confidence: 0
   gomnd:

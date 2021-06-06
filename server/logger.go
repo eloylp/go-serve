@@ -6,7 +6,7 @@ import (
 
 	"github.com/sirupsen/logrus"
 
-	"github.com/eloylp/go-serve/config"
+	"go.eloylp.dev/go-serve/config"
 )
 
 func logger(cfg *config.LoggerSettings) (*logrus.Logger, error) {

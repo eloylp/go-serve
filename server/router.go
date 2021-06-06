@@ -10,8 +10,8 @@ import (
 	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/http/middleware"
 
-	"github.com/eloylp/go-serve/config"
-	"github.com/eloylp/go-serve/metrics"
+	"go.eloylp.dev/go-serve/config"
+	"go.eloylp.dev/go-serve/metrics"
 )
 
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info Info) http.Handler {

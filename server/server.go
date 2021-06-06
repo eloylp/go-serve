@@ -14,7 +14,7 @@ import (
 	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 
-	"github.com/eloylp/go-serve/config"
+	"go.eloylp.dev/go-serve/config"
 )
 
 type Server struct {
