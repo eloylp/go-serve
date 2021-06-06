@@ -14,6 +14,7 @@ const (
 	HTTPAddressStatic   = "http://" + ListenAddress + "/static"
 	HTTPAddressUpload   = "http://" + ListenAddress + "/upload"
 	HTTPAddressDownload = "http://" + ListenAddress + "/download"
+	HTTPAddressStatus   = "http://" + ListenAddress + "/status"
 	DocRoot             = "../tests/root"
 	TuxTestFileMD5      = "a0e6e27f7e31fd0bd549ea936033bf28"
 	GnuTestFileMD5      = "0073978283cb69d470ec2ea1b66f1988"
