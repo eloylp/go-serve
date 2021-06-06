@@ -3,7 +3,6 @@
 package server_test
 
 import (
-	"bytes"
 	"context"
 	"net/http"
 	"testing"
@@ -72,7 +71,7 @@ func TestWriteAuthorizedUserIsAccepted(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, bytes.NewReader(sampleTARGZContent))
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.SetBasicAuth("user", "password")
@@ -89,7 +88,7 @@ func TestWriteNonAuthorizedUserIsRefused(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, bytes.NewReader(sampleTARGZContent))
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 
@@ -106,7 +105,7 @@ func TestWriteBadlyAuthorizedUserIsRefused(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
-	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, bytes.NewReader(sampleTARGZContent))
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.SetBasicAuth("user", "bad-password")
