@@ -15,8 +15,11 @@ import (
 	"github.com/eloylp/go-serve/metrics"
 )
 
-const ContentTypeTarGzip = "application/tar+gzip"
-const ContentTypeFile = "application/octet-stream"
+const (
+	ContentTypeTarGzip = "application/tar+gzip"
+	ContentTypeFile    = "application/octet-stream"
+	DeployPathHeader   = "GoServe-Deploy-Path"
+)
 
 func StatusHandler(info Info) http.HandlerFunc {
 	type Status struct {
@@ -33,7 +36,7 @@ func StatusHandler(info Info) http.HandlerFunc {
 
 func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		deployPath := r.Header.Get("GoServe-Deploy-Path")
+		deployPath := r.Header.Get(DeployPathHeader)
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
 		if err := pathutil.PathInRoot(docRoot, path); err != nil {
 			logger.WithError(err).Error("upload path violation try")

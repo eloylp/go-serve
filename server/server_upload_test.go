@@ -24,7 +24,7 @@ func TestTARGZUpload(t *testing.T) {
 	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
-	req.Header.Add("GoServe-Deploy-Path", "/sub-root/test")
+	req.Header.Add(DeployPathHeader, "/sub-root/test")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
@@ -65,7 +65,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
-	req.Header.Add("GoServe-Deploy-Path", "..")
+	req.Header.Add(DeployPathHeader, "..")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
@@ -94,7 +94,7 @@ func TestUpload(t *testing.T) {
 	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, file)
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/octet-stream")
-	req.Header.Add("GoServe-Deploy-Path", "/sub-root/notes.txt")
+	req.Header.Add(DeployPathHeader, "/sub-root/notes.txt")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)

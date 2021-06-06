@@ -23,6 +23,7 @@ const (
 	NotesTestFileMD5    = "36d7e788e7a54109f5beb9ebe103da39"
 	SubNotesTestFileMD5 = "0ff6da62cf7875cce432f7b955008953"
 	DocRootTARGZ        = "../tests/doc-root.tar.gz"
+	DeployPathHeader    = "GoServe-Deploy-Path"
 )
 
 var sampleTARGZContent = func() []byte {

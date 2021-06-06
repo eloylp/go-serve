@@ -149,7 +149,7 @@ func TestMetricsUploadSizeBucketsConfig(t *testing.T) {
 	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, sampleTARGZContentReader())
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
-	req.Header.Add("GoServe-Deploy-Path", "/deploy")
+	req.Header.Add(DeployPathHeader, "/deploy")
 
 	// Send tar.gz to the upload endpoint
 	resp, err := http.DefaultClient.Do(req)
