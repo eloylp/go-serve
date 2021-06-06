@@ -22,7 +22,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 			WithAuth(middleware.Authorization(cfg.ReadAuthorizations)).
 			WithMethod(http.MethodGet).
 			WithPathRegex(".*")
-		logger.Info("enabling read authorizations in server")
+		logger.Info("configuring read authorizations in server")
 	}
 	var authWriteCfg *middleware.AuthConfig
 	if len(cfg.WriteAuthorizations) > 0 {
@@ -30,7 +30,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 			WithAuth(middleware.Authorization(cfg.WriteAuthorizations)).
 			WithMethod(http.MethodPost).
 			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
-		logger.Info("enabling write authorizations in server")
+		logger.Info("configuring write authorizations in server")
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
@@ -51,7 +51,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 		)
 		userMiddlewares = append(userMiddlewares, responseSizeObserver)
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
-		logger.Infof("enabling metrics at %s endpoint", cfg.MetricsPath)
+		logger.Infof("configuring metrics at %s endpoint", cfg.MetricsPath)
 	}
 	userMiddlewares = append(userMiddlewares,
 		middleware.RequestLogger(logger),
@@ -62,11 +62,11 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	r.Handler(http.MethodGet, "/status", StatusHandler(info))
 	if cfg.DownloadEndpoint != "" {
 		r.Handler(http.MethodGet, cfg.DownloadEndpoint, middleware.InFrontOf(DownloadTARGZHandler(logger, cfg.DocRoot), userMiddlewares...))
-		logger.Infof("configuring download endpoint at %s", cfg.DownloadEndpoint)
+		logger.Infof("configuring downloads at %s endpoint", cfg.DownloadEndpoint)
 	}
 	if cfg.UploadEndpoint != "" {
 		r.Handler(http.MethodPost, cfg.UploadEndpoint, middleware.InFrontOf(UploadTARGZHandler(logger, cfg.DocRoot), userMiddlewares...))
-		logger.Infof("configuring upload endpoint at %s", cfg.UploadEndpoint)
+		logger.Infof("configuring uploads at %s endpoint", cfg.UploadEndpoint)
 	}
 	fileHandler := http.FileServer(http.Dir(docRoot))
 	r.GET(cfg.Prefix+"/*filepath", func(w http.ResponseWriter, r *http.Request, p httprouter.Params) {
