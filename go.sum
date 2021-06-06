@@ -285,6 +285,8 @@ go.eloylp.dev/kit v0.0.0-20210602185435-c5e5824fc9dd h1:KPiYz1Tr+HnmpDSL4NH6dXll
 go.eloylp.dev/kit v0.0.0-20210602185435-c5e5824fc9dd/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
 go.eloylp.dev/kit v0.0.0-20210602220629-14c7e5439cfd h1:CrTUOTkZowatZ1FYi9Z4k61kmrCmnM2nTnjgVUoAuNE=
 go.eloylp.dev/kit v0.0.0-20210602220629-14c7e5439cfd/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
+go.eloylp.dev/kit v0.0.0-20210606143700-486ce86dc2e0 h1:fehA4E4pCcEMdIRzktVmwrXawWwsujmpFw0muokG8eE=
+go.eloylp.dev/kit v0.0.0-20210606143700-486ce86dc2e0/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
 go.etcd.io/etcd v0.0.0-20191023171146-3cf2f69b5738/go.mod h1:dnLIgRNXwCJa5e+c6mIZCrds/GIG4ncV9HhK5PX7jPg=
 go.opencensus.io v0.20.1/go.mod h1:6WKK9ahsWS3RSO+PY9ZHZUfv2irvY6gN279GOPZjmmk=
