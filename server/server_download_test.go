@@ -22,7 +22,7 @@ func TestTARGZDownload(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "/notes")
@@ -52,7 +52,7 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "/notes/notes.txt")
@@ -77,7 +77,7 @@ func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
 	defer s.Shutdown(context.Background())
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodGet, HTTPAddress+"/download", nil)
+	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
 	req.Header.Add("GoServe-Download-Path", "..")

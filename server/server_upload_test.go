@@ -26,7 +26,7 @@ func TestTARGZUpload(t *testing.T) {
 	defer tarGZFile.Close()
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "/sub-root/test")
@@ -70,7 +70,7 @@ func TestTARGZUploadCannotEscapeFromDocRoot(t *testing.T) {
 	defer tarGZFile.Close()
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "..")
@@ -99,7 +99,7 @@ func TestUpload(t *testing.T) {
 	defer file.Close()
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", file)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, file)
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/octet-stream")
 	req.Header.Add("GoServe-Deploy-Path", "/sub-root/notes.txt")

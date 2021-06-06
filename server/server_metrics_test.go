@@ -151,7 +151,7 @@ func TestMetricsUploadSizeBucketsConfig(t *testing.T) {
 	defer tarGZFile.Close()
 
 	// Prepare request
-	req, err := http.NewRequest(http.MethodPost, HTTPAddress+"/upload", tarGZFile)
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, tarGZFile)
 	require.NoError(t, err)
 	req.Header.Add("Content-Type", "application/tar+gzip")
 	req.Header.Add("GoServe-Deploy-Path", "/deploy")
