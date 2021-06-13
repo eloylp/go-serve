@@ -44,8 +44,12 @@ var (
 			Transport: tr,
 		}
 	}()
-	uploadCount   int32
-	downloadCount int32
+	uploadCount        int32
+	uploadTotalTime    float64
+	uploadTotalTimeL   sync.Mutex
+	downloadCount      int32
+	downloadTotalTime  float64
+	downloadTotalTimeL sync.Mutex
 )
 
 func TestServerExecutionPaths(t *testing.T) {
@@ -67,12 +71,12 @@ func TestServerExecutionPaths(t *testing.T) {
 		<-ctx.Done()
 		wg.Done()
 	}()
-	go exec.Parallelize(ctx, wg, 1, uploadFile)
-	go exec.Parallelize(ctx, wg, 1, downloadFile)
+	go exec.Parallelize(ctx, wg, 10, uploadFile)
+	go exec.Parallelize(ctx, wg, 10, downloadFile)
 	wg.Wait()
-	fmt.Printf("Racy test stats >> uploaded %v . downloaded %v", uploadCount, downloadCount) //nolint:forbidigo
-	fmt.Println("--- LOG Trace ---")
-	io.Copy(os.Stdout, logger)
+	fmt.Println("Racy test stats >>")                                                                                                                     //nolint:forbidigo
+	fmt.Printf("Totals: uploaded %v . downloaded %v \n", uploadCount, downloadCount)                                                                      //nolint:forbidigo
+	fmt.Printf("Average time in seconds: uploaded %v . downloaded %v \n", uploadTotalTime/float64(uploadCount), downloadTotalTime/float64(downloadCount)) //nolint:forbidigo
 }
 
 func uploadFile() {
@@ -84,10 +88,15 @@ func uploadFile() {
 	req.SetBasicAuth("user", "password")
 	req.Header.Add(DeployPathHeader, "/"+fileName)
 	req.Header.Add("Content-Type", server.ContentTypeFile)
+	now := time.Now()
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		panic(err)
 	}
+	elapsed := time.Since(now)
+	uploadTotalTimeL.Lock()
+	uploadTotalTime += elapsed.Seconds()
+	uploadTotalTimeL.Unlock()
 	if resp.StatusCode != http.StatusOK {
 		panic(fmt.Sprintf("expected 200 got %v", resp.StatusCode))
 	}
@@ -102,10 +111,15 @@ func downloadFile() {
 		panic(err)
 	}
 	req.SetBasicAuth("user", "password")
+	now := time.Now()
 	resp, err := httpClient.Do(req)
 	if err != nil {
 		panic(err)
 	}
+	elapsed := time.Since(now)
+	downloadTotalTimeL.Lock()
+	downloadTotalTime += elapsed.Seconds()
+	downloadTotalTimeL.Unlock()
 	resp.Body.Close()
 	_, _ = io.Copy(io.Discard, resp.Body)
 	if resp.StatusCode != http.StatusOK {
