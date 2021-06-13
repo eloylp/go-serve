@@ -98,6 +98,7 @@ github.com/google/go-cmp v0.5.5/go.mod h1:v8dTdLbMG2kIc/vJvl+f65V22dbkXbowE6jgT/
 github.com/google/gofuzz v1.0.0/go.mod h1:dBl0BpW6vV/+mYPU4Po3pmUjxk6FQPldtuIdl/M65Eg=
 github.com/google/renameio v0.1.0/go.mod h1:KWCgfxg9yswjAJkECMjeO8J8rahYeXnNhOm40UhjYkI=
 github.com/google/uuid v1.0.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
+github.com/google/uuid v1.2.0 h1:qJYtXnJRWmpe7m/3XlyhrsLrEURqHRM2kxzoxXqyUDs=
 github.com/google/uuid v1.2.0/go.mod h1:TIyPZe4MgqvfeYDBFedMoGGpEw/LqOeaOT+nhxU+yHo=
 github.com/gopherjs/gopherjs v0.0.0-20181017120253-0766667cb4d1/go.mod h1:wJfORRmW1u3UXTncJ5qlYoELFm8eSnnEO6hX4iZ3EWY=
 github.com/gorilla/context v1.1.1/go.mod h1:kBGZzfjB9CEq2AlWe17Uuf7NDRt0dE0s8S51q0aT7Yg=
@@ -281,12 +282,6 @@ github.com/urfave/cli v1.22.1/go.mod h1:Gos4lmkARVdJ6EkW0WaNv/tZAAMe9V7XWyB60NtX
 github.com/urfave/negroni v1.0.0 h1:kIimOitoypq34K7TG7DUaJ9kq/N4Ofuwi1sjz0KipXc=
 github.com/urfave/negroni v1.0.0/go.mod h1:Meg73S6kFm/4PpbYdq35yYWoCZ9mS/YSx+lKnmiohz4=
 github.com/xiang90/probing v0.0.0-20190116061207-43a291ad63a2/go.mod h1:UETIi67q53MR2AWcXfiuqkDkRtnGDLqkBTpCHuJHxtU=
-go.eloylp.dev/kit v0.0.0-20210602185435-c5e5824fc9dd h1:KPiYz1Tr+HnmpDSL4NH6dXllfTrJFimtiDqaPFVtT7c=
-go.eloylp.dev/kit v0.0.0-20210602185435-c5e5824fc9dd/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
-go.eloylp.dev/kit v0.0.0-20210602220629-14c7e5439cfd h1:CrTUOTkZowatZ1FYi9Z4k61kmrCmnM2nTnjgVUoAuNE=
-go.eloylp.dev/kit v0.0.0-20210602220629-14c7e5439cfd/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
-go.eloylp.dev/kit v0.0.0-20210606143700-486ce86dc2e0 h1:fehA4E4pCcEMdIRzktVmwrXawWwsujmpFw0muokG8eE=
-go.eloylp.dev/kit v0.0.0-20210606143700-486ce86dc2e0/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
 go.eloylp.dev/kit v0.0.0-20210606145921-1b0ed9a9dd8d h1:nJApZ0jO5PdQqHKYVwR9vCXj3R7FKSWVEFIrBRymvQ8=
 go.eloylp.dev/kit v0.0.0-20210606145921-1b0ed9a9dd8d/go.mod h1:PZo4lQOZdaR46KnIJDpoFTqrwKi7LqnndI8nGtNocSg=
 go.etcd.io/bbolt v1.3.3/go.mod h1:IbVyRI1SCnLcuJnV2u8VeU0CEYM7e686BmAb1XKL+uU=
