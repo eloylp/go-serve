@@ -15,6 +15,7 @@ jobs:
         uses: golangci/golangci-lint-action@v2
         with:
           version: latest
+          args: "--build-tags unit,integration,racy"
   test:
     name: Test
     runs-on: ubuntu-latest
