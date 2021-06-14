@@ -15,7 +15,6 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/exec"
 	"go.eloylp.dev/kit/test"
 
@@ -54,12 +53,9 @@ var (
 
 func TestServerExecutionPaths(t *testing.T) {
 	BeforeEach(t)
-	logger := bytes.NewBuffer(nil)
 	s, _, docRoot := sut(t,
 		config.WithReadAuthorizations(testUserCredentials),
 		config.WithWriteAuthorizations(testUserCredentials),
-		config.WithLoggerLevel(logrus.DebugLevel.String()),
-		config.WithLoggerOutput(logger),
 	)
 	defer s.Shutdown(context.Background())
 	ctx, cancl := context.WithTimeout(context.Background(), 10*time.Second)
@@ -74,9 +70,12 @@ func TestServerExecutionPaths(t *testing.T) {
 	go exec.Parallelize(ctx, wg, 10, uploadFile)
 	go exec.Parallelize(ctx, wg, 10, downloadFile)
 	wg.Wait()
-	fmt.Println("Racy test stats >>")                                                                                                                     //nolint:forbidigo
-	fmt.Printf("Totals: uploaded %v . downloaded %v \n", uploadCount, downloadCount)                                                                      //nolint:forbidigo
-	fmt.Printf("Average time in seconds: uploaded %v . downloaded %v \n", uploadTotalTime/float64(uploadCount), downloadTotalTime/float64(downloadCount)) //nolint:forbidigo
+
+	t.Log("Racy test stats >>")
+	t.Logf("Totals: uploaded %v . downloaded %v \n",
+		uploadCount, downloadCount)
+	t.Logf("Average time in seconds: uploaded %v . downloaded %v \n",
+		uploadTotalTime/float64(uploadCount), downloadTotalTime/float64(downloadCount))
 }
 
 func uploadFile() {
