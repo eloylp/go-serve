@@ -103,6 +103,7 @@ issues:
         - gosec
         - errcheck
         - dupl
+        - forbidigo
 
 #run:
 #  skip-dirs:
