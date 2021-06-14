@@ -84,4 +84,4 @@ jobs:
         env:
           KUBE_CONFIG_DATA: ${{ secrets.KUBE_CONFIG_DATA }}
         with:
-          args: set image --record deployment/go-serve go-serve=${{ github.repository }}:${{ steps.vars.outputs.tag }} -n eloylp
+          args: set image --record statefulset/go-serve go-serve=${{ github.repository }}:${{ steps.vars.outputs.tag }} -n eloylp
