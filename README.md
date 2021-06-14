@@ -185,7 +185,7 @@ curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
     --output ./gnu.png
 ```
 
-### Prometheus metrics
+#### Prometheus metrics
 
 By default, this server provides various [histograms](https://prometheus.io/docs/practices/histograms/) that will provide a good global view of server operations. You can scrape this metrics at `/metrics` once the server was started. It is possible to have a sidecar HTTP server dedicated to metrics. See the [configuration](#configuration) section for more details. The following is an excerpt of the available metrics:
 
