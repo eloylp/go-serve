@@ -15,16 +15,16 @@ builds:
       - CGO_ENABLED=0
     goos:
       - linux
-      - darwin
-      - windows
       - freebsd
       - openbsd
+      - netbsd
     goarch:
       - amd64
       - 386
       - arm
       - arm64
-      - ppc64le
+      - mips
+      - mips64
     goarm:
       - 7
       - 6
