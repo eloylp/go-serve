@@ -37,7 +37,7 @@ jobs:
         run: make test-racy
 
   publish:
-    name: Push Docker image to GitHub Packages
+    name: Publish Docker images and binaries
     runs-on: ubuntu-latest
     needs:
       - lint
