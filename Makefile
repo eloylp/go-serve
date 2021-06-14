@@ -15,9 +15,9 @@ TAGS=-tags timetzdata
 .DEFAULT_GOAL := build
 
 lint:
-	golangci-lint run -v
+	golangci-lint run --build-tags unit,integration,racy -v
 lint-fix:
-	golangci-lint run -v --fix
+	golangci-lint run --build-tags unit,integration,racy -v --fix
 
 all: lint test build
 
