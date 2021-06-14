@@ -23,12 +23,13 @@ Inspired from the original gopher by Renee French.
     1. [Setting up authorization](#setting-up-authorization)
 6. [Prometheus metrics](#prometheus-metrics)
 7. [The status endpoint](#the-status-endpoint)
-8. [Contributing](./CONTRIBUTING.md)
+8. [Security notes](#security-notes)
+9. [Contributing](./CONTRIBUTING.md)
 
 ### Main features
 
 * Serve specified folder via the HTTP protocol.
-* Users authorization for `READ` and `WRITE` operations independently.
+* Users authorisation for `READ` and `WRITE` operations independently.
 * Upload single files.
 * Upload `tar.gz` files and extract them under the specified path in the document root.
 * Download folders and files of your document root using `tar.gz` as archive.
@@ -131,8 +132,8 @@ Go serve uses environment variables to configure its internals. Here is a table 
 | GOSERVE_LISTEN_ADDR                      | The socket where the server will listen for connections.     | "0.0.0.0:8080"                                               |
 | GOSERVE_DOC_ROOT                         | Path to the  document root we are going to serve.            | "."                                                          |
 | GOSERVE_PREFIX                           | The prefix path under all files will be served. Defaults in value is "/static"  so all files will be served under such path i.e "/static/notes.txt" . This is mandatory and should not interfere with other configured paths. | "/static"                                                    |
-| GOSERVE_UPLOAD_ENDPOINT                  | The path in the server where all uploads will take place. If not defined, it will be disabled. By default is **disabled** | ""                                                           |
-| GOSERVE_DOWNLOAD_ENDPOINT                | The path in the server where all downloads will take place. If not defined, it will be disabled. By default is **disabled** | ""                                                           |
+| GOSERVE_UPLOAD_ENDPOINT                  | The path in the server where all uploads will take place. If not defined, it will be disabled. By default is **disabled**. | ""                                                           |
+| GOSERVE_DOWNLOAD_ENDPOINT                | The path in the server where all downloads will take place. If not defined, it will be disabled. By default is **disabled**. | ""                                                           |
 | GOSERVE_SHUTDOWN_TIMEOUT                 | The number of seconds that the server will wait to terminate pending active connections before closing. | "5s"                                                         |
 | GOSERVE_READ_TIMEOUT                     | The maximum duration for reading the entire request, including the body. Default is **unlimited**. | "0s"                                                         |
 | GOSERVE_WRITE_TIMEOUT                    | The maximum duration before timing out writes of the response. Default is **unlimited**. | "0s"                                                         |
@@ -185,7 +186,7 @@ curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
     --output ./gnu.png
 ```
 
-#### Prometheus metrics
+### Prometheus metrics
 
 By default, this server provides various [histograms](https://prometheus.io/docs/practices/histograms/) that will provide a good global view of server operations. You can scrape this metrics at `/metrics` once the server was started. It is possible to have a sidecar HTTP server dedicated to metrics. See the [configuration](#configuration) section for more details. The following is an excerpt of the available metrics:
 
@@ -262,7 +263,7 @@ http_response_size_sum{code="200",endpoint="/upload",method="POST"} 35
 http_response_size_count{code="200",endpoint="/upload",method="POST"} 1
 ```
 
-#### The status endpoint
+### The status endpoint
 
 The most probably use of this server to place it behind a reverse proxy. In order to facilitate the readiness of the service a status endpoint under `/status` is provided. Heres an example of the information  provided:
 
@@ -277,4 +278,7 @@ The most probably use of this server to place it behind a reverse proxy. In orde
   }
 }
 ```
+### Security notes
+
+This server assumes that users with write permissions are trusted ones. They will be able to upload any kind of file to the server document root. Please, if you enable uploads, be sure that you configure write [authorization](#setting-up-authorization) .
 
