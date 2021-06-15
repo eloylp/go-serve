@@ -18,18 +18,12 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	r := httprouter.New()
 	var authReadCfg *middleware.AuthConfig
 	if len(cfg.ReadAuthorizations) > 0 {
-		authReadCfg = middleware.NewAuthConfig().
-			WithAuth(middleware.Authorization(cfg.ReadAuthorizations)).
-			WithMethod(http.MethodGet).
-			WithPathRegex(".*")
+		authReadCfg = readAuthConfig(cfg)
 		logger.Info("configuring read authorizations in server")
 	}
 	var authWriteCfg *middleware.AuthConfig
 	if len(cfg.WriteAuthorizations) > 0 {
-		authWriteCfg = middleware.NewAuthConfig().
-			WithAuth(middleware.Authorization(cfg.WriteAuthorizations)).
-			WithMethod(http.MethodPost).
-			WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
+		authWriteCfg = writeAuthConfig(cfg)
 		logger.Info("configuring write authorizations in server")
 	}
 	var userMiddlewares []middleware.Middleware
@@ -61,6 +55,20 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 		middleware.For(fileHandler, userMiddlewares...).ServeHTTP(w, r)
 	})
 	return r
+}
+
+func writeAuthConfig(cfg *config.Settings) *middleware.AuthConfig {
+	return middleware.NewAuthConfig().
+		WithAuth(middleware.Authorization(cfg.WriteAuthorizations)).
+		WithMethod(http.MethodPost).
+		WithPathRegex(fmt.Sprintf("^%s$", cfg.UploadEndpoint))
+}
+
+func readAuthConfig(cfg *config.Settings) *middleware.AuthConfig {
+	return middleware.NewAuthConfig().
+		WithAuth(middleware.Authorization(cfg.ReadAuthorizations)).
+		WithMethod(http.MethodGet).
+		WithPathRegex(".*")
 }
 
 func configureMetrics(cfg *config.Settings) []middleware.Middleware {
