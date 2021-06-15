@@ -16,16 +16,6 @@ import (
 
 func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info Info) http.Handler {
 	r := httprouter.New()
-	var authReadCfg *middleware.AuthConfig
-	if len(cfg.ReadAuthorizations) > 0 {
-		authReadCfg = readAuthConfig(cfg)
-		logger.Info("configuring read authorizations in server")
-	}
-	var authWriteCfg *middleware.AuthConfig
-	if len(cfg.WriteAuthorizations) > 0 {
-		authWriteCfg = writeAuthConfig(cfg)
-		logger.Info("configuring write authorizations in server")
-	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled {
 		userMiddlewares = append(userMiddlewares, configureMetrics(cfg)...)
@@ -37,9 +27,17 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	userMiddlewares = append(userMiddlewares,
 		middleware.RequestLogger(logger),
 		middleware.ServerHeader(fmt.Sprintf("go-serve %s", Version)),
-		middleware.AuthChecker(authReadCfg),
-		middleware.AuthChecker(authWriteCfg),
 	)
+	if len(cfg.ReadAuthorizations) > 0 {
+		logger.Info("configuring read authorizations in server")
+		authReadCfg := readAuthConfig(cfg)
+		userMiddlewares = append(userMiddlewares, middleware.AuthChecker(authReadCfg))
+	}
+	if len(cfg.WriteAuthorizations) > 0 {
+		logger.Info("configuring write authorizations in server")
+		authWriteCfg := writeAuthConfig(cfg)
+		userMiddlewares = append(userMiddlewares, middleware.AuthChecker(authWriteCfg))
+	}
 	r.Handler(http.MethodGet, "/status", StatusHandler(info))
 	if cfg.DownloadEndpoint != "" {
 		r.Handler(http.MethodGet, cfg.DownloadEndpoint, middleware.For(DownloadTARGZHandler(logger, cfg.DocRoot), userMiddlewares...))
