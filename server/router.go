@@ -2,11 +2,11 @@ package server
 
 import (
 	"fmt"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/http/middleware"
 
@@ -34,24 +34,9 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	var userMiddlewares []middleware.Middleware
 	if cfg.MetricsEnabled {
-		metrics.Initialize(cfg)
-		mapper := configureEndpointMapper(cfg)
-		durationObserver := middleware.RequestDurationObserver(
-			"",
-			prometheus.DefaultRegisterer,
-			cfg.MetricsRequestDurationBuckets,
-			mapper,
-		)
-		userMiddlewares = append(userMiddlewares, durationObserver)
-		responseSizeObserver := middleware.ResponseSizeObserver(
-			"",
-			prometheus.DefaultRegisterer,
-			cfg.MetricsSizeBuckets,
-			mapper,
-		)
-		userMiddlewares = append(userMiddlewares, responseSizeObserver)
+		userMiddlewares = append(userMiddlewares, configureMetrics(cfg)...)
 	}
-	if cfg.MetricsListenAddr == "" {
+	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
 		logger.Infof("configuring metrics at %s endpoint", cfg.MetricsPath)
 	}
@@ -76,6 +61,26 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 		middleware.For(fileHandler, userMiddlewares...).ServeHTTP(w, r)
 	})
 	return r
+}
+
+func configureMetrics(cfg *config.Settings) []middleware.Middleware {
+	metrics.Initialize(cfg)
+	mapper := configureEndpointMapper(cfg)
+	var metricsMiddlewares []middleware.Middleware
+	durationObserver := middleware.RequestDurationObserver(
+		"",
+		prometheus.DefaultRegisterer,
+		cfg.MetricsRequestDurationBuckets,
+		mapper,
+	)
+	metricsMiddlewares = append(metricsMiddlewares, durationObserver)
+	responseSizeObserver := middleware.ResponseSizeObserver(
+		"",
+		prometheus.DefaultRegisterer,
+		cfg.MetricsSizeBuckets,
+		mapper,
+	)
+	return append(metricsMiddlewares, responseSizeObserver)
 }
 
 func configureEndpointMapper(cfg *config.Settings) *endpointMapper {
