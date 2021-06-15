@@ -3,6 +3,7 @@
 package server_test
 
 import (
+	"bytes"
 	"context"
 	"io/ioutil"
 	"net/http"
@@ -75,14 +76,32 @@ func TestMetricsCanBeServedOnAlternativePort(t *testing.T) {
 
 	defer s.Shutdown(context.Background())
 
+	test.WaitTCPService(t, ListenAddress, time.Millisecond, time.Second)
 	test.WaitTCPService(t, "localhost:9091", time.Millisecond, time.Second)
+
+	// Prepare request
+	req, err := http.NewRequest(http.MethodPost, HTTPAddressUpload, bytes.NewReader([]byte("hello")))
+	require.NoError(t, err)
+	req.Header.Add("Content-Type", "application/octet-stream")
+	req.Header.Add(DeployPathHeader, "/notes.txt")
+	resp, err := http.DefaultClient.Do(req)
+	require.NoError(t, err)
+	defer resp.Body.Close()
+	require.Equal(t, http.StatusOK, resp.StatusCode)
 
 	AssertDefaultMetricsPathConfigured(t)
 
-	resp, err := http.Get("http://localhost:9091/metrics")
+	resp, err = http.Get("http://localhost:9091/metrics")
 	require.NoError(t, err)
 	defer resp.Body.Close()
+
 	assert.Equal(t, http.StatusOK, resp.StatusCode)
+
+	data, err := ioutil.ReadAll(resp.Body)
+	require.NoError(t, err)
+	metrics := string(data)
+	assert.Contains(t, metrics, "goserve_upload_size_count 1")
+
 	assert.Contains(t, loggerOutput.String(), "starting to serve metrics at 0.0.0.0:9091")
 }
 

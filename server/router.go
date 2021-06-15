@@ -2,11 +2,11 @@ package server
 
 import (
 	"fmt"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"net/http"
 
 	"github.com/julienschmidt/httprouter"
 	"github.com/prometheus/client_golang/prometheus"
-	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"github.com/sirupsen/logrus"
 	"go.eloylp.dev/kit/http/middleware"
 
@@ -33,7 +33,7 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 		logger.Info("configuring write authorizations in server")
 	}
 	var userMiddlewares []middleware.Middleware
-	if cfg.MetricsEnabled && cfg.MetricsListenAddr == "" {
+	if cfg.MetricsEnabled {
 		metrics.Initialize(cfg)
 		mapper := configureEndpointMapper(cfg)
 		durationObserver := middleware.RequestDurationObserver(
@@ -50,6 +50,8 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 			mapper,
 		)
 		userMiddlewares = append(userMiddlewares, responseSizeObserver)
+	}
+	if cfg.MetricsListenAddr == "" {
 		r.Handler(http.MethodGet, cfg.MetricsPath, promhttp.Handler())
 		logger.Infof("configuring metrics at %s endpoint", cfg.MetricsPath)
 	}
