@@ -1,25 +1,29 @@
+env:
+  - GO111MODULE=on
 before:
   hooks:
-    - go mod download
+    - go mod tidy
 builds:
-
   - binary: go-serve
+    main: ./cmd/server/main.go
+    flags:
+      - -trimpath
+      - -tags=timetzdata
     ldflags:
-      - -s -w -X main.Name=go-serve -X main.Version={{.Version}} -X main.Build={{.ShortCommit}} -X main.BuildTime={{.Date}}
+      - -s -w -X go.eloylp.dev/go-serve/server.Name=go-serve -X go.eloylp.dev/go-serve/server.Version={{.Version}} -X go.eloylp.dev/go-serve/server.Build={{.ShortCommit}} -X go.eloylp.dev/go-serve/server.BuildTime={{.Date}}
     env:
       - CGO_ENABLED=0
     goos:
       - linux
-      - darwin
-      - windows
       - freebsd
       - openbsd
+      - netbsd
     goarch:
       - amd64
-      - 386
       - arm
       - arm64
-      - ppc64le
+      - mips
+      - mips64
     goarm:
       - 7
       - 6
