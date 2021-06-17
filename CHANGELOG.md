@@ -1,4 +1,7 @@
 
+## [v2.0.0](https://github.com/eloylp/go-serve/releases/v2.0.0) - 2021-06-17
+Check new [README.md](README.md) for more info.
+  
 ## [v1.3.1](https://github.com/eloylp/go-serve/releases/v1.3.1) - 2020-06-27
 ### Changed
 - Go version to 1.14.4
