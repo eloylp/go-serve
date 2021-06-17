@@ -34,7 +34,7 @@ func StatusHandler(info Info) http.HandlerFunc {
 	}
 }
 
-func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
+func UploadHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		deployPath := r.Header.Get(DeployPathHeader)
 		path := filepath.Join(docRoot, deployPath) // nolinter: gosec
@@ -94,7 +94,7 @@ func saveFile(reader io.Reader, path string) (int64, error) {
 	return written, nil
 }
 
-func DownloadTARGZHandler(logger *logrus.Logger, root string) http.HandlerFunc {
+func DownloadHandler(logger *logrus.Logger, root string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		if r.Header.Get("Accept") != ContentTypeTarGzip {
 			http.NotFound(w, r)

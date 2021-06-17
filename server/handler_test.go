@@ -15,7 +15,7 @@ import (
 	"go.eloylp.dev/go-serve/server"
 )
 
-func TestUploadTARGZHandlerAcceptsRelativeRoot(t *testing.T) {
+func TestUploadHandlerAcceptsRelativePaths(t *testing.T) {
 	logBuffer := bytes.NewBuffer(nil)
 	logger := logrus.New()
 	logger.SetOutput(logBuffer)
@@ -28,7 +28,7 @@ func TestUploadTARGZHandlerAcceptsRelativeRoot(t *testing.T) {
 	defer os.RemoveAll("teststuff")
 	req.Header.Add(DeployPathHeader, deployPath)
 	req.Header.Add("Content-Type", server.ContentTypeTarGzip)
-	server.UploadTARGZHandler(logger, ".").ServeHTTP(rec, req)
+	server.UploadHandler(logger, ".").ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
 
@@ -40,7 +40,7 @@ func TestUploadTARGZHandlerAcceptsRelativeRoot(t *testing.T) {
 
 }
 
-func TestDownloadTARGZHandlerAcceptsRelativeRoot(t *testing.T) {
+func TestDownloadHandlerAcceptsRelativePaths(t *testing.T) {
 	logBuffer := bytes.NewBuffer(nil)
 	logger := logrus.New()
 	logger.SetOutput(logBuffer)
@@ -50,7 +50,7 @@ func TestDownloadTARGZHandlerAcceptsRelativeRoot(t *testing.T) {
 
 	req.Header.Add(DownloadPathHeader, "handler_test.go")
 	req.Header.Add("Accept", server.ContentTypeTarGzip)
-	server.DownloadTARGZHandler(logger, ".").ServeHTTP(rec, req)
+	server.DownloadHandler(logger, ".").ServeHTTP(rec, req)
 
 	assert.Equal(t, http.StatusOK, rec.Result().StatusCode)
 

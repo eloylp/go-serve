@@ -40,11 +40,11 @@ func router(cfg *config.Settings, logger *logrus.Logger, docRoot string, info In
 	}
 	r.Handler(http.MethodGet, "/status", StatusHandler(info))
 	if cfg.DownloadEndpoint != "" {
-		r.Handler(http.MethodGet, cfg.DownloadEndpoint, middleware.For(DownloadTARGZHandler(logger, cfg.DocRoot), userMiddlewares...))
+		r.Handler(http.MethodGet, cfg.DownloadEndpoint, middleware.For(DownloadHandler(logger, cfg.DocRoot), userMiddlewares...))
 		logger.Infof("configuring downloads at %s endpoint", cfg.DownloadEndpoint)
 	}
 	if cfg.UploadEndpoint != "" {
-		r.Handler(http.MethodPost, cfg.UploadEndpoint, middleware.For(UploadTARGZHandler(logger, cfg.DocRoot), userMiddlewares...))
+		r.Handler(http.MethodPost, cfg.UploadEndpoint, middleware.For(UploadHandler(logger, cfg.DocRoot), userMiddlewares...))
 		logger.Infof("configuring uploads at %s endpoint", cfg.UploadEndpoint)
 	}
 	fileHandler := http.FileServer(http.Dir(docRoot))
