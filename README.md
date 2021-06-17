@@ -81,7 +81,7 @@ configure such endpoint in the [configuration](#configuration) section.
 curl -X POST --location "http://localhost:8080/upload" \
     -H "GoServe-Deploy-Path: /notes.txt" \
     -H "Content-Type: application/octet-stream" \
-    -d @tests/root/notes/notes.txt
+    --data-binary @tests/root/notes/notes.txt
 ```
 
 The `GoServe-Deploy-Path` value its always relative to the document root.
@@ -104,7 +104,7 @@ endpoint**. Read how to configure such endpoint in the [configuration](#configur
 curl -X POST --location "http://localhost:8080/upload" \
     -H "GoServe-Deploy-Path: /v1.2.3" \
     -H "Content-Type: application/tar+gzip" \
-    -d @tests/doc-root.tar.gz
+    --data-binary @tests/doc-root.tar.gz
 ```
 
 The `GoServe-Deploy-Path` value its always relative to the document root.
