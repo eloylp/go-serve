@@ -80,7 +80,7 @@ func UploadHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc {
 
 func saveFile(reader io.Reader, path string) (int64, error) {
 	dir := filepath.Dir(path)
-	if err := os.MkdirAll(dir, 0755); err != nil {
+	if err := os.MkdirAll(dir, 0755); err != nil { //nolint: gomnd
 		return 0, err
 	}
 	file, err := os.Create(path)
