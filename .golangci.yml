@@ -101,6 +101,7 @@ issues:
         - gomnd
         - gochecknoinits
         - gosec
+        - bodyclose
         - errcheck
         - dupl
         - forbidigo

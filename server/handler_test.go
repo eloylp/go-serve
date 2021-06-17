@@ -37,7 +37,6 @@ func TestUploadHandlerAcceptsRelativePaths(t *testing.T) {
 	require.NoError(t, err)
 	t.Log(string(data))
 	t.Log(logBuffer.String())
-
 }
 
 func TestDownloadHandlerAcceptsRelativePaths(t *testing.T) {
