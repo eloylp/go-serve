@@ -61,7 +61,7 @@ func defaultSettings() *Settings {
 		MetricsEnabled:                true,
 		MetricsPath:                   "/metrics",
 		MetricsRequestDurationBuckets: []float64{0.005, 0.01, 0.025, 0.05, 0.1, 0.25, 0.5, 1, 2.5, 5, 10},
-		MetricsSizeBuckets:            []float64{1_000, 10_000, 50_000, 100_000, 500_000, 1_000_000, 2_000_000, 4_000_000, 8_000_000},
+		MetricsSizeBuckets:            []float64{64, 256, 1024, 4096, 16_384, 65_536, 262_144, 1_048_576, 4_194_304, 16_777_216},
 	}
 	return s
 }

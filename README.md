@@ -143,7 +143,7 @@ Go serve uses environment variables to configure its internals. Here is a table 
 | GOSERVE_METRICS_PATH                     | Configures in which endpoint the metrics should be served. This can help to hide the metrics endpoint by introducing a more complicated path that only systems will know. | "/metrics"                                                   |
 | GOSERVE_METRICS_LISTEN_ADDR              | If configured, another sidecar server will be configured exclusively for serving metrics. This is **disabled** by default. An example of value could be: "0.0.0.0:9091" . | ""                                                           |
 | GOSERVE_METRICS_REQUEST_DURATION_BUCKETS | Define the buckets for the histogram of request duration. Expressed in seconds. | "0.005,0.01,0.025, 0.05,0.1,0.25,0.5, 1,2.5,5,10"            |
-| GOSERVE_METRICS_SIZE_BUCKETS             | Define the buckets for the histogram of response size and upload size. Expressed in bytes. | "1000,10000,50000,100000,500000,1000000,2000000,4000000,8000000" |
+| GOSERVE_METRICS_SIZE_BUCKETS             | Define the buckets for the histogram of response size and upload size. Expressed in bytes. | "64,256,1024,4096,16384,65536,262144,1048576,4194304,16777216" |
 
 #### Setting up authorization
 
@@ -193,37 +193,24 @@ By default, this server provides various [histograms](https://prometheus.io/docs
 ```prometheus
 # HELP goserve_upload_size Histogram to represent the successful uploads to the server
 # TYPE goserve_upload_size histogram
-goserve_upload_size_bucket{le="1000"} 1
-goserve_upload_size_bucket{le="10000"} 1
-goserve_upload_size_bucket{le="50000"} 1
-goserve_upload_size_bucket{le="100000"} 1
-goserve_upload_size_bucket{le="500000"} 1
-goserve_upload_size_bucket{le="1e+06"} 1
-goserve_upload_size_bucket{le="2e+06"} 1
-goserve_upload_size_bucket{le="4e+06"} 1
-goserve_upload_size_bucket{le="8e+06"} 1
+goserve_upload_size_bucket{le="64"} 0
+goserve_upload_size_bucket{le="256"} 0
+goserve_upload_size_bucket{le="1024"} 0
+goserve_upload_size_bucket{le="4096"} 0
+goserve_upload_size_bucket{le="16384"} 0
+goserve_upload_size_bucket{le="65536"} 0
+goserve_upload_size_bucket{le="262144"} 0
+goserve_upload_size_bucket{le="1.048576e+06"} 1
+goserve_upload_size_bucket{le="4.194304e+06"} 1
+goserve_upload_size_bucket{le="1.6777216e+07"} 1
 goserve_upload_size_bucket{le="+Inf"} 1
-goserve_upload_size_sum 20
+goserve_upload_size_sum 533766
 goserve_upload_size_count 1
 # HELP http_request_duration_seconds 
 # TYPE http_request_duration_seconds histogram
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.005"} 1
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.01"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.025"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.05"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.1"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.25"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="0.5"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="1"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="2.5"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="5"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="10"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/static",method="GET",le="+Inf"} 2
-http_request_duration_seconds_sum{code="200",endpoint="/static",method="GET"} 0.008064042
-http_request_duration_seconds_count{code="200",endpoint="/static",method="GET"} 2
-http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.005"} 1
-http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.01"} 1
-http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.025"} 1
+http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.005"} 0
+http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.01"} 0
+http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.025"} 0
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.05"} 1
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.1"} 1
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.25"} 1
@@ -233,34 +220,77 @@ http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST"
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="5"} 1
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="10"} 1
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="+Inf"} 1
-http_request_duration_seconds_sum{code="200",endpoint="/upload",method="POST"} 0.000308553
+http_request_duration_seconds_sum{code="200",endpoint="/upload",method="POST"} 0.027193285
 http_request_duration_seconds_count{code="200",endpoint="/upload",method="POST"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.005"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.01"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.025"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.05"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.1"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.25"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="0.5"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="1"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="2.5"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="5"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="10"} 1
+http_request_duration_seconds_bucket{code="304",endpoint="/static",method="GET",le="+Inf"} 1
+http_request_duration_seconds_sum{code="304",endpoint="/static",method="GET"} 0.00024055
+http_request_duration_seconds_count{code="304",endpoint="/static",method="GET"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.005"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.01"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.025"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.05"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.1"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.25"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="0.5"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="1"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="2.5"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="5"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="10"} 1
+http_request_duration_seconds_bucket{code="404",endpoint="/static",method="GET",le="+Inf"} 1
+http_request_duration_seconds_sum{code="404",endpoint="/static",method="GET"} 0.000128526
+http_request_duration_seconds_count{code="404",endpoint="/static",method="GET"} 1
 # HELP http_response_size 
 # TYPE http_response_size histogram
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="1000"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="10000"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="50000"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="100000"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="500000"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="1e+06"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="2e+06"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="4e+06"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="8e+06"} 2
-http_response_size_bucket{code="200",endpoint="/static",method="GET",le="+Inf"} 2
-http_response_size_sum{code="200",endpoint="/static",method="GET"} 67
-http_response_size_count{code="200",endpoint="/static",method="GET"} 2
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="1000"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="10000"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="50000"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="100000"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="500000"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="1e+06"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="2e+06"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="4e+06"} 1
-http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="8e+06"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="64"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="256"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="1024"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="4096"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="16384"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="65536"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="262144"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="1.048576e+06"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="4.194304e+06"} 1
+http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="1.6777216e+07"} 1
 http_response_size_bucket{code="200",endpoint="/upload",method="POST",le="+Inf"} 1
-http_response_size_sum{code="200",endpoint="/upload",method="POST"} 35
+http_response_size_sum{code="200",endpoint="/upload",method="POST"} 39
 http_response_size_count{code="200",endpoint="/upload",method="POST"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="64"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="256"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="1024"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="4096"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="16384"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="65536"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="262144"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="1.048576e+06"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="4.194304e+06"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="1.6777216e+07"} 1
+http_response_size_bucket{code="304",endpoint="/static",method="GET",le="+Inf"} 1
+http_response_size_sum{code="304",endpoint="/static",method="GET"} 0
+http_response_size_count{code="304",endpoint="/static",method="GET"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="64"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="256"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="1024"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="4096"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="16384"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="65536"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="262144"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="1.048576e+06"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="4.194304e+06"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="1.6777216e+07"} 1
+http_response_size_bucket{code="404",endpoint="/static",method="GET",le="+Inf"} 1
+http_response_size_sum{code="404",endpoint="/static",method="GET"} 19
+http_response_size_count{code="404",endpoint="/static",method="GET"} 1
 ```
 
 ### The status endpoint
