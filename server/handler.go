@@ -43,11 +43,16 @@ func UploadTARGZHandler(logger *logrus.Logger, docRoot string) http.HandlerFunc 
 			reply(w, http.StatusBadRequest, err.Error())
 			return
 		}
+		absPath, err := filepath.Abs(path)
+		if err != nil {
+			logger.WithError(err).Error("error determining absolute path for upload")
+			reply(w, http.StatusBadRequest, err.Error())
+			return
+		}
 		var writtenBytes int64
-		var err error
 		switch r.Header.Get("Content-Type") {
 		case ContentTypeTarGzip:
-			writtenBytes, err = archive.ExtractTARGZ(r.Body, path)
+			writtenBytes, err = archive.ExtractTARGZ(r.Body, absPath)
 			if err != nil {
 				logger.Debugf("%v", err)
 				reply(w, http.StatusBadRequest, err.Error())
