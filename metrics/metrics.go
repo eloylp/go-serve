@@ -10,7 +10,7 @@ var UploadSize *prometheus.HistogramVec
 
 func uploadSize(buckets []float64) *prometheus.HistogramVec {
 	return prometheus.NewHistogramVec(prometheus.HistogramOpts{
-		Namespace: "goserve",
+		Namespace: "http",
 		Subsystem: "upload",
 		Name:      "size",
 		Help:      "Histogram to represent the successful uploads to the server",

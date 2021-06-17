@@ -100,7 +100,7 @@ func TestMetricsCanBeServedOnAlternativePort(t *testing.T) {
 	data, err := ioutil.ReadAll(resp.Body)
 	require.NoError(t, err)
 	metrics := string(data)
-	assert.Contains(t, metrics, "goserve_upload_size_count 1")
+	assert.Contains(t, metrics, "http_upload_size_count 1")
 
 	assert.Contains(t, loggerOutput.String(), "starting to serve metrics at 0.0.0.0:9091")
 }
@@ -184,9 +184,9 @@ func TestMetricsUploadSizeBucketsConfig(t *testing.T) {
 	require.NoError(t, err)
 	metrics := string(data)
 
-	require.Contains(t, metrics, `goserve_upload_size_bucket{le="100000"} 0`)
-	require.Contains(t, metrics, `goserve_upload_size_bucket{le="600000"} 1`)
-	require.Contains(t, metrics, `goserve_upload_size_bucket{le="1e+06"} 1`)
+	require.Contains(t, metrics, `http_upload_size_bucket{le="100000"} 0`)
+	require.Contains(t, metrics, `http_upload_size_bucket{le="600000"} 1`)
+	require.Contains(t, metrics, `http_upload_size_bucket{le="1e+06"} 1`)
 }
 
 func TestMetricsCanBeServedAlternativePath(t *testing.T) {

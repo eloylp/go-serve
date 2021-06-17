@@ -191,21 +191,21 @@ curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
 By default, this server provides various [histograms](https://prometheus.io/docs/practices/histograms/) that will provide a good global view of server operations. You can scrape this metrics at `/metrics` once the server was started. It is possible to have a sidecar HTTP server dedicated to metrics. See the [configuration](#configuration) section for more details. The following is an excerpt of the available metrics:
 
 ```prometheus
-# HELP goserve_upload_size Histogram to represent the successful uploads to the server
-# TYPE goserve_upload_size histogram
-goserve_upload_size_bucket{le="64"} 0
-goserve_upload_size_bucket{le="256"} 0
-goserve_upload_size_bucket{le="1024"} 0
-goserve_upload_size_bucket{le="4096"} 0
-goserve_upload_size_bucket{le="16384"} 0
-goserve_upload_size_bucket{le="65536"} 0
-goserve_upload_size_bucket{le="262144"} 0
-goserve_upload_size_bucket{le="1.048576e+06"} 1
-goserve_upload_size_bucket{le="4.194304e+06"} 1
-goserve_upload_size_bucket{le="1.6777216e+07"} 1
-goserve_upload_size_bucket{le="+Inf"} 1
-goserve_upload_size_sum 533766
-goserve_upload_size_count 1
+# HELP http_upload_size Histogram to represent the successful uploads to the server
+# TYPE http_upload_size histogram
+http_upload_size_bucket{le="64"} 0
+http_upload_size_bucket{le="256"} 0
+http_upload_size_bucket{le="1024"} 0
+http_upload_size_bucket{le="4096"} 0
+http_upload_size_bucket{le="16384"} 0
+http_upload_size_bucket{le="65536"} 0
+http_upload_size_bucket{le="262144"} 0
+http_upload_size_bucket{le="1.048576e+06"} 1
+http_upload_size_bucket{le="4.194304e+06"} 1
+http_upload_size_bucket{le="1.6777216e+07"} 1
+http_upload_size_bucket{le="+Inf"} 1
+http_upload_size_sum 533766
+http_upload_size_count 1
 # HELP http_request_duration_seconds 
 # TYPE http_request_duration_seconds histogram
 http_request_duration_seconds_bucket{code="200",endpoint="/upload",method="POST",le="0.005"} 0
