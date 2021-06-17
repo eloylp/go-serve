@@ -62,7 +62,7 @@ docker run --rm \
  -e GOSERVE_DOC_ROOT=/mnt/data \
  -p 8080:8080 \
  -v $(pwd):/mnt/data \
-  eloylp/goserve
+  eloylp/go-serve
 ```
 
 As you may notice, environment vars are the chosen method for configuration. See this section for more info
