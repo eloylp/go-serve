@@ -22,6 +22,7 @@ const (
 	SubNotesTestFileMD5 = "0ff6da62cf7875cce432f7b955008953"
 	DocRootTARGZ        = "../tests/doc-root.tar.gz"
 	DeployPathHeader    = "GoServe-Deploy-Path"
+	DownloadPathHeader  = "GoServe-Download-Path"
 )
 
 var (

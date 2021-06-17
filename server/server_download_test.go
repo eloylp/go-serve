@@ -25,7 +25,7 @@ func TestTARGZDownload(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
-	req.Header.Add("GoServe-Download-Path", "/notes")
+	req.Header.Add(DownloadPathHeader, "/notes")
 
 	// Obtain the tar.gz with the required path
 	resp, err := http.DefaultClient.Do(req)
@@ -55,7 +55,7 @@ func TestTARGZDownloadForSingleFile(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
-	req.Header.Add("GoServe-Download-Path", "/notes/notes.txt")
+	req.Header.Add(DownloadPathHeader, "/notes/notes.txt")
 
 	// Obtain the tar.gz with the required path
 	resp, err := http.DefaultClient.Do(req)
@@ -80,7 +80,7 @@ func TestTARGZDownloadCannotEscapeFromDocRoot(t *testing.T) {
 	req, err := http.NewRequest(http.MethodGet, HTTPAddressDownload, nil)
 	require.NoError(t, err)
 	req.Header.Add("Accept", "application/tar+gzip")
-	req.Header.Add("GoServe-Download-Path", "..")
+	req.Header.Add(DownloadPathHeader, "..")
 
 	// Require tar.gz to the download endpoint
 	resp, err := http.DefaultClient.Do(req)
