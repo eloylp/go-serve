@@ -17,7 +17,7 @@ Inspired from the original gopher by Renee French.
 4. [Use cases](#use-cases)
     1. [Upload](#upload-file)
     2. [Download](#download-file)
-    3. [Upload tar.gz file](#upload-targz-file)
+    3. [Upload tar.gz file](#upload-targz-archive)
     4. [Download a directory](#download-a-directory)
 5. [Configuration](#configuration)
     1. [Setting up authorization](#setting-up-authorization)
@@ -28,21 +28,21 @@ Inspired from the original gopher by Renee French.
 
 ### Main features
 
-* Serve specified folder via the HTTP protocol.
-* Users authorisation for `READ` and `WRITE` operations independently.
+* Serve specified folder via the HTTP protocol. Serve the current working directory by default.
+* Configure auth for `READ` and `WRITE` operations independently.
 * Upload single files.
-* Upload `tar.gz` files and extract them under the specified path in the document root.
-* Download folders and files of your document root using `tar.gz` as archive.
+* Upload an entire directory tree by using `tar.gz`  archive format and specify in server extraction point.
+* Download the desired directory tree by using `targ.gz`  archives.
 * Basic Prometheus metrics out of the box. Histograms for request duration, response size and upload size.
-* Option to serve metrics on an alternative port.
+* Option to serve metrics at an alternative port.
 * Status endpoint.
+* Cache. Natively provided by the the Go [fileserve](https://github.com/golang/go/blob/acb189ea59d7f47e5db075e502dcce5eac6571dc/src/net/http/fs.go#L838) handler. It uses [If-Modified-Since](https://developer.mozilla.org/en-US/docs/Web/HTTP/Headers/If-Modified-Since) header for caching.
 
 ### Binary distributions
 
-You can go to the [releases](https://github.com/eloylp/go-serve/releases/latest) page for specific OS and architecture requirements and
-download binaries.
+The [releases](https://github.com/eloylp/go-serve/releases/latest) page will host binaries for the different OS and architectures.
 
-An example install for a Linux machine could be:
+Here is an example install for a Linux machine could be:
 
 ```bash
 sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v2.0.0/go-serve_2.0.0_Linux_x86_64" \
@@ -50,12 +50,12 @@ sudo curl -L "https://github.com/eloylp/go-serve/releases/download/v2.0.0/go-ser
 && sudo chmod +x /usr/local/bin/go-serve
 ```
 
-Environment vars are the chosen method for configuration. See this section for more info about [configuration](#configuration).
+Environment variables are the chosen method for [configuration](#configuration). 
 
 ### Docker images
 
 There's an available docker image at [eloylp/go-serve](https://hub.docker.com/r/eloylp/go-serve) docker hub repository. You can get a
-functional server, serving the current content root just by:
+functional server, serving the specified content root just by:
 
 ```bash
 docker run --rm \
@@ -65,8 +65,7 @@ docker run --rm \
   eloylp/go-serve
 ```
 
-As you may notice, environment vars are the chosen method for configuration. See this section for more info
-about [configuration](#configuration).
+Environment variables are the chosen method for [configuration](#configuration).
 
 ### Use cases
 
@@ -74,8 +73,7 @@ This section will explain some common use cases that are currently covered by Go
 
 #### Upload file
 
-You can upload single files to the document root of the server at runtime. Just push the file to the **upload endpoint**. Read how to
-configure such endpoint in the [configuration](#configuration) section.
+The file can simply be pushed to the **upload endpoint**. There is more information about  how to configure such endpoint in the [configuration](#configuration) section. Here is an example:
 
 ```bash
 curl -X POST --location "http://localhost:8080/upload" \
@@ -84,20 +82,20 @@ curl -X POST --location "http://localhost:8080/upload" \
     --data-binary @tests/root/notes/notes.txt
 ```
 
-The `GoServe-Deploy-Path` value its always relative to the document root.
+The `GoServe-Deploy-Path` value its always relative to the document root. It points the file in the serve where the bytes must be dropped.
 
 #### Download file
 
-Once service is up and running, you can fetch resources as usual you will do with any HTTP server:
+Once service is up and running, files can be fetched as usual:
 
 ```bash
 curl -X GET --location "http://localhost:8080/v1.2.3/gnu.png" \
     --output ./gnu.png
 ```
 
-#### Upload tar.gz file
+#### Upload tar.gz archive
 
-You can upload files to the document root of the server at runtime. Just create your tar.gz and push it to the designated **upload
+Entire file and folder trees can be uploaded by creating a `tar.gz` archive. That archive can be pushed the designated **upload
 endpoint**. Read how to configure such endpoint in the [configuration](#configuration) section.
 
 ```bash
@@ -107,12 +105,11 @@ curl -X POST --location "http://localhost:8080/upload" \
     --data-binary @tests/doc-root.tar.gz
 ```
 
-The `GoServe-Deploy-Path` value its always relative to the document root.
+The `GoServe-Deploy-Path` value its always relative to the document root. It points where the content of the `tar.gz` archive must be extracted.
 
 #### Download a directory
 
-You can download a directory by just fetching the **download endpoint** and requesting the server what type of archive you would like to
-get. Currently, only `tar.gz` is supported. Read how to configure such endpoint in the [configuration](#configuration) section:
+Entire file and folder trees can be downloaded from the server. Fetching the **download endpoint** and requesting the server what type of archive you would like to get. Currently, only `tar.gz` is supported. Read how to configure such endpoint in the [configuration](#configuration) section:
 
 ```bash
 curl -X GET --location "http://localhost:8080/download" \
@@ -130,8 +127,8 @@ Go serve uses environment variables to configure its internals. Here is a table 
 | Variable                                 | Description                                                  | Default                                                      |
 | ---------------------------------------- | ------------------------------------------------------------ | ------------------------------------------------------------ |
 | GOSERVE_LISTEN_ADDR                      | The socket where the server will listen for connections.     | "0.0.0.0:8080"                                               |
-| GOSERVE_DOC_ROOT                         | Path to the  document root we are going to serve.            | "."                                                          |
-| GOSERVE_PREFIX                           | The prefix path under all files will be served. Defaults in value is "/static"  so all files will be served under such path i.e "/static/notes.txt" . This is mandatory and should not interfere with other configured paths. | "/static"                                                    |
+| GOSERVE_DOC_ROOT                         | Path to the  document root its going to be served.           | "."                                                          |
+| GOSERVE_PREFIX                           | The prefix path under all files will be served. Default value is "/static"  so all files will be served under such path i.e "/static/notes.txt" . This is mandatory and should not interfere with other configured paths. | "/static"                                                    |
 | GOSERVE_UPLOAD_ENDPOINT                  | The path in the server where all uploads will take place. If not defined, it will be disabled. By default is **disabled**. | ""                                                           |
 | GOSERVE_DOWNLOAD_ENDPOINT                | The path in the server where all downloads will take place. If not defined, it will be disabled. By default is **disabled**. | ""                                                           |
 | GOSERVE_SHUTDOWN_TIMEOUT                 | The number of seconds that the server will wait to terminate pending active connections before closing. | "5s"                                                         |
@@ -295,7 +292,7 @@ http_response_size_count{code="404",endpoint="/static",method="GET"} 1
 
 ### The status endpoint
 
-The most probably use of this server to place it behind a reverse proxy. In order to facilitate the readiness of the service a status endpoint under `/status` is provided. Heres an example of the information  provided:
+The most probably use of this server to place it behind a reverse proxy. In order to facilitate the readiness of the service a status endpoint under `/status` is provided. Here is an example of the information provided:
 
 ```json
 {
