@@ -6,7 +6,7 @@ Just a static HTTP server with some vitamins.
 </p>
 
 <p align="right" style="color:silver">
-Gopher art by @lidiackr
+Gopher art by <a href="https://github.com/lidiackr">@lidiackr</a>
 </p>
 
 ## Table of contents
