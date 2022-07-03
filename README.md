@@ -2,11 +2,7 @@
 
 Just a static HTTP server with some vitamins.
 <p align="center">
-<img src="art/gopher.png" alt="go-serve" width="300"/>
-</p>
-
-<p align="right" style="color:silver">
-Inspired from the original gopher by Renee French.
+<img src="https://raw.githubusercontent.com/lidiackr/gophers/main/eloylp/go-serve/head.png" alt="go-serve" width="300"/>
 </p>
 
 ## Table of contents
