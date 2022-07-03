@@ -5,6 +5,10 @@ Just a static HTTP server with some vitamins.
 <img src="https://raw.githubusercontent.com/lidiackr/gophers/main/eloylp/go-serve/head.png" alt="go-serve" width="300"/>
 </p>
 
+<p align="right" style="color:silver">
+Gopher art by @lidiackr
+</p>
+
 ## Table of contents
 
 1. [Main features](#main-features)
