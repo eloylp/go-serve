@@ -13,5 +13,5 @@ require (
 	github.com/stretchr/testify v1.5.1
 	go.eloylp.dev/kit v0.0.0-20210614151956-50b8b987d692
 	golang.org/x/crypto v0.0.0-20210513164829-c07d793c2f9a // indirect
-	golang.org/x/sys v0.0.0-20210601080250-7ecdf8ef093b // indirect
+	golang.org/x/sys v0.1.0 // indirect
 )
